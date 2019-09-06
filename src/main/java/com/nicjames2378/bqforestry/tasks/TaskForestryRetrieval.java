@@ -14,6 +14,7 @@ import betterquesting.api2.storage.DBEntry;
 import com.nicjames2378.bqforestry.Main;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.GuiEditTaskBeeRetrievalLanding;
 import com.nicjames2378.bqforestry.client.tasks.PanelTaskForestryRetrieval;
+import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.Reference;
 import net.minecraft.client.gui.GuiScreen;
@@ -48,9 +49,9 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
     };
     private final Set<UUID> completeUsers = new TreeSet<>();
     private final HashMap<UUID, int[]> userProgress = new HashMap<>();
-    public boolean consume = false;
-    public boolean autoConsume = false;
-    public boolean onlyMated = false;
+    public boolean consume = ConfigHandler.cfgConsume;
+    public boolean autoConsume = ConfigHandler.cfgAutoConsume;
+    public boolean onlyMated = ConfigHandler.cfgOnlyMated;
 
     public BigItemStack getBaseBeeBig(String species) {
         return new BigItemStack(getBaseBee(species));

@@ -38,8 +38,8 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
         int[] progress = task.getUsersProgress(uuid);
         boolean isComplete = task.isComplete(uuid);
 
-        String sCon = (task.consume ? TextFormatting.RED : TextFormatting.GREEN) + QuestTranslation.translate(task.consume ? "gui.yes" : "gui.no");
-        this.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, 0, -16), 0), QuestTranslation.translate("bqforestry.btn.consume", sCon)).setColor(PresetColor.TEXT_MAIN.getColor()));
+        String doConsume = (task.consume ? TextFormatting.RED : TextFormatting.GREEN) + QuestTranslation.translate(task.consume ? "gui.yes" : "gui.no");
+        this.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, 0, -16), 0), QuestTranslation.translate("bqforestry.btn.consume", doConsume)).setColor(PresetColor.TEXT_MAIN.getColor()));
 
         CanvasScrolling cvList = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 16, 8, 0), 0));
         this.addPanel(cvList);

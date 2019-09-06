@@ -21,6 +21,7 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
+import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.AlleleManager;
@@ -121,7 +122,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
 
         // Scrollbar
         PanelVScrollBar scVerBar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 0, 0, 0), 0));
-        scVerBar.setScrollSpeed(2.0f);
+        scVerBar.setScrollSpeed(ConfigHandler.cfgscrollSpeed);
         cvButtonsArea.setScrollDriverY(scVerBar);
         cvControlsContainer.addPanel(scVerBar);
 //endregion
