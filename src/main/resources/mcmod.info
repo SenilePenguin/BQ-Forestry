@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "bqforestry",
+    "name": "BQ Forestry Expansion",
+    "version": "1.0",
+    "mcversion": "1.12.2",
+    "description": "A Better Questing Expansion to allow the use of Forestry Bees and Trees",
+    "credits": "Created By SenilePenguin (aka NicJames2378)",
+    "logoFile": "",
+    "url": "",
+    "authorList": [
+      "SenilePenguin"
+    ],
+    "parent": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
