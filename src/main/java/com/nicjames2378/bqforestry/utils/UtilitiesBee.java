@@ -1,11 +1,17 @@
 package com.nicjames2378.bqforestry.utils;
 
+import com.nicjames2378.bqforestry.Main;
+import forestry.api.apiculture.EnumBeeChromosome;
+import forestry.api.genetics.AlleleManager;
+import forestry.api.genetics.IAllele;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class UtilitiesBee {
@@ -57,5 +63,18 @@ public class UtilitiesBee {
         if (getBeeSpecies(beeA) == null || getBeeSpecies(beeB) == null)
             return false;                                                   // If one of the bees are missing the properly formatted species tag, they don't match
         return Objects.equals(getBeeSpecies(beeA), getBeeSpecies(beeB));    // Return whether they match or not
+    }
+
+    public static void listBeeSpecies() {
+        Main.log.info("Config ListAllBees is TRUE. Outputting bees list now.");
+        Main.log.info("===========================================================");
+
+        Collection<IAllele> species = AlleleManager.alleleRegistry.getRegisteredAlleles(EnumBeeChromosome.SPECIES);
+        Iterator a = species.iterator();
+        for (int i = 0; i < species.size(); i++) {
+            Main.log.info(String.format("Bees species found: %1$d / %2$d - %3$s", i + 1, species.size(), a.next().toString()));
+        }
+
+        Main.log.info("===========================================================");
     }
 }

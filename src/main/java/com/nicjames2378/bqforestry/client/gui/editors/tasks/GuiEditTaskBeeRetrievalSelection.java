@@ -25,6 +25,7 @@ import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.CanvasBeeDatabase;
+import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.NBTTagCompound;
@@ -117,7 +118,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         // Scrollbar
         PanelVScrollBar scBeeBar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 16, 0, 0), 0));
         cvBeeDB.setScrollDriverY(scBeeBar);
-        scBeeBar.setScrollSpeed(2.0f);
+        scBeeBar.setScrollSpeed(ConfigHandler.cfgscrollSpeed);
         cvRightArea.addPanel(scBeeBar);
 //endregion
 
