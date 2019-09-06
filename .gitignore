@@ -20,6 +20,3 @@ build
 # other
 eclipse
 run
-
-# Project exclude paths
-/src/main/java/com/nicjames2378/bqforestry/config/

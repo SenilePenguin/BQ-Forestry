@@ -1,11 +1,13 @@
 package com.nicjames2378.bqforestry;
 
 import com.nicjames2378.bqforestry.commands.BQFCommandGetSpecies;
+import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.proxy.CommonProxy;
 import com.nicjames2378.bqforestry.utils.Reference;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -22,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collection;
 import java.util.Iterator;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION)
+@Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION, guiFactory = Reference.GUI_FACTORY)
 public class Main {
 
     @Instance
@@ -38,7 +40,9 @@ public class Main {
     @EventHandler
     public static void PreInit(FMLPreInitializationEvent event) {
         log = event.getModLog();
-        //proxy.PreInit(event);
+
+        ConfigHandler.config = new Configuration(event.getSuggestedConfigurationFile());
+        ConfigHandler.initConfigs();
     }
 
     @EventHandler
