@@ -84,7 +84,7 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
                 sb.append(TextFormatting.RED).append(QuestTranslation.translate("betterquesting.tooltip.incomplete"));
             }
 
-            PanelTextBox text = new PanelTextBox(new GuiRectangle(36, i * 32, listW - 36, 40, 0), sb.toString());
+            PanelTextBox text = new PanelTextBox(new GuiRectangle(36, i * 38 + 2, listW - 36, 40, 0), sb.toString());
             text.setColor(PresetColor.TEXT_MAIN.getColor());
             cvList.addPanel(text);
         }

@@ -1,6 +1,10 @@
 package com.nicjames2378.bqforestry.client.gui.editors.tasks;
 
+import betterquesting.api.api.ApiReference;
+import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.client.gui.misc.IVolatileScreen;
+import betterquesting.api.enums.EnumPacketAction;
+import betterquesting.api.network.QuestingPacket;
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api.utils.RenderUtils;
@@ -21,23 +25,27 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
+import com.nicjames2378.bqforestry.Main;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
-import forestry.api.apiculture.EnumBeeChromosome;
-import forestry.api.genetics.AlleleManager;
-import forestry.api.genetics.IAllele;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements IVolatileScreen {
+    private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
     private final IQuest quest;
     private final TaskForestryRetrieval task;
+
+    public GuiEditTaskBeeRetrievalLanding getScreenRef() {
+        return this;
+    }
 
     public GuiEditTaskBeeRetrievalLanding(GuiScreen parent, IQuest quest, TaskForestryRetrieval task) {
         super(parent);
@@ -48,8 +56,8 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
     @Override
     public void initPanel() {
         super.initPanel();
-        final GuiEditTaskBeeRetrievalLanding screenRef = this;
-        final Collection<IAllele> spec = AlleleManager.alleleRegistry.getRegisteredAlleles(EnumBeeChromosome.SPECIES);
+        Main.log.info("");
+
         Keyboard.enableRepeatEvents(true);
 
         //Background
@@ -63,7 +71,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.BOTTOM_CENTER, -100, -16, 200, 16, 0), -1, QuestTranslation.translate("gui.done")) {
             @Override
             public void onButtonClick() {
-                //if (selected != null) sendChanges();
+                sendChanges();
                 mc.displayGuiScreen(parent);
             }
         });
@@ -76,7 +84,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                     @Override
                     public void onButtonClick() {
                         task.autoConsume = !task.autoConsume;
-                        screenRef.initGui();
+                        getScreenRef().initGui();
                     }
                 }
                         .setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.btn.autoconsume.tooltip"), 128, mc.fontRenderer))
@@ -88,7 +96,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                     @Override
                     public void onButtonClick() {
                         task.consume = !task.consume;
-                        screenRef.initGui();
+                        getScreenRef().initGui();
                     }
                 }
                         .setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.btn.consume.tooltip"), 128, mc.fontRenderer))
@@ -121,7 +129,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                 PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, areaWidth - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, taskItem.getBaseStack().getDisplayName(), i);
 
                 btnTaskItem.setCallback(value -> {
-                    mc.displayGuiScreen(new GuiEditTaskBeeRetrievalSelection(screenRef, quest, task, value));
+                    mc.displayGuiScreen(new GuiEditTaskBeeRetrievalSelection(getScreenRef(), quest, task, value));
                 });
                 cvButtonsArea.addPanel(btnTaskItem);
 
@@ -132,7 +140,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                         QuestTranslation.translate("bqforestry.tooltip.delete") + "\n" + QuestTranslation.translate("bqforestry.tooltip.deleteWarning"), 128, mc.fontRenderer));
                 btnDelete.setCallback(value -> {
                     task.requiredItems.remove(task.requiredItems.get(value));
-                    screenRef.initPanel();
+                    getScreenRef().initPanel();
                 });
                 cvButtonsArea.addPanel(btnDelete);
             }
@@ -143,7 +151,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
             btnAddNew.setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.tooltip.add"), 128, mc.fontRenderer));
             btnAddNew.setCallback(value -> {
                 task.requiredItems.add(value, TaskForestryRetrieval.getDefaultBee());
-                screenRef.initGui();
+                getScreenRef().initGui();
             });
             cvButtonsArea.addPanel(btnAddNew);
         }
@@ -190,5 +198,16 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         // Mated
         tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(UtilitiesBee.isMated(bee))));
         return tip;
+    }
+
+    private void sendChanges() {
+        NBTTagCompound base = new NBTTagCompound();
+        base.setTag("config", quest.writeToNBT(new NBTTagCompound()));
+        base.setTag("progress", quest.writeProgressToNBT(new NBTTagCompound(), null));
+        NBTTagCompound tags = new NBTTagCompound();
+        tags.setInteger("action", EnumPacketAction.EDIT.ordinal()); // Action: Update data
+        tags.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
+        tags.setTag("data", base);
+        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
     }
 }

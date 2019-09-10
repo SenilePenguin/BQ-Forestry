@@ -1,10 +1,6 @@
 package com.nicjames2378.bqforestry.client.gui.editors.tasks;
 
-import betterquesting.api.api.ApiReference;
-import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.client.gui.misc.IVolatileScreen;
-import betterquesting.api.enums.EnumPacketAction;
-import betterquesting.api.network.QuestingPacket;
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api2.client.gui.GuiScreenCanvas;
@@ -31,8 +27,6 @@ import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
@@ -63,7 +57,6 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         } else {
             this.selectedSpecies = selectedSpecies;
         }
-        Main.log.info("Selected Species: " + selectedSpecies);
         hasChanged = true;
     }
 
@@ -89,6 +82,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         hasChanged = true;
     }
     //endregion
+
 
     public GuiEditTaskBeeRetrievalSelection(GuiScreen parent, IQuest quest, TaskForestryRetrieval task, int indexInList) {
         super(parent);
@@ -233,7 +227,9 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.BOTTOM_CENTER, -100, -16, 200, 16, 0), -1, QuestTranslation.translate("gui.done")) {
             @Override
             public void onButtonClick() {
-                if (hasChanged) sendChanges();
+                Main.log.info(hasChanged);
+                task.requiredItems.set(indexInList, new BigItemStack(getBaseBee(getSelectedSpecies(), BeeTypes.valueOf(getSelectedType()), getSelectedMated())));
+                //if (hasChanged) sendChanges();
                 mc.displayGuiScreen(parent);
             }
         });
@@ -245,20 +241,6 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         le0.setParent(cvBackground.getTransform());
         PanelLine paLine0 = new PanelLine(ls0, le0, PresetLine.GUI_DIVIDER.getLine(), 1, PresetColor.GUI_DIVIDER.getColor(), 1);
         cvBackground.addPanel(paLine0);
-    }
-
-    private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
-
-    private void sendChanges() {
-        task.requiredItems.set(indexInList, new BigItemStack(getBaseBee(getSelectedSpecies(), BeeTypes.valueOf(getSelectedType()), getSelectedMated())));
-        NBTTagCompound base = new NBTTagCompound();
-        base.setTag("config", quest.writeToNBT(new NBTTagCompound()));
-        base.setTag("progress", quest.writeProgressToNBT(new NBTTagCompound(), null));
-        NBTTagCompound tags = new NBTTagCompound();
-        tags.setInteger("action", EnumPacketAction.EDIT.ordinal()); // Action: Update data
-        tags.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
-        tags.setTag("data", base);
-        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
     }
 
     private String getMatedString() {
