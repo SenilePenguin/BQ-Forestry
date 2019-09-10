@@ -23,12 +23,16 @@ import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
+import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements IVolatileScreen {
@@ -39,13 +43,12 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         super(parent);
         this.quest = quest;
         this.task = task;
-
-        //selected = task.advID;
     }
 
     @Override
     public void initPanel() {
         super.initPanel();
+        final GuiEditTaskBeeRetrievalLanding screenRef = this;
         final Collection<IAllele> spec = AlleleManager.alleleRegistry.getRegisteredAlleles(EnumBeeChromosome.SPECIES);
         Keyboard.enableRepeatEvents(true);
 
@@ -65,9 +68,34 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
             }
         });
 
+        int bgWidth = cvBackground.getTransform().getWidth();
+
+        // AutoConsume Button
+        String doAutoConsume = (task.autoConsume ? TextFormatting.RED : TextFormatting.GREEN) + QuestTranslation.translate(task.autoConsume ? "gui.yes" : "gui.no");
+        cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_EDGE, (bgWidth / 3) / 2 - 55, 80, 110, 16, 0), -1, QuestTranslation.translate("bqforestry.btn.autoconsume", doAutoConsume)) {
+                    @Override
+                    public void onButtonClick() {
+                        task.autoConsume = !task.autoConsume;
+                        screenRef.initGui();
+                    }
+                }
+                        .setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.btn.autoconsume.tooltip"), 128, mc.fontRenderer))
+        );
+
+        // Consume Button
+        String doConsume = (task.consume ? TextFormatting.RED : TextFormatting.GREEN) + QuestTranslation.translate(task.consume ? "gui.yes" : "gui.no");
+        cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_EDGE, (bgWidth / 3) / 2 - 55, 80 + 24, 110, 16, 0), -1, QuestTranslation.translate("bqforestry.btn.consume", doConsume)) {
+                    @Override
+                    public void onButtonClick() {
+                        task.consume = !task.consume;
+                        screenRef.initGui();
+                    }
+                }
+                        .setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.btn.consume.tooltip"), 128, mc.fontRenderer))
+        );
+
 //region List Controls
         // Scroll Container
-        int bgWidth = cvBackground.getTransform().getWidth();
         CanvasEmpty cvControlsContainer = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding((bgWidth / 3) - 22, 32, 16, 32), 0)); // Subtract extra width to make icons line up where BQ NBT edit has ## delimiters
         cvBackground.addPanel(cvControlsContainer);
 
@@ -76,22 +104,21 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         cvControlsContainer.addPanel(cvButtonsArea);
 
         // RequiredItems List
-        final GuiEditTaskBeeRetrievalLanding screenRef = this;
-
         int listSize = task.requiredItems.size();
+        int areaWidth = cvButtonsArea.getTransform().getWidth();
         for (int i = 0; i <= listSize; i++) {
             if (i != listSize) {
                 BigItemStack taskItem = task.requiredItems.get(i);
+
                 cvButtonsArea.addPanel(new PanelGeneric(new GuiRectangle(0, i * 24, 24, 24, -1), new ItemTexture(taskItem)));
                 PanelGeneric iconFrame = new PanelGeneric(new GuiRectangle(0, i * 24, 24, 24, 0), PresetTexture.ITEM_FRAME.getTexture());
-                iconFrame.setTooltip(RenderUtils.splitString("NYI: BeeRetLandInfoPane\nPlease report this!", 128, mc.fontRenderer));
+
+                iconFrame.setTooltip(getHoverTooltip(taskItem.getBaseStack()));
+                //iconFrame.setTooltip(RenderUtils.splitString(getHoverTooltip(taskItem.getBaseStack()), 128, mc.fontRenderer));
                 cvButtonsArea.addPanel(iconFrame);
 
                 // Task Item button
-                PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, cvButtonsArea.getTransform().getWidth() - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, taskItem.getBaseStack().getDisplayName(), i);
-
-                // TODO: Add tooltips to give information about the task on hover
-                // btnTaskItem.setTooltip(RenderUtils.splitString(ITEM INFORMATION HERE, 128, mc.fontRenderer));
+                PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, areaWidth - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, taskItem.getBaseStack().getDisplayName(), i);
 
                 btnTaskItem.setCallback(value -> {
                     mc.displayGuiScreen(new GuiEditTaskBeeRetrievalSelection(screenRef, quest, task, value));
@@ -99,9 +126,10 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                 cvButtonsArea.addPanel(btnTaskItem);
 
                 // Delete button
-                PanelButtonStorage<Integer> btnDelete = new PanelButtonStorage<>(new GuiRectangle(cvButtonsArea.getTransform().getWidth() - 8 - 24, i * 24, 24, 24, 0), -1, "x", i);
+                PanelButtonStorage<Integer> btnDelete = new PanelButtonStorage<>(new GuiRectangle(areaWidth - 8 - 24, i * 24, 24, 24, 0), -1, "x", i);
                 btnDelete.setTextHighlight(new GuiColorStatic(128, 128, 128, 255), new GuiColorStatic(255, 0, 0, 255), new GuiColorStatic(255, 0, 0, 255));
-                btnDelete.setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.tooltip.delete"), 128, mc.fontRenderer));
+                btnDelete.setTooltip(RenderUtils.splitString(
+                        QuestTranslation.translate("bqforestry.tooltip.delete") + "\n" + QuestTranslation.translate("bqforestry.tooltip.deleteWarning"), 128, mc.fontRenderer));
                 btnDelete.setCallback(value -> {
                     task.requiredItems.remove(task.requiredItems.get(value));
                     screenRef.initPanel();
@@ -110,11 +138,11 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
             }
 
             // Add New button (happens after loop to ensure we add an extra one, even if all items are deleted)
-            PanelButtonStorage<Integer> btnAddNew = new PanelButtonStorage<>(new GuiRectangle(cvButtonsArea.getTransform().getWidth() - 8 - 48, i * 24, 24, 24, 0), -1, "+", i);
+            PanelButtonStorage<Integer> btnAddNew = new PanelButtonStorage<>(new GuiRectangle(areaWidth - 8 - 48, i * 24, 24, 24, 0), -1, "+", i);
             btnAddNew.setTextHighlight(new GuiColorStatic(128, 128, 128, 255), new GuiColorStatic(0, 255, 0, 255), new GuiColorStatic(0, 255, 0, 255));
             btnAddNew.setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.tooltip.add"), 128, mc.fontRenderer));
             btnAddNew.setCallback(value -> {
-                task.requiredItems.add(value, task.getBaseBeeBig("forestry.speciesCommon"));
+                task.requiredItems.add(value, TaskForestryRetrieval.getDefaultBee());
                 screenRef.initGui();
             });
             cvButtonsArea.addPanel(btnAddNew);
@@ -122,7 +150,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
 
         // Scrollbar
         PanelVScrollBar scVerBar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 0, 0, 0), 0));
-        scVerBar.setScrollSpeed(ConfigHandler.cfgscrollSpeed);
+        scVerBar.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
         cvButtonsArea.setScrollDriverY(scVerBar);
         cvControlsContainer.addPanel(scVerBar);
 //endregion
@@ -144,5 +172,23 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         PanelLine plBottom = new PanelLine(ls1, rs1, PresetLine.GUI_DIVIDER.getLine(), 1, PresetColor.GUI_DIVIDER.getColor(), -1);
         cvBackground.addPanel(plBottom);
 //endregion
+    }
+
+    private ArrayList<String> getHoverTooltip(ItemStack bee) {
+        // Show information about the bee
+        // Species: forestry.speciesCommon
+        // Type:    Princess
+        // Mated:   Yes
+        ArrayList<String> tip = new ArrayList<>();
+        String GOLD = TextFormatting.GOLD.toString();
+        String AQUA = TextFormatting.AQUA.toString();
+
+        // Species
+        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getSpecies(bee)));
+        // Type
+        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(UtilitiesBee.getType(bee).get()));
+        // Mated
+        tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(UtilitiesBee.isMated(bee))));
+        return tip;
     }
 }

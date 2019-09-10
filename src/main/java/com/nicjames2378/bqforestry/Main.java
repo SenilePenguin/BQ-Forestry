@@ -52,7 +52,7 @@ public class Main {
 
         hasJEI = Loader.isModLoaded("jei");
 
-        if (ConfigHandler.cfgListBeeSpecies) UtilitiesBee.listBeeSpecies();
+        if (ConfigHandler.cfgListBeeSpecies) UtilitiesBee.listAllSpecies();
     }
 
     @EventHandler

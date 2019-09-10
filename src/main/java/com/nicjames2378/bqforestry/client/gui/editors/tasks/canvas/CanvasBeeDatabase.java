@@ -22,11 +22,10 @@ public abstract class CanvasBeeDatabase extends CanvasSearch<String, IAllele> {
         return temp.iterator();
     }
 
-    //@Override
     protected void queryMatches(IAllele value, String query, ArrayDeque<String> results) {
         if (value.getAlleleName().toLowerCase().contains(query.toLowerCase())) {
             results.add(value.getAlleleName());
-        } // Could search the description but that'd make the results less relevant to the query
+        }
     }
 
     private static final Comparator<IAllele> advComparator = (o1, o2) -> {
@@ -36,9 +35,9 @@ public abstract class CanvasBeeDatabase extends CanvasSearch<String, IAllele> {
             return 1;
         }
 
-        String s1 = o1.toString(); //.getDisplay() == null ? o1.getId().toString().toLowerCase() : o1.getDisplay().getTitle().getFormattedText().toLowerCase();
-        String s2 = o2.toString(); //.getDisplay() == null ? o2.getId().toString().toLowerCase() : o2.getDisplay().getTitle().getFormattedText().toLowerCase();
+        //String s1 = o1.toString();
+        //String s2 = o2.toString();
 
-        return s1.compareTo(s2);
+        return o1.toString().compareTo(o2.toString());
     };
 }

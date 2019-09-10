@@ -44,7 +44,7 @@ public class BQFCommandGetSpecies implements ICommand {
             // Gets player and held item
             EntityPlayer player = (EntityPlayer) sender.getCommandSenderEntity();
             ItemStack heldItem = player.getHeldItemMainhand();
-            String species = UtilitiesBee.getBeeSpecies(heldItem);
+            String species = UtilitiesBee.getSpecies(heldItem);
 
             if (heldItem.isEmpty() || species == null) {
                 sender.sendMessage(improperItemError);

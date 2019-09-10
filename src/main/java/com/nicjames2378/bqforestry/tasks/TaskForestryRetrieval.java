@@ -17,6 +17,7 @@ import com.nicjames2378.bqforestry.client.tasks.PanelTaskForestryRetrieval;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.Reference;
+import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -38,24 +39,24 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.nicjames2378.bqforestry.utils.UtilitiesBee.checkBeesMatchSpecies;
-import static com.nicjames2378.bqforestry.utils.UtilitiesBee.getBaseBee;
+import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
+    private static BigItemStack defBee;
+
+    public static BigItemStack getDefaultBee() {
+        return new BigItemStack(getBaseBee(UtilitiesBee.DEFAULT_SPECIES, UtilitiesBee.BeeTypes.valueOf(ConfigHandler.cfgBeeType), ConfigHandler.cfgOnlyMated));
+    }
+
     public final NonNullList<BigItemStack> requiredItems = new NonNullList<BigItemStack>() {
         {
-            add(getBaseBeeBig("forestry.speciesCommon"));
+            add(getDefaultBee());
         }
     };
     private final Set<UUID> completeUsers = new TreeSet<>();
     private final HashMap<UUID, int[]> userProgress = new HashMap<>();
     public boolean consume = ConfigHandler.cfgConsume;
     public boolean autoConsume = ConfigHandler.cfgAutoConsume;
-    public boolean onlyMated = ConfigHandler.cfgOnlyMated;
-
-    public BigItemStack getBaseBeeBig(String species) {
-        return new BigItemStack(getBaseBee(species));
-    }
 
     @Override
     public String getUnlocalisedName() {
@@ -121,10 +122,10 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
 
                 if (progress[j] >= rStack.stackSize) continue;
 
-                if (onlyMated && !isMated(stack))
+                if (isMated(rStack.getBaseStack()) && !isMated(stack))
                     continue;
 
-                if (checkBeesMatchSpecies(rStack.getBaseStack(), stack)) {
+                if (checkMatchSpecies(rStack.getBaseStack(), stack)) {
                     int remaining = rStack.stackSize - progress[j];
                     if (consume) {
                         ItemStack removed = player.inventory.decrStackSize(i, remaining);
@@ -169,7 +170,6 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
     public NBTTagCompound writeToNBT(NBTTagCompound json) {
         json.setBoolean("consume", consume);
         json.setBoolean("autoConsume", autoConsume);
-        json.setBoolean("onlyMated", onlyMated);
 
         NBTTagList itemArray = new NBTTagList();
         for (BigItemStack stack : this.requiredItems) {
@@ -184,7 +184,6 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
     public void readFromNBT(NBTTagCompound json) {
         consume = json.getBoolean("consume");
         autoConsume = json.getBoolean("autoConsume");
-        onlyMated = json.getBoolean("onlyMated");
 
         requiredItems.clear();
         NBTTagList iList = json.getTagList("requiredItems", 10);
@@ -298,17 +297,15 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
             BigItemStack rStack = requiredItems.get(j);
 
             if (progress[j] >= rStack.stackSize) continue;
-            if (onlyMated && !isMated(stack)) continue;
+            if (isMated(rStack.getBaseStack()) && !isMated(stack)) continue;
 
-            if (checkBeesMatchSpecies(rStack.getBaseStack(), stack)) return true;
+            if (checkMatchSpecies(rStack.getBaseStack(), stack)) return true;
         }
 
         return false;
     }
 
-    public boolean isMated(ItemStack item) {
-        return item.hasTagCompound() && item.getTagCompound().hasKey("Mate");
-    }
+
 
     @Override
     public ItemStack submitItem(UUID owner, IQuest quest, ItemStack input) {
@@ -328,7 +325,7 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
 
             int remaining = rStack.stackSize - progress[j];
 
-            if (checkBeesMatchSpecies(rStack.getBaseStack(), stack)) {
+            if (checkMatchSpecies(rStack.getBaseStack(), stack)) {
                 int removed = Math.min(stack.getCount(), remaining);
                 stack.shrink(removed);
                 progress[j] += removed;

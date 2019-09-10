@@ -3,13 +3,22 @@ bqforestry.task.bee_retrieval=Bee Retrieval Task
 bqforestry.reward.bee=Forestry Bee Reward NYI
 bqforestry.reward.tree=Forestry Tree Reward NYI
 
+bqforestry.requirements.mated=Is Mated
+
 bqforestry.title.edit_bee_retrieval_landing=Edit Bee Retrieval Tasks
 bqforestry.title.edit_bee_retrieval_selection=Edit Bee Retrieval Task
 
-bqforestry.tooltip.delete=Deletes this entry from the task list.\nWARNING! This change is irreversible!
+bqforestry.tooltip.delete=Deletes this entry from the task list.
+bqforestry.tooltip.deleteWarning=WARNING! This change is irreversible!
 bqforestry.tooltip.add=Inserts a new entry at this location in the task list.
 
 bqforestry.btn.consume=Consume: %s
+bqforestry.btn.autoconsume=Auto Consume: %s
+bqforestry.btn.onlymated=Only Mated: %s
+
+bqforestry.btn.consume.tooltip=Whether the items will be deleted for quest completion
+bqforestry.btn.autoconsume.tooltip=Whether the items will be automatically consumed. Requires consume to be enabled
+bqforestry.btn.onlymated.tooltip=Whether this task should only accept mated bees
 
 bqforestry.command.getspecies=Species %s copied to the clipboard!
 
