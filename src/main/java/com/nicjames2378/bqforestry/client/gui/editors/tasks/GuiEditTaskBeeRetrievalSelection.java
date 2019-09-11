@@ -176,7 +176,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
             protected boolean addResult(String entry, int index, int cachedWidth) {
                 // Handle Fixing the Forestry bug
                 boolean doForestryFix = false;
-                if (ConfigHandler.cfgEderEndedFix && entry.equals("Ender")) {
+                if (ConfigHandler.cfgEnderEndedFix && entry.equals("Ender")) {
                     doForestryFix = true;
                     entry = "Ended";
                 }

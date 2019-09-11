@@ -25,7 +25,6 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
-import com.nicjames2378.bqforestry.Main;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
@@ -56,8 +55,6 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
     @Override
     public void initPanel() {
         super.initPanel();
-        Main.log.info("");
-
         Keyboard.enableRepeatEvents(true);
 
         //Background

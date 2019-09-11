@@ -14,8 +14,10 @@ public class ConfigHandler {
     public static Configuration config;
 
     private static String key = "bqforestry.config.";
-    private static String CATEGORY_EDITMODE = "editmode";
+    private static String CATEGORY_FORESTRY = "forestry";
+    private static String CATEGORY_OTHER = "other";
     private static String CATEGORY_DEBUG = "debug";
+    private static int configVersion = 2;
 
     public static float cfgScrollSpeed = 2.0f;
     public static boolean cfgAutoConsume = false;
@@ -23,8 +25,10 @@ public class ConfigHandler {
     public static boolean cfgOnlyMated = false;
     public static String cfgBeeType = UtilitiesBee.BeeTypes.princess.get();
 
+    public static boolean cfgCaseSensitiveKeyCodes = true;
+
     public static boolean cfgListBeeSpecies = true;
-    public static boolean cfgEderEndedFix = true;
+    public static boolean cfgEnderEndedFix = true;
 
     public static void initialize(File file) {
         config = new Configuration(file);
@@ -39,15 +43,30 @@ public class ConfigHandler {
         }
         config.load();
 
-        cfgScrollSpeed = config.getFloat("Scroll Speed", CATEGORY_EDITMODE, 2.0f, 0.5f, 4.0f, "How fast this mod handles scrolling in it's Quest Book pages.", key + "scrollspeed");
-        cfgAutoConsume = config.getBoolean("Default AutoConsume", CATEGORY_EDITMODE, false, "The default value for 'autoconsume' on BQF tasks.", key + "autoconsume");
-        cfgConsume = config.getBoolean("Default Consume", CATEGORY_EDITMODE, false, "The default value for 'consume' on BQF tasks.", key + "consume");
-        cfgOnlyMated = config.getBoolean("Default OnlyMated", CATEGORY_EDITMODE, false, "The default value for 'onlyMated' on BQF tasks.", key + "onlymated");
-        cfgBeeType = config.getString("Default Beeess", CATEGORY_EDITMODE, UtilitiesBee.BeeTypes.princess.get(), "The default selected bee type on BQF tasks.", UtilitiesBee.getAllTypes(), key + "beetype");
+        // ===== Handle Versioning Stuff =====
+        // No versioning found
+        if (!config.hasKey(CATEGORY_DEBUG, "version")) {
+            Main.log.warn("Config Versioning information not found!");
+        }
+        // Incorrect versioning found
+        if (config.getInt("version", CATEGORY_DEBUG, configVersion, configVersion, configVersion, "Versioning Information. Do not change!", key + "versioning") != configVersion) {
+            Main.log.error("Incorrect versioning detected! Recommended to delete config and let it regenerate!");
+        }
 
+        // FORESTRY
+        cfgScrollSpeed = config.getFloat("Scroll Speed", CATEGORY_FORESTRY, 2.0f, 0.5f, 4.0f, "How fast this mod handles scrolling in it's Quest Book pages.", key + "scrollspeed");
+        cfgAutoConsume = config.getBoolean("Default AutoConsume", CATEGORY_FORESTRY, false, "The default value for 'autoconsume' on BQF tasks.", key + "autoconsume");
+        cfgConsume = config.getBoolean("Default Consume", CATEGORY_FORESTRY, false, "The default value for 'consume' on BQF tasks.", key + "consume");
+        cfgOnlyMated = config.getBoolean("Default OnlyMated", CATEGORY_FORESTRY, false, "The default value for 'onlyMated' on BQF tasks.", key + "onlymated");
+        cfgBeeType = config.getString("Default Type", CATEGORY_FORESTRY, UtilitiesBee.BeeTypes.princess.get(), "The default selected bee type on BQF tasks.", UtilitiesBee.getAllTypes(), key + "beetype");
+
+        //DEBUG
         cfgListBeeSpecies = config.getBoolean("ListAllBees", CATEGORY_DEBUG, true, "Should all bee species be printed to the log in startup?", key + "listbeespecies");
-        cfgEderEndedFix = config.getBoolean("EnderEndedFix", CATEGORY_DEBUG, true, "Try to fix the forestry bug where 'ender' bees use an 'ended' tag?" +
+        cfgEnderEndedFix = config.getBoolean("EnderEndedFix", CATEGORY_DEBUG, true, "Try to fix the forestry bug where 'ender' bees use an 'ended' tag?" +
                 "\nNOTE: This only changes how BQF reads the NBT, and does not change anything within Forestry!?", key + "enderendedfix");
+
+        // OTHER
+        cfgCaseSensitiveKeyCodes = config.getBoolean("Case Sensitive Keycodes", CATEGORY_OTHER, true, "Should keycodes be case sensitive?", key + "casesensitivekeycodes");
     }
 
     @SubscribeEvent

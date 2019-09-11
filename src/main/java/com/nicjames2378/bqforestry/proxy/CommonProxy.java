@@ -5,9 +5,12 @@ import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.questing.tasks.ITask;
 import betterquesting.api2.registry.IFactoryData;
 import betterquesting.api2.registry.IRegistry;
+import com.nicjames2378.bqforestry.Main;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskForestryRetrieval;
+import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskKeyCode;
 import com.nicjames2378.bqforestry.utils.Reference;
+import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -19,6 +22,7 @@ public class CommonProxy {
     public void registerExpansion() {
         IRegistry<IFactoryData<ITask, NBTTagCompound>, ITask> taskReg = QuestingAPI.getAPI(ApiReference.TASK_REG);
         taskReg.register(FactoryTaskForestryRetrieval.INSTANCE);
+        taskReg.register(FactoryTaskKeyCode.INSTANCE);
 
         //IRegistry<IFactoryData<IReward, NBTTagCompound>, IReward> rewardReg = QuestingAPI.getAPI(ApiReference.REWARD_REG);
         //rewardReg.register(FactoryRewardItem.INSTANCE);
@@ -26,5 +30,9 @@ public class CommonProxy {
 
     public void registerHandlers() {
         MinecraftForge.EVENT_BUS.register(ConfigHandler.INSTANCE);
+    }
+
+    public void doDebugOutputs() {
+        if (Main.hasForestry && ConfigHandler.cfgListBeeSpecies) UtilitiesBee.listAllSpecies();
     }
 }

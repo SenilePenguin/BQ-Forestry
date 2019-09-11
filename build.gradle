@@ -112,10 +112,11 @@ def getBuildVersion() {
     def returnVersion = project.config.mod_version
     sayVerbose("Versioning Started. Current version: " + project.config.mod_version.toString())
 
-    String major = ""
-    String minor = ""
-    String patch = ""
+    String major = "1"
+    String minor = "0"
+    String patch = "0"
     String dev = ""
+    boolean wasDev = false
 
     sayVerbose("Checking first three segments of version.")
     def pattern = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+.*)") // #.#.#-> (through end of line)
@@ -138,26 +139,42 @@ def getBuildVersion() {
 
     if (matchChecker.matches()) { //if patch version has dev info
         sayVerbose("Section 3 has dev information. Dev version: " + matchChecker.group(3))
+        devMode = true
         patch = matchChecker.group(1) //patch is just first part
         dev = matchChecker.group(3) //and dev version is 3rd
     } else {
         sayVerbose("Section 3 does not have dev information.")
     }
 
+    // If inDev and wasDev: Dev += 1
+    // if inDev and !wasDev: Dev = 1 && patch +=1
+    // if !inDev and !wasDev: patch +=1
+    // Dont increment patch if leaving dev mode
+
+
+
     if (project.config.isDev.toBoolean()) {
         sayVerbose("Properties 'inDev' mode enabled.")
-        if (!matchChecker.matches()) {
-            sayVerbose("Previous dev version was not detected. Making this version dev.1")
-            dev = 1
-        } else {
-            sayVerbose("Previous dev version was detected. Dev version changing from " + dev + " to " + (dev.toInteger() + 1))
+        if (wasDev) {
+            sayVerbose("Previous dev detected. Dev changing from " + dev + " to " + (dev.toInteger() + 1))
             String newDev = (dev.toInteger() + 1)
             dev = newDev
+        } else {
+            sayVerbose("Previous dev not detected. Making this dev.1 of patch " + patch.toInteger() + 1)
+            patch = (patch.toInteger() + 1)
+            dev = 1
         }
         returnVersion = (major + "." + minor + "." + patch + "-dev." + dev)
     } else {
-        sayVerbose("config is not in dev mode. Patch version changing from " + patch + " to " + (patch.toInteger() + 1))
-        patch = (patch.toInteger() + 1)
+        sayVerbose("Properties 'inDev' mode disabled.")
+        if (wasDev) {
+            sayVerbose("Previous dev detected. Removing dev tag and keeping patch")
+            String newDev = (dev.toInteger() + 1)
+            dev = newDev
+        } else {
+            sayVerbose("Previous dev not detected. Incrementing patch to " + patch.toInteger() + 1)
+            patch = (patch.toInteger() + 1)
+        }
         returnVersion = (major + "." + minor + "." + patch)
     }
 
