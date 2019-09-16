@@ -28,7 +28,6 @@ public class ConfigHandler {
     public static boolean cfgCaseSensitiveKeyCodes = true;
 
     public static boolean cfgListBeeSpecies = true;
-    public static boolean cfgEnderEndedFix = true;
 
     public static void initialize(File file) {
         config = new Configuration(file);
@@ -62,8 +61,6 @@ public class ConfigHandler {
 
         //DEBUG
         cfgListBeeSpecies = config.getBoolean("ListAllBees", CATEGORY_DEBUG, true, "Should all bee species be printed to the log in startup?", key + "listbeespecies");
-        cfgEnderEndedFix = config.getBoolean("EnderEndedFix", CATEGORY_DEBUG, true, "Try to fix the forestry bug where 'ender' bees use an 'ended' tag?" +
-                "\nNOTE: This only changes how BQF reads the NBT, and does not change anything within Forestry!?", key + "enderendedfix");
 
         // OTHER
         cfgCaseSensitiveKeyCodes = config.getBoolean("Case Sensitive Keycodes", CATEGORY_OTHER, true, "Should keycodes be case sensitive?", key + "casesensitivekeycodes");

@@ -139,7 +139,7 @@ def getBuildVersion() {
 
     if (matchChecker.matches()) { //if patch version has dev info
         sayVerbose("Section 3 has dev information. Dev version: " + matchChecker.group(3))
-        devMode = true
+        wasDev = true
         patch = matchChecker.group(1) //patch is just first part
         dev = matchChecker.group(3) //and dev version is 3rd
     } else {

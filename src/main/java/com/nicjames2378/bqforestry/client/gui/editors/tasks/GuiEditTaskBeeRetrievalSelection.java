@@ -25,6 +25,7 @@ import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.CanvasBeeData
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
+import forestry.api.genetics.IAllele;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -109,7 +110,8 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         this.addPanel(cvBackground);
 
         // TitleText
-        cvBackground.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(16, 16, 16, -32), 0), QuestTranslation.translate("bqforestry.title.edit_bee_retrieval_selection")).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor()));
+        cvBackground.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(16, 16, 16, -32), 0),
+                QuestTranslation.translate("bqforestry.title.edit_bee_retrieval_selection")).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor()));
 
 
 //region Left Panel Controls
@@ -173,19 +175,14 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
             }
 
             @Override
-            protected boolean addResult(String entry, int index, int cachedWidth) {
-                // Handle Fixing the Forestry bug
-                boolean doForestryFix = false;
-                if (ConfigHandler.cfgEnderEndedFix && entry.equals("Ender")) {
-                    doForestryFix = true;
-                    entry = "Ended";
-                }
+            protected boolean addResult(IAllele entry, int index, int cachedWidth) {
+                String beeUID = entry.getUID();
 
-                this.addPanel(new PanelGeneric(new GuiRectangle(0, index * 24, 24, 24, -1), new ItemTexture(new BigItemStack(getBaseBee("forestry.species" + entry, BeeTypes.valueOf(getSelectedType()))))));
+                this.addPanel(new PanelGeneric(new GuiRectangle(0, index * 24, 24, 24, -1), new ItemTexture(new BigItemStack(getBaseBee(beeUID, BeeTypes.valueOf(getSelectedType()))))));
                 this.addPanel(new PanelGeneric(new GuiRectangle(0, index * 24, 24, 24, 0), PresetTexture.ITEM_FRAME.getTexture()));
 
-                PanelButtonStorage<String> btnBeeSpecies = new PanelButtonStorage<>(new GuiRectangle(24, index * 24, cachedWidth - 24, 24, 0), -1, (doForestryFix ? "Ender" : entry), "forestry.species" + entry);
-                btnBeeSpecies.setActive(!("forestry.species" + entry).equals(getSelectedSpecies()));
+                PanelButtonStorage<String> btnBeeSpecies = new PanelButtonStorage<>(new GuiRectangle(24, index * 24, cachedWidth - 24, 24, 0), -1, entry.getAlleleName(), entry.getUID());
+                btnBeeSpecies.setActive(!beeUID.equals(getSelectedSpecies()));
                 btnBeeSpecies.setCallback(value -> {
                     setSelectedSpecies(value);
 
@@ -203,6 +200,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
                         )), 8);
                     }
                 });
+                btnBeeSpecies.setTooltip(getBeeTooltip(entry.getModID(), entry.getUID()));
 
                 this.addPanel(btnBeeSpecies);
                 lstSpeciesButtons.add(btnBeeSpecies);
@@ -212,7 +210,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         cvRightArea.addPanel(cvBeeDB);
 
         // Search Box
-        PanelTextField<String> txtSearch = new PanelTextField<>(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, 0, -16), 0), "", FieldFilterString.INSTANCE);
+        PanelTextField<String> txtSearch = new PanelTextField<String>(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, 0, -16), 0), "", FieldFilterString.INSTANCE);
         txtSearch.setCallback(cvBeeDB::setSearchFilter).setWatermark("Search...");
         cvRightArea.addPanel(txtSearch);
 
@@ -246,5 +244,19 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
     private String getMatedString() {
         String doOnlyMated = (getSelectedMated() ? TextFormatting.RED : TextFormatting.GREEN) + QuestTranslation.translate(getSelectedMated() ? "gui.yes" : "gui.no");
         return QuestTranslation.translate("bqforestry.btn.onlymated", doOnlyMated);
+    }
+
+    private List<String> getBeeTooltip(String modID, String uid) {
+        ArrayList<String> ret = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(TextFormatting.GOLD).append("ModID: ").append(TextFormatting.AQUA).append(modID);
+        ret.add(sb.toString());
+
+        sb.delete(0, sb.length()); // Reuse StringBuilder instead of instantiating new one for this little bit
+
+        sb.append(TextFormatting.GOLD).append("UID: ").append(TextFormatting.AQUA).append(uid);
+        ret.add(sb.toString());
+        return ret;
     }
 }

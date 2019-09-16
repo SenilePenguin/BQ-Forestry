@@ -8,7 +8,7 @@ import forestry.api.genetics.IAllele;
 
 import java.util.*;
 
-public abstract class CanvasBeeDatabase extends CanvasSearch<String, IAllele> {
+public abstract class CanvasBeeDatabase extends CanvasSearch<IAllele, IAllele> {
     public CanvasBeeDatabase(IGuiRect rect) {
         super(rect);
     }
@@ -22,9 +22,11 @@ public abstract class CanvasBeeDatabase extends CanvasSearch<String, IAllele> {
         return temp.iterator();
     }
 
-    protected void queryMatches(IAllele value, String query, ArrayDeque<String> results) {
-        if (value.getAlleleName().toLowerCase().contains(query.toLowerCase())) {
-            results.add(value.getAlleleName());
+    protected void queryMatches(IAllele value, String query, ArrayDeque<IAllele> results) {
+        if (value.getUID().toLowerCase().contains(query.toLowerCase()) ||
+                value.getModID().toLowerCase().contains(query.toLowerCase()) ||
+                value.getUID().toLowerCase().contains(query.toLowerCase())) {
+            results.add(value);
         }
     }
 
@@ -35,9 +37,6 @@ public abstract class CanvasBeeDatabase extends CanvasSearch<String, IAllele> {
             return 1;
         }
 
-        //String s1 = o1.toString();
-        //String s2 = o2.toString();
-
-        return o1.toString().compareTo(o2.toString());
+        return o1.getAlleleName().compareTo(o2.getAlleleName());
     };
 }

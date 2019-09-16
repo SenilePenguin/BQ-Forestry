@@ -161,9 +161,6 @@ public class UtilitiesBee {
         Iterator a = species.iterator();
         for (int i = 0; i < species.size(); i++) {
             String spe = a.next().toString();
-            // Handle Fixing the Forestry bug
-            if (ConfigHandler.cfgEnderEndedFix && spe.equalsIgnoreCase("ender"))
-                spe = spe.replace("ender", "ended") + "(FixEnderEnded Enabled!)";
             Main.log.info(String.format("Bees species found: %1$d / %2$d - %3$s", i + 1, species.size(), spe));
         }
 
