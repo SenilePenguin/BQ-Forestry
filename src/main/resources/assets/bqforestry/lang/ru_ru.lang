@@ -1,0 +1,44 @@
+bqforestry.task.bee_retrieval=Получение пчел
+bqforestry.task.keycode=Ввод кода
+
+bqforestry.reward.bee=Награда за получение пчел
+bqforestry.reward.tree=Награда за получение дерева
+
+bqforestry.title.edit_bee_retrieval_landing=Изменение заданий на получение пчел
+bqforestry.title.edit_bee_retrieval_selection=Изменение задания на получение пчел
+
+bqforestry.label.keycode=Код:
+
+bqforestry.tooltip.delete=Удаляет эту запись из списка заданий.
+bqforestry.tooltip.deleteWarning=ВНИМАНИЕ! Это действие необратимо!
+bqforestry.tooltip.add=Добавляет новую запись в список задач.
+
+bqforestry.btn.consume=Удалять из инвентаря: %s
+bqforestry.btn.autoconsume=Автоудаление: %s
+bqforestry.btn.onlymated=Только спаренная: %s
+bqforestry.btn.casesensitive=Регистрозависимый: %s
+
+bqforestry.btn.consume.tooltip=Будут ли предметы удалены из инвентаря игрока после завершения квеста
+bqforestry.btn.autoconsume.tooltip=Будут ли предметы автоматически удалены из инвентаря. Для работы требуется включенное удаление.
+bqforestry.btn.onlymated.tooltip=Будет ли задание принимать только спаренные особи
+bqforestry.btn.casesensitive.tooltip=Регистрозависимость означает, что одинаковые буквы, написанные в верхнем и нижнем регистре будут считаться разными буквами
+
+bqforestry.requirements.mated=Только спаренные
+
+bqforestry.command.getspecies=Вид %s скопирован в буфер обмена!
+
+bqforestry.config.beetype=Тип пчелы
+bqforestry.config.scrollspeed=Скорость прокрутки
+bqforestry.config.autoconsume=Автоудаление
+bqforestry.config.consume=Удаление
+bqforestry.config.onlymated=Только спаренные
+bqforestry.config.listbeespecies=Выводить список пчел
+bqforestry.config.versioning=Версионность
+
+bqforestry.config.beetype.tooltip=Тип пчелы по умолчанию в новых заданиях
+bqforestry.config.scrollspeed.tooltip=Как быстро полоса прокрутки в интерфейсе BQForestry будет двигаться
+bqforestry.config.autoconsume.tooltip=Значение по умолчанию для опции автоудаления в новых заданиях
+bqforestry.config.consume.tooltip=Значение по умолчанию для опции удаления в новых заданиях
+bqforestry.config.onlymated.tooltip=Значение по умолчанию для опции приема только спаренных особей в новых заданиях
+bqforestry.config.listbeespecies.tooltip=Нужно ли перечислять все виды пчел при запуске. Полезно, если использовать этот список для операций копирования/вставки.
+bqforestry.config.versioning.tooltip=НЕ ИЗМЕНЯТЬ!
