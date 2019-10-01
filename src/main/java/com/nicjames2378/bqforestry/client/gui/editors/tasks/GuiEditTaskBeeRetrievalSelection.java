@@ -94,7 +94,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         ItemStack rStack = task.requiredItems.get(indexInList).getBaseStack();
 
         setSelectedSpecies(getSpecies(rStack));
-        setSelectedType(getType(rStack).get());
+        setSelectedType(getGrowthLevel(rStack).get());
         setSelectedMated(isMated(rStack));
     }
 
@@ -120,7 +120,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         cvBackground.addPanel(cvLeftArea);
 
         int lHW = cvLeftArea.getTransform().getWidth() / 2;
-        String[] types = UtilitiesBee.getAllTypes();
+        String[] types = UtilitiesBee.getGrowthStages();
         boolean isLeft = true;
 
         for (int t = 0; t < types.length; t++) {

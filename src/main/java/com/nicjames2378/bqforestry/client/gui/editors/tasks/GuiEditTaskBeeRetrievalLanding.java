@@ -191,7 +191,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         // Species
         tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getSpecies(bee)));
         // Type
-        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(UtilitiesBee.getType(bee).get()));
+        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(UtilitiesBee.getGrowthLevel(bee).get()));
         // Mated
         tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(UtilitiesBee.isMated(bee))));
         return tip;

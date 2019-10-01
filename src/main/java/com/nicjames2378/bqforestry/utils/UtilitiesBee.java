@@ -3,21 +3,18 @@ package com.nicjames2378.bqforestry.utils;
 import com.nicjames2378.bqforestry.Main;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import forestry.api.apiculture.EnumBeeChromosome;
-import forestry.api.genetics.AlleleManager;
-import forestry.api.genetics.IAllele;
+import forestry.api.genetics.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3i;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
 public class UtilitiesBee {
-    private static String[] cacheTypes;
+    private static String[] cacheGrowthStages;
 
     public static final String DEFAULT_SPECIES = "forestry.speciesCommon";
 
@@ -38,34 +35,82 @@ public class UtilitiesBee {
         }
     }
 
-    private static String getTypePath(BeeTypes type) {
-/*        switch (type) {
-            case larvae:
-                return pathLarvae;
-            case drone:
-                return pathDrone;
-            case princess:
-                return pathPrincess;
-            case queen:
-                return pathQueen;
-            default:
-                return null;
-        }*/
+    public static void initialize() {
+        boolean debug = ConfigHandler.cfgDoDebugOutputs;
 
+        for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
+            Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
+            TreeMap<Integer, String> currentMap = new TreeMap<>();
+
+            Iterator iterator = alleles.iterator();
+            for (int i = 0; i < alleles.size(); i++) {
+                Object next = iterator.next();
+
+                int value = getValue(chromosome.getAlleleClass(), next);
+                currentMap.put(value, next.toString());
+                if (debug)
+                    Main.log.info(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
+            }
+        }
+    }
+
+
+    private static int getValue(Class<? extends IAllele> alleleClass, Object next) {
+        // Provides an easy way for me to get the values of certain applicable Alleles
+        //      and put them in order based on integer values
+
+        if (IAlleleInteger.class.isAssignableFrom(alleleClass)) {
+            IAlleleInteger aa = (IAlleleInteger) next;
+            return aa.getValue();
+
+        } else if (IAlleleFloat.class.isAssignableFrom(alleleClass)) {
+            IAlleleFloat aa = (IAlleleFloat) next;
+            return (int) (aa.getValue() * 10);
+
+        } else if (IAlleleBoolean.class.isAssignableFrom(alleleClass)) {
+            IAlleleBoolean aa = (IAlleleBoolean) next;
+            return aa.getValue() ? 1 : 0;
+
+        } else if (IAlleleTolerance.class.isAssignableFrom(alleleClass)) {
+            IAlleleTolerance aa = (IAlleleTolerance) next;
+            String[] val = String.valueOf(aa.getValue()).toLowerCase().split("_");
+
+            // Generate custom Integers based on the values (and how I want them ordered)
+            if (val[0].contains("down")) {
+                return 10 + Integer.parseInt(val[1]);
+            } else if (val[0].contains("up")) {
+                return 20 + Integer.parseInt(val[1]);
+            } else if (val[0].contains("both")) {
+                return 30 + Integer.parseInt(val[1]);
+            } else {
+                return 0;
+            }
+
+        } else if (IAlleleArea.class.isAssignableFrom(alleleClass)) {
+            IAlleleArea aa = (IAlleleArea) next;
+            Vec3i vec = aa.getValue();
+            return vec.getX() + vec.getY() + vec.getZ();
+            // return String.format("%1$s %2$s %3$s", vec.getX(), vec.getY(), vec.getZ()).replace(" ", "0");
+        }
+
+        return 0;
+    }
+
+    private static String getGrowthPath(BeeTypes type) {
         return String.format("bee_%1$s_ge", type.get());
     }
 
-    public static String[] getAllTypes() {
+    public static String[] getGrowthStages() {
         // Save a tiny bit of time by caching this list since it can't change at runtime
-        if (cacheTypes != null) return cacheTypes;
+        if (cacheGrowthStages != null) return cacheGrowthStages;
 
         ArrayList<String> list = new ArrayList<>();
         for (BeeTypes a : BeeTypes.values()) {
             list.add(a.get());
         }
 
-        cacheTypes = list.toArray(new String[0]);
-        return cacheTypes;
+        cacheGrowthStages = list.toArray(new String[0]);
+        return cacheGrowthStages;
     }
 
     public static ItemStack getBaseBee(String species) {
@@ -79,7 +124,7 @@ public class UtilitiesBee {
     public static ItemStack getBaseBee(String species, BeeTypes beeType, boolean requireMated) {
         if (species == null) species = DEFAULT_SPECIES; // Not-a-bee check
 
-        ResourceLocation rl = new ResourceLocation("forestry", getTypePath(beeType));
+        ResourceLocation rl = new ResourceLocation("forestry", getGrowthPath(beeType));
         ItemStack bee = new ItemStack(
                 Objects.requireNonNull(Item.REGISTRY.getObject(rl))); // Get the Forestry Bee item
         /*
@@ -134,8 +179,8 @@ public class UtilitiesBee {
         return species.getString("UID0");
     }
 
-    public static BeeTypes getType(ItemStack bee) {
-        for (String s : getAllTypes()) {
+    public static BeeTypes getGrowthLevel(ItemStack bee) {
+        for (String s : getGrowthStages()) {
             if (bee.getUnlocalizedName().contains(s)) return BeeTypes.valueOf(s);
         }
 

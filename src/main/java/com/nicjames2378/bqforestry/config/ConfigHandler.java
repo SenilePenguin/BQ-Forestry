@@ -27,7 +27,7 @@ public class ConfigHandler {
 
     public static boolean cfgCaseSensitiveKeyCodes = true;
 
-    public static boolean cfgListBeeSpecies = true;
+    public static boolean cfgDoDebugOutputs = true;
 
     public static void initialize(File file) {
         config = new Configuration(file);
@@ -57,10 +57,10 @@ public class ConfigHandler {
         cfgAutoConsume = config.getBoolean("Default AutoConsume", CATEGORY_FORESTRY, false, "The default value for 'autoconsume' on BQF tasks.", key + "autoconsume");
         cfgConsume = config.getBoolean("Default Consume", CATEGORY_FORESTRY, false, "The default value for 'consume' on BQF tasks.", key + "consume");
         cfgOnlyMated = config.getBoolean("Default OnlyMated", CATEGORY_FORESTRY, false, "The default value for 'onlyMated' on BQF tasks.", key + "onlymated");
-        cfgBeeType = config.getString("Default Type", CATEGORY_FORESTRY, UtilitiesBee.BeeTypes.princess.get(), "The default selected bee type on BQF tasks.", UtilitiesBee.getAllTypes(), key + "beetype");
+        cfgBeeType = config.getString("Default Type", CATEGORY_FORESTRY, UtilitiesBee.BeeTypes.princess.get(), "The default selected bee type on BQF tasks.", UtilitiesBee.getGrowthStages(), key + "beetype");
 
         //DEBUG
-        cfgListBeeSpecies = config.getBoolean("ListAllBees", CATEGORY_DEBUG, true, "Should all bee species be printed to the log in startup?", key + "listbeespecies");
+        cfgDoDebugOutputs = config.getBoolean("Output Debug Information", CATEGORY_DEBUG, true, "Should all bee chromosomes be printed to the log on startup?", key + "debugoutput");
 
         // OTHER
         cfgCaseSensitiveKeyCodes = config.getBoolean("Case Sensitive Keycodes", CATEGORY_OTHER, true, "Should keycodes be case sensitive?", key + "casesensitivekeycodes");

@@ -33,6 +33,6 @@ public class CommonProxy {
     }
 
     public void doDebugOutputs() {
-        if (Main.hasForestry && ConfigHandler.cfgListBeeSpecies) UtilitiesBee.listAllSpecies();
+        if (Main.hasForestry) UtilitiesBee.initialize();
     }
 }
