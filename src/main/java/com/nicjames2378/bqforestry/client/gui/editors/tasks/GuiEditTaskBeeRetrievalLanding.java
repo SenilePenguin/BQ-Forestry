@@ -28,6 +28,7 @@ import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
+import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -189,7 +190,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         String AQUA = TextFormatting.AQUA.toString();
 
         // Species
-        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getSpecies(bee)));
+        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getTrait(bee, EnumBeeChromosome.SPECIES)));
         // Type
         tip.add(GOLD.concat("Type: ").concat(AQUA).concat(UtilitiesBee.getGrowthLevel(bee).get()));
         // Mated

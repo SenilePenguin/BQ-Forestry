@@ -161,7 +161,7 @@ public class UtilitiesBee {
     }
 
     // Returns null if a properly formatted species tag cannot be found!
-    public static String getSpecies(ItemStack bee) {
+    public static String getTrait(ItemStack bee, EnumBeeChromosome trait) {
         if (bee == null) return null;
 
         if (!bee.hasTagCompound()) return null;
@@ -174,9 +174,42 @@ public class UtilitiesBee {
         NBTTagList chromosomes = genome.getTagList("Chromosomes", 10);
 
         if (chromosomes.hasNoTags()) return null;
-        NBTTagCompound species = chromosomes.getCompoundTagAt(0);
+        NBTTagCompound nbtTrait = chromosomes.getCompoundTagAt(getIndexFromChromosome(trait));
 
-        return species.getString("UID0");
+        return nbtTrait.getString("UID0");
+    }
+
+    private static int getIndexFromChromosome(EnumBeeChromosome chromosome) {
+        switch (chromosome) {
+            case SPECIES:
+                return 0;
+            case SPEED:
+                return 1;
+            case LIFESPAN:
+                return 2;
+            case FERTILITY:
+                return 3;
+            case TEMPERATURE_TOLERANCE:
+                return 4;
+            case NEVER_SLEEPS:
+                return 5;
+            case HUMIDITY_TOLERANCE:
+                return 6;
+            case TOLERATES_RAIN:
+                return 7;
+            case CAVE_DWELLING:
+                return 8;
+            case FLOWER_PROVIDER:
+                return 9;
+            case FLOWERING:
+                return 10;
+            case TERRITORY:
+                return 11;
+            case EFFECT:
+                return 12;
+            default:
+                return -1;
+        }
     }
 
     public static BeeTypes getGrowthLevel(ItemStack bee) {
@@ -187,15 +220,22 @@ public class UtilitiesBee {
         return BeeTypes.valueOf(ConfigHandler.cfgBeeType);
     }
 
+    public static boolean hasValidgrowthLevel(ItemStack bee) {
+        for (String s : getGrowthStages()) {
+            if (bee.getUnlocalizedName().contains(s)) return true;
+        }
+        return false;
+    }
+
     public static boolean isMated(ItemStack item) {
         return item.hasTagCompound() && item.getTagCompound().hasKey("Mate");
         //return item.getTagCompound() != null && item.getTagCompound().hasKey("Mate");
     }
 
-    public static boolean checkMatchSpecies(ItemStack beeA, ItemStack beeB) {
-        if (getSpecies(beeA) == null || getSpecies(beeB) == null)
+    public static boolean checkTraitsMatch(ItemStack beeA, ItemStack beeB, EnumBeeChromosome trait) {
+        if (getTrait(beeA, trait) == null || getTrait(beeB, trait) == null)
             return false;                                                   // If one of the bees are missing the properly formatted species tag, they don't match
-        return Objects.equals(getSpecies(beeA), getSpecies(beeB));    // Return whether they match or not
+        return Objects.equals(getTrait(beeA, trait), getTrait(beeB, trait));    // Return whether they match or not
     }
 
     public static void listAllSpecies() {

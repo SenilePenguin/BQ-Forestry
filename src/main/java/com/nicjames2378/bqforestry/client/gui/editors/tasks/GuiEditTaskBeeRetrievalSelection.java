@@ -25,6 +25,7 @@ import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.CanvasBeeData
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
+import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.IAllele;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
@@ -93,7 +94,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
 
         ItemStack rStack = task.requiredItems.get(indexInList).getBaseStack();
 
-        setSelectedSpecies(getSpecies(rStack));
+        setSelectedSpecies(getTrait(rStack, EnumBeeChromosome.SPECIES));
         setSelectedType(getGrowthLevel(rStack).get());
         setSelectedMated(isMated(rStack));
     }

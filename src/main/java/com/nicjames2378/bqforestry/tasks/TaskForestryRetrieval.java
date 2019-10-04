@@ -18,6 +18,7 @@ import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.Reference;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
+import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -125,7 +126,7 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
                 if (isMated(rStack.getBaseStack()) && !isMated(stack))
                     continue;
 
-                if (checkMatchSpecies(rStack.getBaseStack(), stack)) {
+                if (checkTraitsMatch(rStack.getBaseStack(), stack, EnumBeeChromosome.SPECIES)) {
                     int remaining = rStack.stackSize - progress[j];
                     if (consume) {
                         ItemStack removed = player.inventory.decrStackSize(i, remaining);
@@ -299,7 +300,7 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
             if (progress[j] >= rStack.stackSize) continue;
             if (isMated(rStack.getBaseStack()) && !isMated(stack)) continue;
 
-            if (checkMatchSpecies(rStack.getBaseStack(), stack)) return true;
+            if (checkTraitsMatch(rStack.getBaseStack(), stack, EnumBeeChromosome.SPECIES)) return true;
         }
 
         return false;
@@ -325,7 +326,7 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
 
             int remaining = rStack.stackSize - progress[j];
 
-            if (checkMatchSpecies(rStack.getBaseStack(), stack)) {
+            if (checkTraitsMatch(rStack.getBaseStack(), stack, EnumBeeChromosome.SPECIES)) {
                 int removed = Math.min(stack.getCount(), remaining);
                 stack.shrink(removed);
                 progress[j] += removed;

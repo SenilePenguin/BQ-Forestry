@@ -19,6 +19,7 @@ public class ConfigHandler {
     private static String CATEGORY_DEBUG = "debug";
     private static int configVersion = 2;
 
+    public static boolean cfgDefaultCommandCopy = true;
     public static float cfgScrollSpeed = 2.0f;
     public static boolean cfgAutoConsume = false;
     public static boolean cfgConsume = false;
@@ -53,6 +54,7 @@ public class ConfigHandler {
         }
 
         // FORESTRY
+        cfgDefaultCommandCopy = config.getBoolean("Default Command Copy", CATEGORY_FORESTRY, true, "Whether commands should automatically copy relevant outputs to the clipboard.", key + "defaultcommandcopy");
         cfgScrollSpeed = config.getFloat("Scroll Speed", CATEGORY_FORESTRY, 2.0f, 0.5f, 4.0f, "How fast this mod handles scrolling in it's Quest Book pages.", key + "scrollspeed");
         cfgAutoConsume = config.getBoolean("Default AutoConsume", CATEGORY_FORESTRY, false, "The default value for 'autoconsume' on BQF tasks.", key + "autoconsume");
         cfgConsume = config.getBoolean("Default Consume", CATEGORY_FORESTRY, false, "The default value for 'consume' on BQF tasks.", key + "consume");

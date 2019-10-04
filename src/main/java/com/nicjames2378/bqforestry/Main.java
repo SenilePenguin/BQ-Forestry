@@ -1,6 +1,6 @@
 package com.nicjames2378.bqforestry;
 
-import com.nicjames2378.bqforestry.commands.BQFCommandGetSpecies;
+import com.nicjames2378.bqforestry.commands.BQFCommandFindTrait;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.proxy.CommonProxy;
 import com.nicjames2378.bqforestry.utils.Reference;
@@ -59,6 +59,6 @@ public class Main {
 
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
-        event.registerServerCommand(new BQFCommandGetSpecies());
+        event.registerServerCommand(new BQFCommandFindTrait());
     }
 }

@@ -39,7 +39,12 @@ bqforestry.btn.casesensitive.tooltip=Case sensitivity means that capital and low
 
 bqforestry.requirements.mated=Is Mated
 
-bqforestry.command.getspecies=Species %s copied to the clipboard!
+bqforestry.command.error.clientonly=This command can only be issued by a player in-game.
+bqforestry.command.error.improperargument=Invalid argument! Please check this command's usage or press "tab" while holding a Bee!
+bqforestry.command.error.improperitem=Please hold a properly formatted %s before using this command!
+bqforestry.command.gettrait=Trait "%s"
+bqforestry.command.gettrait.copied= copied to the clipboard!
+bqforestry.command.gettrait.usage=%s <trait> [copyToClipboard]
 
 bqforestry.config.beetype=Bee Type
 bqforestry.config.scrollspeed=Scrollspeed
@@ -48,6 +53,7 @@ bqforestry.config.consume=Consume
 bqforestry.config.onlymated=Onlymated
 bqforestry.config.debugoutput=Output Alleles
 bqforestry.config.versioning=Versioning
+bqforestry.config.defaultcommandcopy=Command Auto-Copy
 
 bqforestry.config.beetype.tooltip=The default selected bee type when adding a new task
 bqforestry.config.scrollspeed.tooltip=How quickly scrollbars on BQForestry GUIs move
@@ -56,3 +62,4 @@ bqforestry.config.consume.tooltip=The default consume value when adding a new ta
 bqforestry.config.onlymated.tooltip=The default onlymated value when adding a new task
 bqforestry.config.debugoutput.tooltip=Whether to list all bee chromosomes to the log on startup. Helpful if you need the list for copy/paste.
 bqforestry.config.versioning.tooltip=DO NOT CHANGE!
+bqforestry.config.defaultcommandcopy.tooltip=Whether commands should automatically copy their outputs to the clipboard.
