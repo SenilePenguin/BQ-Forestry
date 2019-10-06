@@ -11,10 +11,12 @@ import betterquesting.api2.client.gui.controls.filters.FieldFilterString;
 import betterquesting.api2.client.gui.misc.*;
 import betterquesting.api2.client.gui.panels.CanvasEmpty;
 import betterquesting.api2.client.gui.panels.CanvasTextured;
+import betterquesting.api2.client.gui.panels.IGuiPanel;
 import betterquesting.api2.client.gui.panels.bars.PanelVScrollBar;
 import betterquesting.api2.client.gui.panels.content.PanelGeneric;
 import betterquesting.api2.client.gui.panels.content.PanelLine;
 import betterquesting.api2.client.gui.panels.content.PanelTextBox;
+import betterquesting.api2.client.gui.panels.lists.CanvasScrolling;
 import betterquesting.api2.client.gui.resources.textures.ItemTexture;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
@@ -22,6 +24,8 @@ import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.Main;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.CanvasBeeDatabase;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.controls.factory.FactoryForestryDataControlArea;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.controls.factory.PanelToggleStorage;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
@@ -32,9 +36,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import static com.nicjames2378.bqforestry.utils.StringUtils.capitalizeFirst;
+import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements IVolatileScreen {
@@ -42,7 +47,6 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
     private final TaskForestryRetrieval task;
     private final int indexInList;
     private final GuiEditTaskBeeRetrievalSelection screenReference = this;
-    private boolean hasChanged = false;
 
     private String selectedSpecies;
     private String selectedType;
@@ -59,7 +63,6 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         } else {
             this.selectedSpecies = selectedSpecies;
         }
-        hasChanged = true;
     }
 
     public String getSelectedType() {
@@ -72,7 +75,6 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         } else {
             this.selectedType = selectedType;
         }
-        hasChanged = true;
     }
 
     private boolean getSelectedMated() {
@@ -81,7 +83,6 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
 
     private void setSelectedMated(boolean selectedMated) {
         this.selectedMated = selectedMated;
-        hasChanged = true;
     }
     //endregion
 
@@ -94,9 +95,15 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
 
         ItemStack rStack = task.requiredItems.get(indexInList).getBaseStack();
 
-        setSelectedSpecies(getTrait(rStack, EnumBeeChromosome.SPECIES));
+        setSelectedSpecies(getTrait(rStack, EnumBeeChromosome.SPECIES)[0]);
         setSelectedType(getGrowthLevel(rStack).get());
         setSelectedMated(isMated(rStack));
+
+        for (EnumBeeChromosome chr : EnumBeeChromosome.values()) {
+            for (String s : getTrait(rStack, chr)) {
+                Main.log.info(String.format("Selection: %1$s - %2$s", chr.getName(), s));
+            }
+        }
     }
 
     @Override
@@ -105,6 +112,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         Keyboard.enableRepeatEvents(true);
         final List<PanelButtonStorage<String>> lstTypeButtons = new ArrayList<>();
         final List<PanelButtonStorage<String>> lstSpeciesButtons = new ArrayList<>();
+        final HashMap<EnumBeeChromosome, ArrayList<PanelToggleStorage>> mapOptions = new HashMap<>();
 
         //Background
         CanvasTextured cvBackground = new CanvasTextured(new GuiTransform(), PresetTexture.PANEL_MAIN.getTexture());
@@ -120,21 +128,38 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         CanvasEmpty cvLeftArea = new CanvasEmpty(new GuiTransform(GuiAlign.HALF_LEFT, new GuiPadding(16, 32, 8, 32), 0));
         cvBackground.addPanel(cvLeftArea);
 
-        int lHW = cvLeftArea.getTransform().getWidth() / 2;
+        // ControlsContainer
+        CanvasScrolling cvControls = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 16, 8, 0), 1));
+        cvLeftArea.addPanel(cvControls);
+
+        // Needed to make the ControlsContainer properly sized? Things don't center properly without this.
+        cvControls.addPanel(new PanelGeneric(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 16, 8, 0), 1), null));
+
+
+        int lHW = cvControls.getTransform().getWidth() / 2;
+        int workingY = 0;
         String[] types = UtilitiesBee.getGrowthStages();
         boolean isLeft = true;
+
+        // GrowthLabel
+        cvControls.addPanel(new PanelTextBox(new GuiRectangle(lHW - 70, workingY, 140, 12, -1),
+                QuestTranslation.translate("bqforestry.label.beegrowthstage")).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor()));
+        workingY += 12;
 
         for (int t = 0; t < types.length; t++) {
             // Text indicator
             String formattedType = (types[t].equals(getSelectedType()) ? TextFormatting.GREEN : "") + types[t].substring(0, 1).toUpperCase() + types[t].substring(1).toLowerCase();
-            cvLeftArea.addPanel(new PanelTextBox(new GuiRectangle(lHW + (isLeft ? -66 : 4), (Math.floorDiv(t, 2)) * 64 + 54, 70, 16, -1), formattedType));
+            cvControls.addPanel(new PanelTextBox(new GuiRectangle(lHW + (isLeft ? -66 : 4), (Math.floorDiv(t, 2)) * 64 + 54 + workingY, 70, 16, -1), formattedType));
 
             // Type Buttons
-            PanelButtonStorage<String> btnBeeType = new PanelButtonStorage<>(new GuiRectangle(lHW + (isLeft ? -70 : 0), (Math.floorDiv(t, 2)) * 64, 70, 64, 0), -1, "", types[t]);
+            PanelButtonStorage<String> btnBeeType = new PanelButtonStorage<>(new GuiRectangle(lHW + (isLeft ? -70 : 0), (Math.floorDiv(t, 2)) * 64 + workingY, 70, 64, 0), -1, "", types[t]);
             btnBeeType.setActive(!(types[t]).equals(getSelectedType()));
             btnBeeType.setCallback(value -> {
                 setSelectedType(value);
                 // TODO: There has to be a better way to update beeDB icons instead of redrawing the entire screen.... right?
+                //
+                //      Need to test memory impact of storing all icon panels in array and manually changing the images
+                //      vs redrawing the entire screen.
                 screenReference.initGui();
             });
             btnBeeType.setIcon(new ItemTexture(new BigItemStack(getBaseBee(
@@ -142,7 +167,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
                     UtilitiesBee.BeeTypes.valueOf(btnBeeType.getStoredValue()))
             )), 8);
 
-            cvLeftArea.addPanel(btnBeeType);
+            cvControls.addPanel(btnBeeType);
             lstTypeButtons.add(btnBeeType);
 
             // Inverts isLeft
@@ -150,16 +175,37 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
 
             if (t == types.length - 1) { // If we're on the last iteration, add the
                 // OnlyMated Button
-                PanelButtonStorage<Boolean> btnOnlyMated = new PanelButtonStorage<>(new GuiRectangle(lHW - 70, (Math.floorDiv(t + 1, 2)) * 64, 140, 16, 0), -1, getMatedString(), getSelectedMated());
+                PanelButtonStorage<Boolean> btnOnlyMated = new PanelButtonStorage<>(new GuiRectangle(lHW - 70, (Math.floorDiv(t + 1, 2)) * 64 + workingY, 140, 16, 0), -1, getMatedString(), getSelectedMated());
                 btnOnlyMated.setCallback(value -> {
                     setSelectedMated(!value);
                     btnOnlyMated.setStoredValue(!value);
                     btnOnlyMated.setText(getMatedString());
                 });
 
-                cvLeftArea.addPanel(btnOnlyMated);
+                cvControls.addPanel(btnOnlyMated);
+
+                workingY += (Math.floorDiv(t + 1, 2)) * 64 + 32;
             }
         }
+
+        // Rest of NBT option buttons
+        for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
+            if (chromosome == EnumBeeChromosome.SPECIES || chromosome == EnumBeeChromosome.EFFECT || chromosome == EnumBeeChromosome.FLOWER_PROVIDER)
+                continue;
+
+            FactoryForestryDataControlArea dataArea = new FactoryForestryDataControlArea(cvControls, lHW - 70, workingY, 140);
+            dataArea.setTitle(capitalizeFirst(chromosome.getName()), false)
+                    .setLayout(1, 16)
+                    .setPanels(getButtonsForChromosome(chromosome, dataArea, mapOptions))
+                    .buildCanvas();
+            workingY += dataArea.getHeight();
+        }
+
+        // Scrollbar
+        PanelVScrollBar scOptions = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 16, 0, 0), 0));
+        cvControls.setScrollDriverY(scOptions);
+        scOptions.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
+        cvLeftArea.addPanel(scOptions);
 //endregion
 
 //region Right Panel Controls
@@ -226,9 +272,23 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.BOTTOM_CENTER, -100, -16, 200, 16, 0), -1, QuestTranslation.translate("gui.done")) {
             @Override
             public void onButtonClick() {
-                Main.log.info(hasChanged);
-                task.requiredItems.set(indexInList, new BigItemStack(getBaseBee(getSelectedSpecies(), BeeTypes.valueOf(getSelectedType()), getSelectedMated())));
-                //if (hasChanged) sendChanges();
+                BigItemStack newBee = new BigItemStack(getBaseBee(getSelectedSpecies(), BeeTypes.valueOf(getSelectedType()), getSelectedMated()));
+                setMated(newBee.getBaseStack(), getSelectedMated());
+
+                for (Map.Entry<EnumBeeChromosome, ArrayList<PanelToggleStorage>> entry : mapOptions.entrySet()) {
+                    ArrayList<PanelToggleStorage> values = entry.getValue();
+
+                    for (int i = 0; i < values.size(); i++) {
+                        if (values.get(i).getToggledStatus()) {
+                            writeTrait(newBee.getBaseStack(), entry.getKey(), (String) values.get(i).getStoredValue());
+
+                            if (ConfigHandler.cfgDoDebugOutputs)
+                                Main.log.info(String.format("Bee Retrieval Selection [Enabled Values] - %1$s: %2$s", entry.getKey().getName(), values.get(i).getStoredValue()));
+                        }
+                    }
+                }
+
+                task.requiredItems.set(indexInList, newBee);
                 mc.displayGuiScreen(parent);
             }
         });
@@ -259,5 +319,31 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
         sb.append(TextFormatting.GOLD).append("UID: ").append(TextFormatting.AQUA).append(uid);
         ret.add(sb.toString());
         return ret;
+    }
+
+
+    private IGuiPanel[] getButtonsForChromosome(EnumBeeChromosome chromosome, FactoryForestryDataControlArea factoryProvider, HashMap<EnumBeeChromosome, ArrayList<PanelToggleStorage>> referenceMap) {
+        ArrayList<IGuiPanel> panels = new ArrayList<>();
+
+        // Cycle through all alleles for each chromosome
+        TreeMap<Integer, String> map = getAllelesForChromosome(chromosome);
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+            // Make the new toggle buttons
+            PanelToggleStorage<String> newPanel = new PanelToggleStorage<>(factoryProvider.getNextRect(), -1, entry.getValue().substring(indexOfFirstCapital(entry.getValue())), entry.getValue());
+
+            // See if they should be enabled by default or not
+            if (Arrays.asList(getTrait(task.requiredItems.get(indexInList).getBaseStack(), chromosome)).contains(newPanel.getStoredValue().toString()))
+                newPanel.setToggledStatus(true);
+
+            // Create a key if needed
+            if (!referenceMap.containsKey(chromosome)) referenceMap.put(chromosome, new ArrayList<>());
+
+            // Add the buttons to the referenceMap and the return array
+            referenceMap.get(chromosome).add(newPanel);
+            panels.add(newPanel);
+        }
+
+        // Send the panels back for the Factory to use
+        return panels.toArray(new IGuiPanel[0]);
     }
 }

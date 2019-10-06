@@ -41,7 +41,7 @@ public class BQFCommandFindTrait implements ICommand {
             EntityPlayer player = (EntityPlayer) sender.getCommandSenderEntity();
             ItemStack heldItem = player.getHeldItemMainhand();
 
-            if (UtilitiesBee.hasValidgrowthLevel(heldItem)) return ValidChromosomes.Bee;
+            if (UtilitiesBee.hasValidGrowthLevel(heldItem)) return ValidChromosomes.Bee;
         }
         return ValidChromosomes.INVALID;
     }
@@ -118,7 +118,7 @@ public class BQFCommandFindTrait implements ICommand {
             switch (en) {
                 case Bee:
                     if (list.contains(args[0].toLowerCase()))
-                        trait = UtilitiesBee.getTrait(player.getHeldItemMainhand(), EnumBeeChromosome.valueOf(args[0].toUpperCase()));
+                        trait = UtilitiesBee.getTrait(player.getHeldItemMainhand(), EnumBeeChromosome.valueOf(args[0].toUpperCase()))[0];
                     break;
                 case Tree:
                 case INVALID:

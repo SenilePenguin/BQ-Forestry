@@ -124,6 +124,8 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                 cvButtonsArea.addPanel(iconFrame);
 
                 // Task Item button
+                // getDisplayName() can create a NullPointerException down the stack if the item has an improper Species tag. Nothing I can do except
+                // TODO: Find alternative way to get bee's display name?
                 PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, areaWidth - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, taskItem.getBaseStack().getDisplayName(), i);
 
                 btnTaskItem.setCallback(value -> {
@@ -190,7 +192,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         String AQUA = TextFormatting.AQUA.toString();
 
         // Species
-        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getTrait(bee, EnumBeeChromosome.SPECIES)));
+        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getTrait(bee, EnumBeeChromosome.SPECIES)[0]));
         // Type
         tip.add(GOLD.concat("Type: ").concat(AQUA).concat(UtilitiesBee.getGrowthLevel(bee).get()));
         // Mated

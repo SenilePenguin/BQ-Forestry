@@ -37,6 +37,10 @@ public class FactoryForestryDataControlArea {
         return this;
     }
 
+    public IGuiPanel[] getPanels() {
+        return this.panels;
+    }
+
     public FactoryForestryDataControlArea setTitle(String title, boolean isLangKey) {
         titleText = isLangKey ? QuestTranslation.translate(title) : title;
         return this;
