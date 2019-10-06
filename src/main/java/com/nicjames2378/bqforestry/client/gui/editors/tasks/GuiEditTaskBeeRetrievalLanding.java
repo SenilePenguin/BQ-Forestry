@@ -27,7 +27,6 @@ import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
-import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
@@ -37,6 +36,8 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+
+import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements IVolatileScreen {
     private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
@@ -123,10 +124,13 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                 //iconFrame.setTooltip(RenderUtils.splitString(getHoverTooltip(taskItem.getBaseStack()), 128, mc.fontRenderer));
                 cvButtonsArea.addPanel(iconFrame);
 
-                // Task Item button
                 // getDisplayName() can create a NullPointerException down the stack if the item has an improper Species tag. Nothing I can do except
-                // TODO: Find alternative way to get bee's display name?
-                PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, areaWidth - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, taskItem.getBaseStack().getDisplayName(), i);
+                // Checking that bee's species is actually in the database before running a getDisplayName() on it should work
+                String speciesTrait = getTrait(taskItem.getBaseStack(), EnumBeeChromosome.SPECIES)[0];
+                String displayName = checkTraitIsInDatabase(EnumBeeChromosome.SPECIES, speciesTrait) ? taskItem.getBaseStack().getDisplayName() : speciesTrait;
+
+                // Task Item button
+                PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, areaWidth - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, displayName, i);
 
                 btnTaskItem.setCallback(value -> {
                     mc.displayGuiScreen(new GuiEditTaskBeeRetrievalSelection(getScreenRef(), quest, task, value));
@@ -192,11 +196,11 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         String AQUA = TextFormatting.AQUA.toString();
 
         // Species
-        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getTrait(bee, EnumBeeChromosome.SPECIES)[0]));
+        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(getTrait(bee, EnumBeeChromosome.SPECIES)[0]));
         // Type
-        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(UtilitiesBee.getGrowthLevel(bee).get()));
+        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(getGrowthLevel(bee).get()));
         // Mated
-        tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(UtilitiesBee.isMated(bee))));
+        tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(isMated(bee))));
         return tip;
     }
 

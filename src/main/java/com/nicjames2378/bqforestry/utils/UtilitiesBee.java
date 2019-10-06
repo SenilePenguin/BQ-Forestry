@@ -57,10 +57,8 @@ public class UtilitiesBee {
     }
 
     public static TreeMap<Integer, String> getAllelesForChromosome(EnumBeeChromosome chromosome) {
-        //for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
         Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
         TreeMap<Integer, String> orderedMap = new TreeMap<>();
-
 
         Iterator iterator = alleles.iterator();
         for (int i = 0; i < alleles.size(); i++) {
@@ -69,7 +67,6 @@ public class UtilitiesBee {
             int value = getValue(chromosome.getAlleleClass(), next);
             orderedMap.put(value, next.toString());
         }
-        //}
         return orderedMap;
     }
 
@@ -193,16 +190,6 @@ public class UtilitiesBee {
 
         if (isMated) tag.setTag("Mate", new NBTTagCompound());
         else if (tag.hasKey("Mate")) tag.removeTag("Mate");
-    }
-
-    public static void setChrList(ItemStack bee) {
-        if (bee == null) throw new NullPointerException();
-
-        NBTTagCompound tag = bee.getTagCompound();
-        if (tag == null) tag = new NBTTagCompound();
-
-        NBTTagCompound tagGenome = tag.getCompoundTag("Genome");
-        tagGenome.setTag("ChromosomesList", new NBTTagList());
     }
 
     // Returns null if a properly formatted species tag cannot be found!
@@ -353,6 +340,13 @@ public class UtilitiesBee {
         // if (getTrait(rStack, trait) == null || getTrait(invStack, trait) == null)
         //     return false;                                                   // If one of the bees are missing the properly formatted species tag, they don't match
         return Arrays.equals(getTrait(rStack, trait), getTrait(invStack, trait));    // Return whether they match or not
+    }
+
+    public static boolean checkTraitIsInDatabase(EnumBeeChromosome chromosome, String trait) {
+        for (Map.Entry<Integer, String> entry : getAllelesForChromosome(chromosome).entrySet()) {
+            if (trait.equals(entry.getValue())) return true;
+        }
+        return false;
     }
 
     public static void listAllSpecies() {
