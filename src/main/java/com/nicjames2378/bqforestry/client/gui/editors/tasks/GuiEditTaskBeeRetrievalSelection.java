@@ -22,7 +22,7 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.CanvasBeeDatabase;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.controls.factory.FactoryForestryDataControlArea;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.controls.factory.PanelToggleStorage;
@@ -274,18 +274,21 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
 
                     // For Debug only
                     StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < values.size(); i++) {
-                        if (values.get(i).getToggledStatus()) {
-                            writeTrait(newBee.getBaseStack(), entry.getKey(), (String) values.get(i).getStoredValue());
+                    boolean debug = ConfigHandler.cfgDoDebugOutputs;
 
-                            if (ConfigHandler.cfgDoDebugOutputs)
-                                sb.append(String.format("Bee Retrieval Selection [Enabled Values] - %1$s: %2$s", entry.getKey().getName(), values.get(i).getStoredValue())).append(", ");
+                    for (PanelToggleStorage value : values) {
+                        if (value.getToggledStatus()) {
+                            writeTrait(newBee.getBaseStack(), entry.getKey(), (String) value.getStoredValue());
+
+                            if (debug)
+                                sb.append(String.format("                                         - %1$s: ", value.getStoredValue())).append(", ");
                         }
                     }
 
                     // For Debug Only
-                    if (ConfigHandler.cfgDoDebugOutputs) {
-                        Main.log.info(sb.toString());
+                    if (debug) {
+                        sb.insert(0, String.format("Bee Retrieval Selection [Enabled Values] - %1$s: ", entry.getKey().getName()));
+                        BQ_Forestry.log.info(sb.toString());
                         sb.delete(0, sb.length()); // Reuse StringBuilder instead of creating new one every loop
                     }
                 }

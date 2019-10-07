@@ -1,6 +1,6 @@
 package com.nicjames2378.bqforestry.config;
 
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.utils.Reference;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import net.minecraftforge.common.config.Configuration;
@@ -38,7 +38,7 @@ public class ConfigHandler {
 
     public static void loadVarsFromConfig() {
         if (config == null) {
-            Main.log.warn("Config attempted to be loaded before it was initialised!");
+            BQ_Forestry.log.warn("Config attempted to be loaded before it was initialised!");
             return;
         }
         config.load();
@@ -46,11 +46,11 @@ public class ConfigHandler {
         // ===== Handle Versioning Stuff =====
         // No versioning found
         if (!config.hasKey(CATEGORY_DEBUG, "version")) {
-            Main.log.warn("Config Versioning information not found!");
+            BQ_Forestry.log.warn("Config Versioning information not found!");
         }
         // Incorrect versioning found
         if (config.getInt("version", CATEGORY_DEBUG, configVersion, configVersion, configVersion, "Versioning Information. Do not change!", key + "versioning") != configVersion) {
-            Main.log.error("Incorrect versioning detected! Recommended to delete config and let it regenerate!");
+            BQ_Forestry.log.error("Incorrect versioning detected! Recommended to delete config and let it regenerate!");
         }
 
         // FORESTRY

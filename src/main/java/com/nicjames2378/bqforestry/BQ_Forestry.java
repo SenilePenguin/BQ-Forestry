@@ -15,11 +15,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION, dependencies = Reference.DEPENDENCIES, guiFactory = Reference.GUI_FACTORY)
-public class Main {
+@Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = "@VERSION@", dependencies = Reference.DEPENDENCIES, guiFactory = Reference.GUI_FACTORY)
+public class BQ_Forestry {
 
     @Instance
-    public static Main instance;
+    public static BQ_Forestry instance;
 
     public static Logger log;
     public static boolean hasJEI = false;

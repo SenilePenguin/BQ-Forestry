@@ -1,6 +1,6 @@
 package com.nicjames2378.bqforestry.utils;
 
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.*;
@@ -52,7 +52,7 @@ public class UtilitiesBee {
                 int value = getValue(chromosome.getAlleleClass(), next);
                 //currentMap.put(value, next.toString());
                 if (debug)
-                    Main.log.info(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
+                    BQ_Forestry.log.info(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
             }
         }
     }
@@ -66,29 +66,29 @@ public class UtilitiesBee {
             Object next = iterator.next();
 
             int value = getValue(chromosome.getAlleleClass(), next);
-            orderedMap.put(value, next.toString());
+            orderedMap.put((value >= 0 ? value : i), next.toString());
         }
         return orderedMap;
     }
 
-    private static int getValue(Class<? extends IAllele> alleleClass, Object next) {
+    private static int getValue(Class<? extends IAllele> alleleClass, Object item) {
         // Provides an easy way for me to get the values of certain applicable Alleles
         //      and put them in order based on integer values
 
         if (IAlleleInteger.class.isAssignableFrom(alleleClass)) {
-            IAlleleInteger aa = (IAlleleInteger) next;
+            IAlleleInteger aa = (IAlleleInteger) item;
             return aa.getValue();
 
         } else if (IAlleleFloat.class.isAssignableFrom(alleleClass)) {
-            IAlleleFloat aa = (IAlleleFloat) next;
+            IAlleleFloat aa = (IAlleleFloat) item;
             return (int) (aa.getValue() * 10);
 
         } else if (IAlleleBoolean.class.isAssignableFrom(alleleClass)) {
-            IAlleleBoolean aa = (IAlleleBoolean) next;
+            IAlleleBoolean aa = (IAlleleBoolean) item;
             return aa.getValue() ? 1 : 0;
 
         } else if (IAlleleTolerance.class.isAssignableFrom(alleleClass)) {
-            IAlleleTolerance aa = (IAlleleTolerance) next;
+            IAlleleTolerance aa = (IAlleleTolerance) item;
             String[] val = String.valueOf(aa.getValue()).toLowerCase().split("_");
 
             // Generate custom Integers based on the values (and how I want them ordered)
@@ -103,13 +103,13 @@ public class UtilitiesBee {
             }
 
         } else if (IAlleleArea.class.isAssignableFrom(alleleClass)) {
-            IAlleleArea aa = (IAlleleArea) next;
+            IAlleleArea aa = (IAlleleArea) item;
             Vec3i vec = aa.getValue();
             return vec.getX() + vec.getY() + vec.getZ();
             // return String.format("%1$s %2$s %3$s", vec.getX(), vec.getY(), vec.getZ()).replace(" ", "0");
         }
 
-        return 0;
+        return -1;
     }
 
     private static String getGrowthPath(BeeTypes type) {
@@ -360,23 +360,28 @@ public class UtilitiesBee {
     }
 
     public static boolean checkTraitIsInDatabase(EnumBeeChromosome chromosome, String trait) {
+        BQ_Forestry.log.info(String.format("Check is in database (%1$s): %2$s", chromosome.getName(), trait));
         for (Map.Entry<Integer, String> entry : getAllelesForChromosome(chromosome).entrySet()) {
-            if (trait.equals(entry.getValue())) return true;
+            BQ_Forestry.log.info(String.format("      Entry: %1$s, String: %2$s", entry.getKey().toString(), entry.getValue()));
+            BQ_Forestry.log.info(String.format("      IS IN DATABASE (%1$s): Entry: %2$s, Trait: %3$s", chromosome.getName(), entry.getKey().toString(), trait));
+            if (trait.equals(entry.getValue())) {
+                return true;
+            }
         }
         return false;
     }
 
     public static void listAllSpecies() {
-        Main.log.info("Config ListAllBees is TRUE. Outputting bees list now.");
-        Main.log.info("===========================================================");
+        BQ_Forestry.log.info("Config ListAllBees is TRUE. Outputting bees list now.");
+        BQ_Forestry.log.info("===========================================================");
 
         Collection<IAllele> species = AlleleManager.alleleRegistry.getRegisteredAlleles(EnumBeeChromosome.SPECIES);
         Iterator a = species.iterator();
         for (int i = 0; i < species.size(); i++) {
             String spe = a.next().toString();
-            Main.log.info(String.format("Bees species found: %1$d / %2$d - %3$s", i + 1, species.size(), spe));
+            BQ_Forestry.log.info(String.format("Bees species found: %1$d / %2$d - %3$s", i + 1, species.size(), spe));
         }
 
-        Main.log.info("===========================================================");
+        BQ_Forestry.log.info("===========================================================");
     }
 }

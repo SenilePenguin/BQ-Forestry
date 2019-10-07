@@ -10,7 +10,7 @@ import betterquesting.api2.cache.QuestCache;
 import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.IGuiPanel;
 import betterquesting.api2.storage.DBEntry;
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.GuiEditTaskBeeRetrievalLanding;
 import com.nicjames2378.bqforestry.client.tasks.PanelTaskForestryRetrieval;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
@@ -81,7 +81,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
 
     @Override
     public void detect(EntityPlayer player, IQuest quest) {
-        Main.log.info("WHATISWHERE - Detect");
+        BQ_Forestry.log.info("WHATISWHERE - Detect");
         UUID playerID = QuestingAPI.getQuestingUUID(player);
 
         if (player.inventory == null || isComplete(playerID)) return;
@@ -133,29 +133,29 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
                 HashMap<EnumBeeChromosome, HashSet<String>> map = getAllTraits(rStack.getBaseStack(), false);
                 boolean nbtIsValid = false;
 
-                Main.log.info("================");
+                BQ_Forestry.log.info("================");
                 for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
-                    Main.log.info(String.format("SubmitItemDEBUG: Chromosome %1$s", entry.getKey()));
+                    BQ_Forestry.log.info(String.format("SubmitItemDEBUG: Chromosome %1$s", entry.getKey()));
 
                     for (String s : entry.getValue()) {
-                        Main.log.info(String.format("                      Value %1$s", s));
+                        BQ_Forestry.log.info(String.format("                      Value %1$s", s));
                     }
                 }
-                Main.log.info("");
+                BQ_Forestry.log.info("");
 
                 // Iterates through all valid alleles
                 for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
                     // Safe to use [0] here since we don't currently support secondary traits anywhere else
                     String submissionTrait = getTrait(stack, entry.getKey(), true)[0];
-                    Main.log.info(String.format("SubmitItem: Chromosome %1$s (Wanted: %2$s)", entry.getKey(), entry.getValue()));
+                    BQ_Forestry.log.info(String.format("SubmitItem: Chromosome %1$s (Wanted: %2$s)", entry.getKey(), entry.getValue()));
 
                     // If the bee's trait is anywhere in the set, carry on. Otherwise break the loop.
                     if (entry.getValue().contains(submissionTrait)) {
-                        Main.log.info(String.format("                      Value [%1$s] is VALID", submissionTrait));
+                        BQ_Forestry.log.info(String.format("                      Value [%1$s] is VALID", submissionTrait));
                         // Set flag saying the NBT is still valid
                         nbtIsValid = true;
                     } else { // The trait was not found in the compatible traits list. Abort!
-                        Main.log.info(String.format("                      Value [%1$s] is INVALID", submissionTrait));
+                        BQ_Forestry.log.info(String.format("                      Value [%1$s] is INVALID", submissionTrait));
                         nbtIsValid = false;
                         break; // If we didn't find a valid allele for the required category, stop looping
                     }
@@ -245,7 +245,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
             try {
                 completeUsers.add(UUID.fromString(cList.getStringTagAt(i)));
             } catch (Exception e) {
-                Main.log.log(Level.ERROR, "Unable to load UUID for task", e);
+                BQ_Forestry.log.log(Level.ERROR, "Unable to load UUID for task", e);
             }
         }
 
@@ -263,7 +263,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
 
                 userProgress.put(uuid, data);
             } catch (Exception e) {
-                Main.log.log(Level.ERROR, "Unable to load user progress for task", e);
+                BQ_Forestry.log.log(Level.ERROR, "Unable to load user progress for task", e);
             }
         }
     }

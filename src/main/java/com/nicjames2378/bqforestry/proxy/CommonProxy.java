@@ -5,7 +5,7 @@ import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.questing.tasks.ITask;
 import betterquesting.api2.registry.IFactoryData;
 import betterquesting.api2.registry.IRegistry;
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskForestryRetrieval;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskKeyCode;
@@ -33,6 +33,6 @@ public class CommonProxy {
     }
 
     public void doDebugOutputs() {
-        if (Main.hasForestry) UtilitiesBee.initialize();
+        if (BQ_Forestry.hasForestry) UtilitiesBee.initialize();
     }
 }

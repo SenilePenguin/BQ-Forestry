@@ -7,7 +7,7 @@ import betterquesting.api2.client.gui.panels.IGuiPanel;
 import betterquesting.api2.client.gui.panels.content.PanelTextBox;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.utils.QuestTranslation;
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 
 public class FactoryForestryDataControlArea {
     private IGuiPanel[] panels;
@@ -75,7 +75,7 @@ public class FactoryForestryDataControlArea {
 
     public FactoryForestryDataControlArea setLayout(int columns, int sizeY) {
         if (this.LAYOUT_COLUMNS != -1) {
-            Main.log.info("Layout already set!");
+            BQ_Forestry.log.info("Layout already set!");
             return this;
         }
 

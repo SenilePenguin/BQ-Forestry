@@ -10,7 +10,7 @@ import betterquesting.api2.client.gui.panels.content.PanelTextBox;
 import betterquesting.api2.client.gui.panels.lists.CanvasScrolling;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.utils.QuestTranslation;
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import mezz.jei.Internal;
@@ -59,7 +59,7 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
 
             // ItemSlot
             PanelItemSlot slot = new PanelItemSlot(new GuiRectangle(0, i * 38, 32, 32, 0), -1, stack, false, true);
-            if (Main.hasJEI) slot.setCallback(value -> lookupRecipe(value.getBaseStack()));
+            if (BQ_Forestry.hasJEI) slot.setCallback(value -> lookupRecipe(value.getBaseStack()));
             cvList.addPanel(slot);
 
             StringBuilder sb = new StringBuilder();
