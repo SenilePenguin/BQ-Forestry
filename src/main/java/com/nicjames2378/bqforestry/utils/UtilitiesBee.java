@@ -40,6 +40,7 @@ public class UtilitiesBee {
     public static void initialize() {
         boolean debug = ConfigHandler.cfgDoDebugOutputs;
 
+        // TODO: Clean this?
         for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
             Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
             //TreeMap<Integer, String> currentMap = new TreeMap<>();
@@ -192,8 +193,31 @@ public class UtilitiesBee {
         else if (tag.hasKey("Mate")) tag.removeTag("Mate");
     }
 
-    // Returns null if a properly formatted species tag cannot be found!
-    public static String[] getTrait(ItemStack bee, EnumBeeChromosome chromosome) {
+    public static HashMap<EnumBeeChromosome, HashSet<String>> getAllTraits(ItemStack bee, boolean forceForestryMethod) {
+        HashMap<EnumBeeChromosome, HashSet<String>> retMap = new HashMap<>();
+
+        for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
+            // Not sure which is faster and more memory efficient. Needs testing
+            //      (but top is assumed more efficient as it's not making a throw-away list)
+            HashSet<String> set = new HashSet<>();
+            String[] array = getTrait(bee, chromosome, forceForestryMethod);
+
+            // Skip adding this chromosome to the map if there aren't any traits
+            if (array.length <= 0 || array[0].equals("")) continue;
+            Collections.addAll(set, array);
+            //HashSet<String> set = new HashSet<>(Arrays.asList(getTrait(bee, chromosome)));
+
+            retMap.put(chromosome, set);
+        }
+
+        return retMap;
+    }
+
+    /*public static String[] getTrait(ItemStack bee, EnumBeeChromosome chromosome) {
+        return getTrait(bee, chromosome, false);
+    }*/
+
+    public static String[] getTrait(ItemStack bee, EnumBeeChromosome chromosome, boolean forceForestryMethod) {
         String[] _EMPTY = new String[]{""};
 
         if (bee == null) return _EMPTY;
@@ -205,26 +229,25 @@ public class UtilitiesBee {
         NBTTagCompound tagGenome = tag.getCompoundTag("Genome");
 
         if (tagGenome.hasNoTags()) return _EMPTY;
-        String[] ret = new String[]{};
+        String[] ret;
 
         // Due to constraints within Forestry that I have no ability to fix, I have to do some special conditioning
         //      for the Species trait. This prevents me from having it use a list, as well as causing plenty of
         //      other headaches. >:(
         // Species has to be a TAG_Compound, while we want everything else to be saved under a TAG_List
-
-        if (chromosome == EnumBeeChromosome.SPECIES) {
+        // Also, we get the trait under "UID0" if asked to use the Forestry Method
+        if (chromosome == EnumBeeChromosome.SPECIES || forceForestryMethod) {
             NBTTagList tagStupidSpeciesIsStupid = tagGenome.getTagList("Chromosomes", 10); // 10 = TAG_Compound
             if (tagStupidSpeciesIsStupid.hasNoTags())
                 return _EMPTY; // The TagList is a assigned a new NBTTagList if it doesn't exist
 
-            NBTTagCompound tagTrait = (NBTTagCompound) tagStupidSpeciesIsStupid.get(0); //getIndexFromChromosome(chromosome));
+            NBTTagCompound tagTrait = (NBTTagCompound) tagStupidSpeciesIsStupid.get(getIndexFromChromosome(chromosome));
 
             ret = new String[]{tagTrait.getString("UID0")};
-            return ret;
-        } else {
-            NBTTagCompound tagChromosomesList = tagGenome.getCompoundTag("ChromosomesList");
-            // The TagCompound is a assigned a new NBTTagList if it doesn't exist
 
+        } else {
+            // These are assigned new ones if they can't be found in the "get"
+            NBTTagCompound tagChromosomesList = tagGenome.getCompoundTag("ChromosomesList");
             NBTTagList nbtTraitList = tagChromosomesList.getTagList(chromosome.getName(), 8); //8=TAG_String
 
             ArrayList<String> returnValue = new ArrayList<>();
@@ -233,15 +256,10 @@ public class UtilitiesBee {
                 returnValue.add(nbtTraitList.getStringTagAt(i));
             }
 
-            return returnValue.toArray(new String[0]);
-
-/*
-            NBTTagList tagChromosomes = tagGenome.getTagList("ChromosomesList", 9); //9=TAG_List
-            if (tagChromosomes.hasNoTags()) return ""; // The TagList is a assigned a new NBTTagList if it doesn't exist
-
-            NBTTagList nbtTrait = (NBTTagList) tagChromosomes.get(getIndexFromChromosome(chromosome));*//*
-            return nbtTrait.getStringTagAt(0);*/
+            if (returnValue.size() <= 0) ret = _EMPTY;
+            else ret = returnValue.toArray(new String[0]);
         }
+        return ret;
     }
 
     public static void writeTrait(ItemStack bee, EnumBeeChromosome chromosome, String trait) {
@@ -280,8 +298,7 @@ public class UtilitiesBee {
         }
     }
 
-    // TODO: Deprecate this in exchange for a string-tag based system
-    @Deprecated
+    // Used to map Forestry chromosomes to their NBT indices
     private static int getIndexFromChromosome(EnumBeeChromosome chromosome) {
         switch (chromosome) {
             case SPECIES:
@@ -339,7 +356,7 @@ public class UtilitiesBee {
         // TODO: Check if invStack's trait is anywhere in rStack's traits
         // if (getTrait(rStack, trait) == null || getTrait(invStack, trait) == null)
         //     return false;                                                   // If one of the bees are missing the properly formatted species tag, they don't match
-        return Arrays.equals(getTrait(rStack, trait), getTrait(invStack, trait));    // Return whether they match or not
+        return Arrays.equals(getTrait(rStack, trait, false), getTrait(invStack, trait, false));    // Return whether they match or not
     }
 
     public static boolean checkTraitIsInDatabase(EnumBeeChromosome chromosome, String trait) {

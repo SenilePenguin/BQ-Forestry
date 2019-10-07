@@ -95,15 +95,9 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
 
         ItemStack rStack = task.requiredItems.get(indexInList).getBaseStack();
 
-        setSelectedSpecies(getTrait(rStack, EnumBeeChromosome.SPECIES)[0]);
+        setSelectedSpecies(getTrait(rStack, EnumBeeChromosome.SPECIES, true)[0]);
         setSelectedType(getGrowthLevel(rStack).get());
         setSelectedMated(isMated(rStack));
-
-        for (EnumBeeChromosome chr : EnumBeeChromosome.values()) {
-            for (String s : getTrait(rStack, chr)) {
-                Main.log.info(String.format("Selection: %1$s - %2$s", chr.getName(), s));
-            }
-        }
     }
 
     @Override
@@ -278,13 +272,21 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
                 for (Map.Entry<EnumBeeChromosome, ArrayList<PanelToggleStorage>> entry : mapOptions.entrySet()) {
                     ArrayList<PanelToggleStorage> values = entry.getValue();
 
+                    // For Debug only
+                    StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < values.size(); i++) {
                         if (values.get(i).getToggledStatus()) {
                             writeTrait(newBee.getBaseStack(), entry.getKey(), (String) values.get(i).getStoredValue());
 
                             if (ConfigHandler.cfgDoDebugOutputs)
-                                Main.log.info(String.format("Bee Retrieval Selection [Enabled Values] - %1$s: %2$s", entry.getKey().getName(), values.get(i).getStoredValue()));
+                                sb.append(String.format("Bee Retrieval Selection [Enabled Values] - %1$s: %2$s", entry.getKey().getName(), values.get(i).getStoredValue())).append(", ");
                         }
+                    }
+
+                    // For Debug Only
+                    if (ConfigHandler.cfgDoDebugOutputs) {
+                        Main.log.info(sb.toString());
+                        sb.delete(0, sb.length()); // Reuse StringBuilder instead of creating new one every loop
                     }
                 }
 
@@ -332,7 +334,7 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
             PanelToggleStorage<String> newPanel = new PanelToggleStorage<>(factoryProvider.getNextRect(), -1, entry.getValue().substring(indexOfFirstCapital(entry.getValue())), entry.getValue());
 
             // See if they should be enabled by default or not
-            if (Arrays.asList(getTrait(task.requiredItems.get(indexInList).getBaseStack(), chromosome)).contains(newPanel.getStoredValue().toString()))
+            if (Arrays.asList(getTrait(task.requiredItems.get(indexInList).getBaseStack(), chromosome, false)).contains(newPanel.getStoredValue().toString()))
                 newPanel.setToggledStatus(true);
 
             // Create a key if needed

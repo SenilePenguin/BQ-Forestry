@@ -126,7 +126,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
 
                 // getDisplayName() can create a NullPointerException down the stack if the item has an improper Species tag. Nothing I can do except
                 // Checking that bee's species is actually in the database before running a getDisplayName() on it should work
-                String speciesTrait = getTrait(taskItem.getBaseStack(), EnumBeeChromosome.SPECIES)[0];
+                String speciesTrait = getTrait(taskItem.getBaseStack(), EnumBeeChromosome.SPECIES, true)[0];
                 String displayName = checkTraitIsInDatabase(EnumBeeChromosome.SPECIES, speciesTrait) ? taskItem.getBaseStack().getDisplayName() : speciesTrait;
 
                 // Task Item button
@@ -196,7 +196,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         String AQUA = TextFormatting.AQUA.toString();
 
         // Species
-        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(getTrait(bee, EnumBeeChromosome.SPECIES)[0]));
+        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(getTrait(bee, EnumBeeChromosome.SPECIES, true)[0]));
         // Type
         tip.add(GOLD.concat("Type: ").concat(AQUA).concat(getGrowthLevel(bee).get()));
         // Mated

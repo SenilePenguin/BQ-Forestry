@@ -2,7 +2,6 @@ package com.nicjames2378.bqforestry.commands;
 
 import betterquesting.api2.utils.QuestTranslation;
 import com.google.common.collect.Lists;
-import com.nicjames2378.bqforestry.Main;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import forestry.api.apiculture.EnumBeeChromosome;
@@ -31,8 +30,8 @@ public class BQFCommandFindTrait implements ICommand {
 
     private enum ValidChromosomes {
         INVALID,
-        Bee,
-        Tree
+        Bee
+//        Tree
     }
 
     private static ValidChromosomes getEnumValid(ICommandSender sender) {
@@ -54,9 +53,9 @@ public class BQFCommandFindTrait implements ICommand {
                 for (EnumBeeChromosome e : EnumBeeChromosome.values())
                     values.add(e.getName().toLowerCase());
                 break;
-            case Tree:
-                values.add("NotYetImplemented");
-                break;
+//            case Tree:
+//                values.add("NotYetImplemented");
+//                break;
             default:
                 break;
         }
@@ -114,22 +113,22 @@ public class BQFCommandFindTrait implements ICommand {
             ArrayList<String> list = getChromosomes(en);
             String trait = "";
 
+            String[] aa;
             // Ensure the player is holding a valid item (or give an error message)
             switch (en) {
                 case Bee:
-                    if (list.contains(args[0].toLowerCase()))
-                        trait = UtilitiesBee.getTrait(player.getHeldItemMainhand(), EnumBeeChromosome.valueOf(args[0].toUpperCase()))[0];
-                    break;
-                case Tree:
+                    if (list.contains(args[0].toLowerCase())) {
+                        // It's safe to assume a [0] here since bees using my NBT handling shouldn't actually be obtainable in-game
+                        trait = UtilitiesBee.getTrait(player.getHeldItemMainhand(), EnumBeeChromosome.valueOf(args[0].toUpperCase()), true)[0];
+                        break;
+                    }
+                    //case Tree:
                 case INVALID:
                     throw new WrongUsageException("bqforestry.command.error.improperitem", "item");
             }
 
             if (!trait.equals("")) {
                 // Handles whether to copy to clipboard or not
-                Main.log.info("AAA: " + (args.length < 2));
-                Main.log.info("AAA: " + ConfigHandler.cfgDefaultCommandCopy);
-
                 if (args.length < 2 && ConfigHandler.cfgDefaultCommandCopy) { // Doesn't have a second argument, so get inference from Config
                     // Has second argument that *is* true (do a true check instead of a false check in case of typos)
                     displayTraitWithCopy(player, trait, true);

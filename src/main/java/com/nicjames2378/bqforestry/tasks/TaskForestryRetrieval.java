@@ -3,7 +3,6 @@ package com.nicjames2378.bqforestry.tasks;
 import betterquesting.api.api.ApiReference;
 import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.questing.IQuest;
-import betterquesting.api.questing.tasks.IItemTask;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api.utils.JsonHelper;
 import betterquesting.api2.cache.CapabilityProviderQuestCache;
@@ -21,17 +20,13 @@ import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Tuple;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Level;
@@ -42,9 +37,7 @@ import java.util.*;
 
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
-public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
-    private static BigItemStack defBee;
-
+public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
     public static BigItemStack getDefaultBee() {
         return new BigItemStack(getBaseBee(UtilitiesBee.DEFAULT_SPECIES, UtilitiesBee.BeeTypes.valueOf(ConfigHandler.cfgBeeType), ConfigHandler.cfgOnlyMated));
     }
@@ -88,6 +81,7 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
 
     @Override
     public void detect(EntityPlayer player, IQuest quest) {
+        Main.log.info("WHATISWHERE - Detect");
         UUID playerID = QuestingAPI.getQuestingUUID(player);
 
         if (player.inventory == null || isComplete(playerID)) return;
@@ -113,21 +107,65 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
             }
         }*/
 
+        // Iterate the player's inventory slots
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);
+
+            // Jump the loop if the slot is empty
             if (stack.isEmpty()) continue;
             int remStack = stack.getCount(); // Allows the stack detection to split across multiple requirements
 
+            // Iterate through the required items
             for (int j = 0; j < requiredItems.size(); j++) {
                 BigItemStack rStack = requiredItems.get(j);
 
+                // If the item isn't even the correct item (DERP!)
+                if (rStack.getBaseStack().isItemEqual(stack)) continue;
+
+                // What does this do???
                 if (progress[j] >= rStack.stackSize) continue;
 
+                // If we require mated and the player's item isn't
                 if (isMated(rStack.getBaseStack()) && !isMated(stack))
                     continue;
 
-                if (checkTraitsMatch(rStack.getBaseStack(), stack, EnumBeeChromosome.SPECIES)) {
+                // Gets a list of valid alleles from the quest bee item
+                HashMap<EnumBeeChromosome, HashSet<String>> map = getAllTraits(rStack.getBaseStack(), false);
+                boolean nbtIsValid = false;
+
+                Main.log.info("================");
+                for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
+                    Main.log.info(String.format("SubmitItemDEBUG: Chromosome %1$s", entry.getKey()));
+
+                    for (String s : entry.getValue()) {
+                        Main.log.info(String.format("                      Value %1$s", s));
+                    }
+                }
+                Main.log.info("");
+
+                // Iterates through all valid alleles
+                for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
+                    // Safe to use [0] here since we don't currently support secondary traits anywhere else
+                    String submissionTrait = getTrait(stack, entry.getKey(), true)[0];
+                    Main.log.info(String.format("SubmitItem: Chromosome %1$s (Wanted: %2$s)", entry.getKey(), entry.getValue()));
+
+                    // If the bee's trait is anywhere in the set, carry on. Otherwise break the loop.
+                    if (entry.getValue().contains(submissionTrait)) {
+                        Main.log.info(String.format("                      Value [%1$s] is VALID", submissionTrait));
+                        // Set flag saying the NBT is still valid
+                        nbtIsValid = true;
+                    } else { // The trait was not found in the compatible traits list. Abort!
+                        Main.log.info(String.format("                      Value [%1$s] is INVALID", submissionTrait));
+                        nbtIsValid = false;
+                        break; // If we didn't find a valid allele for the required category, stop looping
+                    }
+                }
+
+                // Did we have at least one NBT from each list of required values?
+                if (nbtIsValid) {
                     int remaining = rStack.stackSize - progress[j];
+
+                    // Are we taking items from the player for this quest?
                     if (consume) {
                         ItemStack removed = player.inventory.decrStackSize(i, remaining);
                         progress[j] += removed.getCount();
@@ -137,11 +175,13 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
                         progress[j] += temp;
                     }
 
+                    // Set a flag saying progress was made
                     updated = true;
                 }
             }
         }
 
+        // If progress was made, save it to Better Questing
         if (updated) setUserProgress(playerID, progress);
 
         boolean hasAll = true; //flag
@@ -287,8 +327,9 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
         return new PanelTaskForestryRetrieval(rect, this);
     }
 
-    @Override
+    /*@Override
     public boolean canAcceptItem(UUID owner, IQuest quest, ItemStack stack) {
+        Main.log.info("WHATISWHERE - CanAccept");
         if (owner == null || stack == null || stack.isEmpty() || !consume || isComplete(owner) || requiredItems.size() <= 0)
             return false;
 
@@ -307,9 +348,9 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
     }
 
 
-
     @Override
     public ItemStack submitItem(UUID owner, IQuest quest, ItemStack input) {
+        Main.log.info("WHATISWHERE - Submit");
         if (owner == null || input.isEmpty() || !consume || isComplete(owner)) return input;
 
         ItemStack stack = input.copy();
@@ -326,7 +367,46 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
 
             int remaining = rStack.stackSize - progress[j];
 
-            if (checkTraitsMatch(rStack.getBaseStack(), stack, EnumBeeChromosome.SPECIES)) {
+
+            // Iterate all chromosomes on rStack
+            // Iterate through all traits on chromosome
+            // Check if stack contains at least one of them
+            // If not, break. Otherwise, continue checking.
+
+            boolean isValid = false;
+
+
+            Main.log.info("================");
+            HashMap<EnumBeeChromosome, HashSet<String>> map = getAllTraits(rStack.getBaseStack(), false);
+            for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
+                Main.log.info(String.format("SubmitItemDEBUG: Chromosome %1$s", entry.getValue()));
+
+                for (String s : entry.getValue()) {
+                    Main.log.info(String.format("                      Value %1$s", s));
+                }
+            }
+            Main.log.info("");
+
+
+            // getAllTraits returns a map with only chromosomes containing traits
+            for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
+                // Safe to use [0] here since we don't currently support secondary traits anywhere else
+                String stackTrait = getTrait(stack, entry.getKey(), false)[0];
+                Main.log.info(String.format("SubmitItem: Chromosome %1$s, stackTrait %2$s", entry.getValue(), stackTrait));
+
+
+                // If the bee's trait is anywhere in the set, carry on. Otherwise break the loop.
+                if (entry.getValue().contains(stackTrait)) {
+                    Main.log.info("                      IsContained? TRUE");
+                    isValid = true;
+                    continue;
+                }
+                Main.log.info("                      IsContained? FALSE");
+                isValid = false;
+                break;
+            }
+
+            if (isValid) { //checkTraitsMatch(rStack.getBaseStack(), stack, EnumBeeChromosome.SPECIES)) {
                 int removed = Math.min(stack.getCount(), remaining);
                 stack.shrink(removed);
                 progress[j] += removed;
@@ -340,7 +420,7 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
         }
 
         return stack.isEmpty() ? ItemStack.EMPTY : stack;
-    }
+    }*/
 
     @Override
     @SideOnly(Side.CLIENT)
@@ -356,7 +436,7 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
         int[] progress = userProgress.get(uuid);
         return progress == null || progress.length != requiredItems.size() ? new int[requiredItems.size()] : progress;
     }
-
+/*
     private void bulkMarkDirty(@Nonnull List<UUID> uuids, int questID) {
         if (uuids.size() <= 0) return;
         final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
@@ -378,5 +458,5 @@ public class TaskForestryRetrieval implements ITaskInventory, IItemTask {
 
     private void setBulkProgress(@Nonnull List<Tuple<UUID, int[]>> list) {
         list.forEach((entry) -> setUserProgress(entry.getFirst(), entry.getSecond()));
-    }
+    }*/
 }
