@@ -10,22 +10,37 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-//version = "2.0.3"
-group = "com.nicjames2378.bqforestry" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "bqforestry"
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+// For some reason, this kept running even after the game closed. Wtf and why???
+//version=getNextBuildVersion()
+//setVersionInProperties()
+
+version = modVersion
+group = modGroup
+archivesBaseName = modBaseName
 
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-ext.configFile = file "build.properties"
+minecraft {
+    version = project.forgeVersion
+    runDir = "run"
 
-configFile.withReader {
-    // Load config. It shall from now be referenced as simply config or project.config
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
+    replace "@VERSION@", project.version
+    replaceIn project.modBaseClass
+
+    // the mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   snapshot are built nightly.
+    // stable_#            stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not always work.
+    // simply re-run your setup task after changing the mappings to update your workspace.
+    mappings = "snapshot_20171003"
+    // makeObfSourceJar = true // an Srg named sources jar is made by default. uncomment this to disable.
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -37,163 +52,78 @@ dependencies {
     compile files("libs/BetterQuesting-3.5.300.jar")
     compile files("libs/forestry_1.12.2-5.8.2.394.jar")
     compile files("libs/jei_1.12.2-4.15.0.268.jar")
-
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-}
-
-if (project.config.verbose.toBoolean()) {
-    println ""
-    println ""
-    println "VERBOSE: Starting extra build sequence."
-}
-version = getBuildVersion()
-setVersionInReferenceJava()
-setVersionInBuildProperties()
-if (project.config.verbose.toBoolean()) {
-    println "VERBOSE: Finishing extra build sequence."
-    println ""
-    println ""
-}
-
-println "Starting build of ${archivesBaseName}. Version: ${version}"
-println "Using Forge ${config.forge_version}, for Minecraft ${config.mc_version}"
-
-minecraft {
-    version = config.mc_version + "-" + config.forge_version
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20171003"
-
-    runDir = "run"
-    replace '${mod_version}', project.config.mod_version
-    // makeObfSourceJar = true // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
-    inputs.property "mc_version", project.config.mc_version
+    inputs.property "mcversion", project.minecraft.version
 
+    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand 'version': project.version, 'mc_version': project.config.mc_version
+        include "mcmod.info"
+
+        // replace version and mcversion
+        expand "version": project.version, "mcversion": project.minecraft.version
+
+        // copy everything else, thats not the mcmod.info
+        from(sourceSets.main.resources.srcDirs) {
+            exclude "mcmod.info"
+        }
     }
 }
 
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    appendix = 'deobf'
 }
 
-def sayVerbose(String text) {
-    if (project.config.verbose.toBoolean()) {
-        println("VERBOSE: " + text)
-    }
+artifacts {
+    archives deobfJar
 }
 
-def getBuildVersion() {
-    Matcher matchChecker
-    def returnVersion = project.config.mod_version
-    sayVerbose("Versioning Started. Current version: " + project.config.mod_version.toString())
-
+// For some reason, this kept running even after the game closed. Wtf and why???
+/*
+def getNextBuildVersion() {
     String major = "1"
     String minor = "0"
     String patch = "0"
-    String dev = ""
-    boolean wasDev = false
+    String build = "0"
 
-    sayVerbose("Checking first three segments of version.")
-    def pattern = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+.*)") // #.#.#-> (through end of line)
-    matchChecker = pattern.matcher(project.config.mod_version.toString())
+    def pattern = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)") // (modVersion = )(#).(#).(#).(#)
+    println "Current ModVersion: " + modVersion
+    Matcher matchChecker = pattern.matcher(modVersion.toString())
+
 
     if (!matchChecker.matches()) {
-        println "A version could not be found or is not specified. Please ensure the correct 'build.properties' file is selected and that the 'mod_version' is in the '#.#.#' format (optional '-dev.#')."
-    }
-
-    major = matchChecker.group(1)
-    sayVerbose("Section 1: " + major)
-    minor = matchChecker.group(2)
-    sayVerbose("Section 2: " + minor)
-    patch = matchChecker.group(3)
-    sayVerbose("Section 3: " + patch)
-
-    pattern = Pattern.compile("(\\d+)\\" + "-(\\w+).(\\d+)")
-    //#-dev.## (the '+' operation is to correct regex redundant escape character warning caused by the hyphen
-    matchChecker = pattern.matcher(matchChecker.group(3))
-
-    if (matchChecker.matches()) { //if patch version has dev info
-        sayVerbose("Section 3 has dev information. Dev version: " + matchChecker.group(3))
-        wasDev = true
-        patch = matchChecker.group(1) //patch is just first part
-        dev = matchChecker.group(3) //and dev version is 3rd
+        println "A version could not be found or is not specified. Please ensure the correct 'gradle.properties' file is selected and that the 'modVersion' is in the format '#.#.#.#'"
     } else {
-        sayVerbose("Section 3 does not have dev information.")
+        major = matchChecker.group(1)
+        minor = matchChecker.group(2)
+        patch = matchChecker.group(3)
+        build = matchChecker.group(4)
     }
 
-    // If inDev and wasDev: Dev += 1
-    // if inDev and !wasDev: Dev = 1 && patch +=1
-    // if !inDev and !wasDev: patch +=1
-    // Dont increment patch if leaving dev mode
+    def ret = (major + "." + minor + "." + patch + "." + (build.toInteger() + 1))
 
-
-
-    if (project.config.isDev.toBoolean()) {
-        sayVerbose("Properties 'inDev' mode enabled.")
-        if (wasDev) {
-            sayVerbose("Previous dev detected. Dev changing from " + dev + " to " + (dev.toInteger() + 1))
-            String newDev = (dev.toInteger() + 1)
-            dev = newDev
-        } else {
-            sayVerbose("Previous dev not detected. Making this dev.1 of patch " + patch.toInteger() + 1)
-            patch = (patch.toInteger() + 1)
-            dev = 1
-        }
-        returnVersion = (major + "." + minor + "." + patch + "-dev." + dev)
-    } else {
-        sayVerbose("Properties 'inDev' mode disabled.")
-        if (wasDev) {
-            sayVerbose("Previous dev detected. Removing dev tag and keeping patch")
-            String newDev = (dev.toInteger() + 1)
-            dev = newDev
-        } else {
-            sayVerbose("Previous dev not detected. Incrementing patch to " + patch.toInteger() + 1)
-            patch = (patch.toInteger() + 1)
-        }
-        returnVersion = (major + "." + minor + "." + patch)
-    }
-
-    sayVerbose("Versioning Finished. New version: " + returnVersion)
-    return returnVersion
+    println "New ModVersion: " + ret
+    return ret;
 }
 
-def setVersionInBuildProperties() {
-    String fileDir = "build.properties"
+// Find better way to write to properties file (HOW DOES ANTBUILDER WORK???)
+def setVersionInProperties() {
+    String fileDir = "gradle.properties"
     def file = file(fileDir)
-    def pattern = Pattern.compile("^mod_version=(.*+)")
+    def pattern = Pattern.compile("(^modVersion\\D*)(.[0-9.]+)")
+
+    println "Save ModVersion: " + version.toString()
 
     def newLines = []
     file.eachLine { String s ->
         String line = s
         def matcher = pattern.matcher(s)
         if (matcher.matches()) {
-            sayVerbose("Found 'mod_version' line in build.properties. Updating string!")
-            line = line.replace(matcher.group(1), version.toString())
+            line = line.replace(matcher.group(2), version.toString())
         }
         newLines.add(line)
     }
@@ -206,28 +136,4 @@ def setVersionInBuildProperties() {
 
     return 0
 }
-
-def setVersionInReferenceJava() {
-    String fileDir = "src/main/java/com/nicjames2378/bqforestry/utils/Reference.java"
-    def file = file(fileDir)
-    def pattern = Pattern.compile("^ {4}public static final String VERSION = \"(.*)\";")
-
-    def newLines = []
-    file.eachLine { String s ->
-        String line = s
-        def matcher = pattern.matcher(s)
-        if (matcher.matches()) {
-            line = line.replace(matcher.group(1), "${version}")
-            sayVerbose("Found 'VERSION' line in Reference.java. Updating string!")
-        }
-        newLines.add(line)
-    }
-
-    new File(fileDir).withWriter { out ->
-        newLines.each {
-            out.println it
-        }
-    }
-
-    return 0
-}
+*/

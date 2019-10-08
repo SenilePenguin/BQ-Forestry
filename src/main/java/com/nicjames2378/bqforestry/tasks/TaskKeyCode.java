@@ -5,7 +5,7 @@ import betterquesting.api.questing.IQuest;
 import betterquesting.api.questing.tasks.ITask;
 import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.IGuiPanel;
-import com.nicjames2378.bqforestry.Main;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.GuiEditTaskKeyCode;
 import com.nicjames2378.bqforestry.client.tasks.PanelTaskKeyCode;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
@@ -94,7 +94,7 @@ public class TaskKeyCode implements ITask {
             try {
                 completeUsers.add(UUID.fromString(cList.getStringTagAt(i)));
             } catch (Exception e) {
-                Main.log.log(Level.ERROR, "Unable to load UUID for task", e);
+                BQ_Forestry.log.log(Level.ERROR, "Unable to load UUID for task", e);
             }
         }
     }
