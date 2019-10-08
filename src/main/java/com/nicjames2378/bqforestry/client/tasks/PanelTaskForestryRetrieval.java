@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Optional.Method;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class PanelTaskForestryRetrieval extends CanvasEmpty {
@@ -57,15 +58,21 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
         for (int i = 0; i < task.requiredItems.size(); i++) {
             BigItemStack stack = task.requiredItems.get(i);
 
+            // Have to do some trickery here to ensure we don't get a crash for non Forestry-certified items. Smh
+            BigItemStack safeStack = UtilitiesBee.getSafeStack(stack);
+
             // ItemSlot
-            PanelItemSlot slot = new PanelItemSlot(new GuiRectangle(0, i * 38, 32, 32, 0), -1, stack, false, true);
+            PanelItemSlot slot = new PanelItemSlot(new GuiRectangle(0, i * 38, 32, 32, 0), -1, safeStack, false, true);
+            ArrayList<String> tTip = new ArrayList<>();
+            tTip.add("AAA");
+            slot.setTooltip(tTip);
             if (BQ_Forestry.hasJEI) slot.setCallback(value -> lookupRecipe(value.getBaseStack()));
             cvList.addPanel(slot);
 
             StringBuilder sb = new StringBuilder();
 
             // Name
-            sb.append(stack.getBaseStack().getDisplayName());
+            sb.append(safeStack.getBaseStack().getDisplayName());
 
             // Also, should I //TODO: Add oreDict support?
             // if (stack.hasOreDict()) sb.append(" (").append(stack.getOreDict()).append(")");

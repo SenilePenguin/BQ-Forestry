@@ -1,5 +1,6 @@
 package com.nicjames2378.bqforestry.utils;
 
+import betterquesting.api.utils.BigItemStack;
 import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import forestry.api.apiculture.EnumBeeChromosome;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.*;
 
@@ -18,6 +20,7 @@ public class UtilitiesBee {
     private static String[] cacheGrowthStages;
 
     public static final String DEFAULT_SPECIES = "forestry.speciesCommon";
+    public static final String _INVALID_SPECIES_STRING = "(MISSING) ";
 
     @SuppressWarnings("unused") // Stupid IntelliJ being a stupid whiner...
     public enum BeeTypes {
@@ -55,6 +58,14 @@ public class UtilitiesBee {
                     BQ_Forestry.log.info(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
             }
         }
+    }
+
+    public static String getDisplayName(ItemStack stack) {
+        // getDisplayName() can create a NullPointerException down the stack if the item has an improper Species tag. Nothing I can do except
+        //      check that bee's species is actually in the database before running a getDisplayName() on it
+
+        String speciesTrait = getTrait(stack, EnumBeeChromosome.SPECIES, true)[0];
+        return checkTraitIsInDatabase(EnumBeeChromosome.SPECIES, speciesTrait) ? stack.getDisplayName() : TextFormatting.RED + _INVALID_SPECIES_STRING + speciesTrait;
     }
 
     public static TreeMap<Integer, String> getAllelesForChromosome(EnumBeeChromosome chromosome) {
@@ -173,14 +184,25 @@ public class UtilitiesBee {
         NBTTagCompound itemData = new NBTTagCompound();
         itemData.setTag("Genome", genome);
 
-        /*if (requireMated) {
-            NBTTagCompound mate = new NBTTagCompound();
-            itemData.setTag("Mate", mate);
-        }*/
         setMated(bee, requireMated);
 
         bee.setTagCompound(itemData);   // Finally add it to the defaultBee
         return bee;
+    }
+
+    // Gets a duplicate of a BigItemStack with it's it values possibly replaced to make Forestry not throw a fit.
+    public static BigItemStack getSafeStack(BigItemStack stack) {
+        BigItemStack safeStack = stack.copy();
+        String stackDName = getDisplayName(safeStack.getBaseStack());
+        // If we get the displayName and it contains the error string,
+        if (stackDName.contains(_INVALID_SPECIES_STRING)) {
+            // Replace the NBT with something Forestry won't whine about
+            safeStack.getBaseStack().setTagCompound(getBaseBee(DEFAULT_SPECIES).getTagCompound());
+            // Then overwrite it's display name so people still know what they're looking to submit
+            safeStack.getBaseStack().setStackDisplayName(stackDName);
+        }
+
+        return safeStack;
     }
 
     public static void setMated(ItemStack bee, boolean isMated) {
@@ -360,10 +382,7 @@ public class UtilitiesBee {
     }
 
     public static boolean checkTraitIsInDatabase(EnumBeeChromosome chromosome, String trait) {
-        BQ_Forestry.log.info(String.format("Check is in database (%1$s): %2$s", chromosome.getName(), trait));
         for (Map.Entry<Integer, String> entry : getAllelesForChromosome(chromosome).entrySet()) {
-            BQ_Forestry.log.info(String.format("      Entry: %1$s, String: %2$s", entry.getKey().toString(), entry.getValue()));
-            BQ_Forestry.log.info(String.format("      IS IN DATABASE (%1$s): Entry: %2$s, Trait: %3$s", chromosome.getName(), entry.getKey().toString(), trait));
             if (trait.equals(entry.getValue())) {
                 return true;
             }

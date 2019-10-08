@@ -275,20 +275,23 @@ public class GuiEditTaskBeeRetrievalSelection extends GuiScreenCanvas implements
                     // For Debug only
                     StringBuilder sb = new StringBuilder();
                     boolean debug = ConfigHandler.cfgDoDebugOutputs;
+                    boolean foundToggled = false;
+
+                    if (debug)
+                        sb.append(String.format("Bee Retrieval Selection: Enabled Values for item #%1$s: - %2$s: [", indexInList, entry.getKey().getName()));
 
                     for (PanelToggleStorage value : values) {
                         if (value.getToggledStatus()) {
+                            foundToggled = true;
                             writeTrait(newBee.getBaseStack(), entry.getKey(), (String) value.getStoredValue());
-
-                            if (debug)
-                                sb.append(String.format("                                         - %1$s: ", value.getStoredValue())).append(", ");
+                            if (debug) sb.append(value.getStoredValue()).append(", ");
                         }
                     }
 
                     // For Debug Only
                     if (debug) {
-                        sb.insert(0, String.format("Bee Retrieval Selection [Enabled Values] - %1$s: ", entry.getKey().getName()));
-                        BQ_Forestry.log.info(sb.toString());
+                        sb.append("]");
+                        if (foundToggled) BQ_Forestry.log.info(sb.toString());
                         sb.delete(0, sb.length()); // Reuse StringBuilder instead of creating new one every loop
                     }
                 }
