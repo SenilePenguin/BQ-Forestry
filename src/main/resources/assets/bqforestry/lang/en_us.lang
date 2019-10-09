@@ -43,8 +43,7 @@ bqforestry.command.error.clientonly=This command can only be issued by a player 
 bqforestry.command.error.improperargument=Invalid argument! Please check this command's usage or press "tab" while holding a Bee!
 bqforestry.command.error.improperitem=Please hold a properly formatted %s before using this command!
 bqforestry.command.gettrait=Trait "%s"
-bqforestry.command.gettrait.copied= copied to the clipboard!
-bqforestry.command.gettrait.usage=%s <trait> [copyToClipboard]
+bqforestry.command.gettrait.copied= copied to the clipboard
 
 bqforestry.config.beetype=Bee Type
 bqforestry.config.scrollspeed=Scrollspeed
