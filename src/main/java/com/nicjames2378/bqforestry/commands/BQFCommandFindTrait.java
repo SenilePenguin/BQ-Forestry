@@ -1,6 +1,5 @@
 package com.nicjames2378.bqforestry.commands;
 
-import betterquesting.api2.utils.QuestTranslation;
 import com.google.common.collect.Lists;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
@@ -76,7 +75,7 @@ public class BQFCommandFindTrait implements ICommand {
         StringBuilder sb = new StringBuilder();
 
         if (list.size() < 1) {
-            return QuestTranslation.translate("bqforestry.command.gettrait.usage", commandKey);
+            return commandKey + " <trait> [copyToClipboard]";
         }
 
         sb.append(commandKey).append(" <");
@@ -87,8 +86,6 @@ public class BQFCommandFindTrait implements ICommand {
         sb.append(">");
 
         return sb.toString();
-
-        //return QuestTranslation.translate("bqforestry.command.gettrait.usage", commandKey);
     }
 
     @Override
