@@ -10,6 +10,7 @@ import betterquesting.api2.cache.QuestCache;
 import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.IGuiPanel;
 import betterquesting.api2.storage.DBEntry;
+import betterquesting.api2.utils.ParticipantInfo;
 import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.GuiEditTaskBeeRetrievalLanding;
 import com.nicjames2378.bqforestry.client.tasks.PanelTaskForestryRetrieval;
@@ -75,16 +76,17 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
     @Override
     public void onInventoryChange(@Nonnull DBEntry<IQuest> quest, @Nonnull EntityPlayer player) {
         if (!consume || autoConsume) {
-            detect(player, quest.getValue());
+            detect(new ParticipantInfo(player), quest);
         }
     }
 
     @Override
-    public void detect(EntityPlayer player, IQuest quest) {
+    public void detect(ParticipantInfo participant, DBEntry<IQuest> quest) {
+//    public void detect(EntityPlayer player, IQuest quest) {
         BQ_Forestry.log.info("WHATISWHERE - Detect");
-        UUID playerID = QuestingAPI.getQuestingUUID(player);
+        UUID playerID = QuestingAPI.getQuestingUUID(participant.PLAYER);
 
-        if (player.inventory == null || isComplete(playerID)) return;
+        if (participant.PLAYER.inventory == null || isComplete(playerID)) return;
 
         int[] progress = this.getUsersProgress(playerID);
         boolean updated = false;
@@ -108,8 +110,8 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
         }*/
 
         // Iterate the player's inventory slots
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
+        for (int i = 0; i < participant.PLAYER.inventory.getSizeInventory(); i++) {
+            ItemStack stack = participant.PLAYER.inventory.getStackInSlot(i);
 
             // Jump the loop if the slot is empty
             if (stack.isEmpty()) continue;
@@ -167,7 +169,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
 
                     // Are we taking items from the player for this quest?
                     if (consume) {
-                        ItemStack removed = player.inventory.decrStackSize(i, remaining);
+                        ItemStack removed = participant.PLAYER.inventory.decrStackSize(i, remaining);
                         progress[j] += removed.getCount();
                     } else {
                         int temp = Math.min(remaining, remStack);
@@ -202,8 +204,8 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
         }
 
         if (updated) {
-            QuestCache qc = player.getCapability(CapabilityProviderQuestCache.CAP_QUEST_CACHE, null);
-            if (qc != null) qc.markQuestDirty(QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
+            QuestCache qc = participant.PLAYER.getCapability(CapabilityProviderQuestCache.CAP_QUEST_CACHE, null);
+            if (qc != null) qc.markQuestDirty(QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest.getValue()));
         }
     }
 
@@ -318,12 +320,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
     }
 
     @Override
-    public void resetAll() {
-        resetUser(null);
-    }
-
-    @Override
-    public IGuiPanel getTaskGui(IGuiRect rect, IQuest quest) {
+    public IGuiPanel getTaskGui(IGuiRect rect, DBEntry<IQuest> quest) {
         return new PanelTaskForestryRetrieval(rect, this);
     }
 
@@ -424,8 +421,8 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public GuiScreen getTaskEditor(GuiScreen parent, IQuest quest) {
-        return new GuiEditTaskBeeRetrievalLanding(parent, quest, this);
+    public GuiScreen getTaskEditor(GuiScreen parent, DBEntry<IQuest> quest) {
+        return new GuiEditTaskBeeRetrievalLanding(parent, quest.getValue(), this);
     }
 
     public void setUserProgress(UUID uuid, int[] progress) {
