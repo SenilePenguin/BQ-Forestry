@@ -5,14 +5,15 @@ import betterquesting.api.questing.IQuest;
 import betterquesting.api.questing.tasks.ITask;
 import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.IGuiPanel;
-import com.nicjames2378.bqforestry.Main;
+import betterquesting.api2.storage.DBEntry;
+import betterquesting.api2.utils.ParticipantInfo;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.GuiEditTaskKeyCode;
 import com.nicjames2378.bqforestry.client.tasks.PanelTaskKeyCode;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskKeyCode;
 import com.nicjames2378.bqforestry.utils.Reference;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -49,8 +50,8 @@ public class TaskKeyCode implements ITask {
     }
 
     @Override
-    public void detect(EntityPlayer player, IQuest iQuest) {
-        UUID playerID = QuestingAPI.getQuestingUUID(player);
+    public void detect(ParticipantInfo participant, DBEntry<IQuest> quest) {
+        UUID playerID = QuestingAPI.getQuestingUUID(participant.PLAYER);
 
         if (isComplete(playerID)) return;
         if (caseSensitive) {
@@ -94,7 +95,7 @@ public class TaskKeyCode implements ITask {
             try {
                 completeUsers.add(UUID.fromString(cList.getStringTagAt(i)));
             } catch (Exception e) {
-                Main.log.log(Level.ERROR, "Unable to load UUID for task", e);
+                BQ_Forestry.log.log(Level.ERROR, "Unable to load UUID for task", e);
             }
         }
     }
@@ -124,18 +125,13 @@ public class TaskKeyCode implements ITask {
     }
 
     @Override
-    public void resetAll() {
-        resetUser(null);
-    }
-
-    @Override
-    public IGuiPanel getTaskGui(IGuiRect rect, IQuest quest) {
-        return new PanelTaskKeyCode(rect, quest, this);
+    public IGuiPanel getTaskGui(IGuiRect rect, DBEntry<IQuest> quest) {
+        return new PanelTaskKeyCode(rect, quest.getValue(), this);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public GuiScreen getTaskEditor(GuiScreen parent, IQuest quest) {
-        return new GuiEditTaskKeyCode(parent, quest, this);
+    public GuiScreen getTaskEditor(GuiScreen parent, DBEntry<IQuest> quest) {
+        return new GuiEditTaskKeyCode(parent, quest.getValue(), this);
     }
 }

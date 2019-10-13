@@ -27,7 +27,7 @@ import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
-import com.nicjames2378.bqforestry.utils.UtilitiesBee;
+import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,6 +36,8 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+
+import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements IVolatileScreen {
     private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
@@ -75,9 +77,18 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
 
         int bgWidth = cvBackground.getTransform().getWidth();
 
+//region LeftPanel
+        CanvasEmpty cvLeftArea = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(16, 34, (bgWidth / 3) * 2 + 24, 34), 0));
+        this.addPanel(cvLeftArea);
+
+        // Should we set the Auto/Consume buttons side-by-size or stacked?
+        int LPW = cvLeftArea.getTransform().getWidth();
+        int hLPW = LPW >> 1; // For anyone reading this, >>1 is a bit-shift. It's equivalent to a division by 2, but much faster on the CPU. Doesn't work on negatives, so read up on it if you're interested!
+        boolean isWide = LPW * 0.5 >= 106; // Value chosen because I think it's looks nice. Meh!
+
         // AutoConsume Button
         String doAutoConsume = (task.autoConsume ? TextFormatting.RED : TextFormatting.GREEN) + QuestTranslation.translate(task.autoConsume ? "gui.yes" : "gui.no");
-        cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_EDGE, (bgWidth / 3) / 2 - 55, 80, 110, 16, 0), -1, QuestTranslation.translate("bqforestry.btn.autoconsume", doAutoConsume)) {
+        cvLeftArea.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_EDGE, 0, 0, (int) (isWide ? hLPW : LPW), 16, 0), -1, QuestTranslation.translate("bqforestry.btn.autoconsume", doAutoConsume)) {
                     @Override
                     public void onButtonClick() {
                         task.autoConsume = !task.autoConsume;
@@ -89,7 +100,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
 
         // Consume Button
         String doConsume = (task.consume ? TextFormatting.RED : TextFormatting.GREEN) + QuestTranslation.translate(task.consume ? "gui.yes" : "gui.no");
-        cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_EDGE, (bgWidth / 3) / 2 - 55, 80 + 24, 110, 16, 0), -1, QuestTranslation.translate("bqforestry.btn.consume", doConsume)) {
+        cvLeftArea.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_EDGE, (int) (isWide ? hLPW : 0), (isWide ? 0 : 16), (int) (isWide ? hLPW : LPW), 16, 0), -1, QuestTranslation.translate("bqforestry.btn.consume", doConsume)) {
                     @Override
                     public void onButtonClick() {
                         task.consume = !task.consume;
@@ -99,14 +110,35 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                         .setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.btn.consume.tooltip"), 128, mc.fontRenderer))
         );
 
-//region List Controls
+
+        // TODO: Hovered Item Information Panel Here
+
+        // How to intercept the tooltips
+//        cvBackground.addPanel(new PanelButton(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(16, 34, (bgWidth / 3) * 2 + 24, 34), 0), -1, "test") {
+//            @Override
+//            public List<String> getTooltip(int mx, int my) {
+//                List<String> aaa = new ArrayList<>();
+//                aaa.add("AAA");
+//                aaa.add("bbb");
+//
+//                if (this.getTransform().contains(mx, my)) {
+//                    BQ_Forestry.log.info("Capturing Tooltip!");
+//                    return aaa;
+//                }
+//                return null;
+//            }
+//        });
+//endregion
+
+
+//region Right Panel
         // Scroll Container
-        CanvasEmpty cvControlsContainer = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding((bgWidth / 3) - 22, 32, 16, 32), 0)); // Subtract extra width to make icons line up where BQ NBT edit has ## delimiters
-        cvBackground.addPanel(cvControlsContainer);
+        CanvasEmpty cvRightArea = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding((bgWidth / 3) - 22, 34, 16, 34), 0)); // Subtract extra width to make icons line up where BQ NBT edit has ## delimiters
+        cvBackground.addPanel(cvRightArea);
 
         // List Container
         CanvasScrolling cvButtonsArea = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));
-        cvControlsContainer.addPanel(cvButtonsArea);
+        cvRightArea.addPanel(cvButtonsArea);
 
         // RequiredItems List
         int listSize = task.requiredItems.size();
@@ -115,7 +147,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
             if (i != listSize) {
                 BigItemStack taskItem = task.requiredItems.get(i);
 
-                cvButtonsArea.addPanel(new PanelGeneric(new GuiRectangle(0, i * 24, 24, 24, -1), new ItemTexture(taskItem)));
+                cvButtonsArea.addPanel(new PanelGeneric(new GuiRectangle(0, i * 24, 24, 24, -1), new ItemTexture(getSafeStack(taskItem))));
                 PanelGeneric iconFrame = new PanelGeneric(new GuiRectangle(0, i * 24, 24, 24, 0), PresetTexture.ITEM_FRAME.getTexture());
 
                 iconFrame.setTooltip(getHoverTooltip(taskItem.getBaseStack()));
@@ -123,8 +155,7 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
                 cvButtonsArea.addPanel(iconFrame);
 
                 // Task Item button
-                PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, areaWidth - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, taskItem.getBaseStack().getDisplayName(), i);
-
+                PanelButtonStorage<Integer> btnTaskItem = new PanelButtonStorage<>(new GuiRectangle(24, i * 24, areaWidth - 32 - 48/*-icons, buttons, and scrollbar*/, 24, 0), -1, getDisplayName(taskItem.getBaseStack()), i);
                 btnTaskItem.setCallback(value -> {
                     mc.displayGuiScreen(new GuiEditTaskBeeRetrievalSelection(getScreenRef(), quest, task, value));
                 });
@@ -154,10 +185,10 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         }
 
         // Scrollbar
-        PanelVScrollBar scVerBar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 0, 0, 0), 0));
+        PanelVScrollBar scVerBar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 1, 0, 1), 0));
         scVerBar.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
         cvButtonsArea.setScrollDriverY(scVerBar);
-        cvControlsContainer.addPanel(scVerBar);
+        cvRightArea.addPanel(scVerBar);
 //endregion
 
 //region Decorative Elements
@@ -189,11 +220,12 @@ public class GuiEditTaskBeeRetrievalLanding extends GuiScreenCanvas implements I
         String AQUA = TextFormatting.AQUA.toString();
 
         // Species
-        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(UtilitiesBee.getSpecies(bee)));
+        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(getTrait(bee, EnumBeeChromosome.SPECIES, true)[0]));
         // Type
-        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(UtilitiesBee.getType(bee).get()));
+        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(getGrowthLevel(bee).get()));
         // Mated
-        tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(UtilitiesBee.isMated(bee))));
+        tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(isMated(bee))));
+
         return tip;
     }
 

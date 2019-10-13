@@ -2,17 +2,24 @@
   {
     "modid": "bqforestry",
     "name": "BQ Forestry Expansion",
-    "version": "1.0",
-    "mcversion": "1.12.2",
-    "description": "A Better Questing Expansion to allow the use of Forestry Bees and Trees",
-    "credits": "Created By SenilePenguin (aka NicJames2378)",
-    "logoFile": "",
-    "url": "",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "description": "A Better Questing Expansion to allow the use of Forestry Bees",
+    "credits": "Special thanks to Funwayguy for his time and effort developing Better Questing",
+    "logoFile": "title.jpg",
+    "url": "https://www.curseforge.com/minecraft/mc-mods/bq-forestry",
     "authorList": [
       "SenilePenguin"
     ],
     "parent": "",
     "screenshots": [],
-    "dependencies": []
+    "requiredMods": [
+      "betterquesting"
+    ],
+    "dependencies": [
+      "betterquesting",
+      "forestry",
+      "jei"
+    ]
   }
 ]
