@@ -7,6 +7,20 @@ bqforestry.reward.tree=Награда за получение дерева
 bqforestry.title.edit_bee_retrieval_landing=Изменение заданий на получение пчел
 bqforestry.title.edit_bee_retrieval_selection=Изменение задания на получение пчел
 
+bqforestry.label.beegrowthstage=Стадия роста пчелы
+bqforestry.label.bee.enum.species=Виды
+bqforestry.label.bee.enum.speed=Скорость производства
+bqforestry.label.bee.enum.lifespan=Срок жизни
+bqforestry.label.bee.enum.fertility=Плодовитость
+bqforestry.label.bee.enum.temperature_tolerance=Устойчивость к температуре
+bqforestry.label.bee.enum.never_sleeps=Работает круглосуточно
+bqforestry.label.bee.enum.humidity_tolerance=Устойчивость к влажности
+bqforestry.label.bee.enum.tolerates_rain=Работает в дождь
+bqforestry.label.bee.enum.cave_dwelling=Работает под землей
+bqforestry.label.bee.enum.flower_provider=Цветы
+bqforestry.label.bee.enum.flowering=Скорость опыления
+bqforestry.label.bee.enum.territory=Рабочая территория
+bqforestry.label.bee.enum.effect=Эффект
 bqforestry.label.keycode=Код:
 
 bqforestry.tooltip.delete=Удаляет эту запись из списка заданий.
@@ -25,7 +39,11 @@ bqforestry.btn.casesensitive.tooltip=Регистрозависимость оз
 
 bqforestry.requirements.mated=Только спаренные
 
-bqforestry.command.getspecies=Вид %s скопирован в буфер обмена!
+bqforestry.command.error.clientonly=Эта команда может быть выполнена только игроков в игровом мире.
+bqforestry.command.error.improperargument=Неверный аргумент! Проверьте правильность использования команды или нажмите "TAB", когда держите в руках Пчелу!
+bqforestry.command.error.improperitem=Пожалуйста возьмите правильный %s перед использованием команды!
+bqforestry.command.gettrait=Вид "%s"
+bqforestry.command.gettrait.copied= скопирован в буфер обмена
 
 bqforestry.config.beetype=Тип пчелы
 bqforestry.config.scrollspeed=Скорость прокрутки
@@ -34,6 +52,7 @@ bqforestry.config.consume=Удаление
 bqforestry.config.onlymated=Только спаренные
 bqforestry.config.debugoutput=Выводить список пчел
 bqforestry.config.versioning=Версионность
+bqforestry.config.defaultcommandcopy=Автокопирование
 
 bqforestry.config.beetype.tooltip=Тип пчелы по умолчанию в новых заданиях
 bqforestry.config.scrollspeed.tooltip=Как быстро полоса прокрутки в интерфейсе BQForestry будет двигаться
@@ -42,3 +61,4 @@ bqforestry.config.consume.tooltip=Значение по умолчанию дл�
 bqforestry.config.onlymated.tooltip=Значение по умолчанию для опции приема только спаренных особей в новых заданиях
 bqforestry.config.debugoutput.tooltip=Нужно ли перечислять все виды пчел при запуске. Полезно, если использовать этот список для операций копирования/вставки.
 bqforestry.config.versioning.tooltip=НЕ ИЗМЕНЯТЬ!
+bqforestry.config.defaultcommandcopy.tooltip=Должен ли результат команд автоматически копироваться в буфер обмена.
