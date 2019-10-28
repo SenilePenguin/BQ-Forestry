@@ -6,6 +6,7 @@ bqforestry.reward.tree=Награда за получение дерева
 
 bqforestry.title.edit_bee_retrieval_landing=Изменение заданий на получение пчел
 bqforestry.title.edit_bee_retrieval_selection=Изменение задания на получение пчел
+bqforestry.title.edit_bee_retrieval=Изменить задание на получение пчел
 
 bqforestry.label.beegrowthstage=Стадия роста пчелы
 bqforestry.label.bee.enum.species=Виды
