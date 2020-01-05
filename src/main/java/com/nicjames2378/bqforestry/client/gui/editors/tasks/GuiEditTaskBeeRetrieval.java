@@ -25,8 +25,10 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
+import com.nicjames2378.bqforestry.client.themes.ThemeHandler;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
+import com.nicjames2378.bqforestry.utils.StringUtils;
 import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
@@ -61,6 +63,8 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
     public void initPanel() {
         super.initPanel();
         Keyboard.enableRepeatEvents(true);
+
+        if (task.requiredItems.size() <= 0) selectedItem = -1;
 
         //Background
         CanvasTextured cvBackground = new CanvasTextured(new GuiTransform(), PresetTexture.PANEL_MAIN.getTexture());
@@ -119,9 +123,6 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
 
                 // Item Frame icon (aka, button)
                 PanelButtonStorage<Integer> btnReqItem = new PanelButtonStorage<>(new GuiRectangle(i * buttonSize + (i * 2), 0, buttonSize, buttonSize, 0), -1, String.valueOf(i), i);
-                btnReqItem.setIcon(PresetTexture.ITEM_FRAME.getTexture());
-                btnReqItem.setTooltip(getHoverTooltip(taskItem.getBaseStack()));
-                btnReqItem.setActive(!btnReqItem.getStoredValue().equals(selectedItem));
                 btnReqItem.setCallback(value -> {
                     selectedItem = value;
                     // Update buttons to reflect current selected
@@ -130,6 +131,9 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                     }
                     refresh();
                 });
+                btnReqItem.setIcon(btnReqItem.getStoredValue().equals(selectedItem) ? ThemeHandler.ITEM_FRAME_SELECTED.getTexture() : ThemeHandler.ITEM_FRAME.getTexture());
+                btnReqItem.setTooltip(getHoverTooltip(taskItem.getBaseStack()));
+                btnReqItem.setActive(!btnReqItem.getStoredValue().equals(selectedItem));
 
                 cvBeeScroll.addPanel(btnReqItem);
                 lstRequiredItemButtons.add(btnReqItem);
@@ -142,7 +146,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                 cvBeeScroll.addPanel(btnReqItemIcon);
             } else {
                 // AddNew button
-                PanelButton btnAddNew = new PanelButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), -1, "+") {
+                PanelButton btnAddNew = new PanelButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), -1, "") {
                     @Override
                     public void onButtonClick() {
                         task.requiredItems.add(TaskForestryRetrieval.getDefaultBee());
@@ -150,6 +154,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                     }
                 };
                 btnAddNew.setTextHighlight(new GuiColorStatic(128, 128, 128, 255), new GuiColorStatic(0, 255, 0, 255), new GuiColorStatic(0, 255, 0, 255));
+                btnAddNew.setIcon(ThemeHandler.ICON_ITEM_ADD.getTexture());
                 btnAddNew.setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.tooltip.add"), 128, mc.fontRenderer));
 
                 cvBeeScrollContainer.addPanel(btnAddNew);
@@ -162,7 +167,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         cvBeeScroll.setScrollDriverX(scBeeScrollBarH);
         cvBeeScrollContainer.addPanel(scBeeScrollBarH);
 
-        scBeeScrollBarH.setEnabled(cvBeeScroll.getScrollBounds().getHeight() > 0);
+//        scBeeScrollBarH.setEnabled(cvBeeScroll.getScrollBounds().getHeight() > 0);
 //endregion
 
 //region Data Panels
@@ -171,18 +176,52 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
 
         int cWidthHalf = cvDataPanels.getTransform().getWidth() / 2;
         int cHeight = cvDataPanels.getTransform().getHeight();
-//        int cHeightHalf = cvDataPanels.getTransform().getHeight() / 2;
         int cHeightThird = cvDataPanels.getTransform().getHeight() / 3;
 //endregion
 
 //region Stats Display Area
-        CanvasTextured cvBeeStats = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, 0, cWidthHalf - 1, cHeightThird * 2 - 2, 0), PresetTexture.ITEM_FRAME.getTexture());
-        cvDataPanels.addPanel(cvBeeStats);
+        CanvasTextured cvBeeStatsHolder = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, 0, cWidthHalf - 1, cHeightThird * 2 - 2, 0), PresetTexture.ITEM_FRAME.getTexture());
+        cvDataPanels.addPanel(cvBeeStatsHolder);
+
+        CanvasEmpty cvBeeStats = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(4, 4, 4, 4), 0));
+        cvBeeStatsHolder.addPanel(cvBeeStats);
+        /*cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.HALF_BOTTOM, new GuiPadding(0, 0, 0, 0), 0), String.format("Task Item %1$s: %2$s (%3$s)", selectedItem,
+                getDisplayName(task.requiredItems.get(selectedItem).getBaseStack(),
+                        getTrait(task.requiredItems.get(selectedItem).getBaseStack(), EnumBeeChromosome.SPECIES)
+                ))));*/
 //endregion
 
 //region Category Area
         CanvasTextured cvBeeCategories = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, cHeightThird * 2, cWidthHalf - 1, cHeightThird + 1, 0), PresetTexture.ITEM_FRAME.getTexture());
         cvDataPanels.addPanel(cvBeeCategories);
+
+        // Trash/Delete Button
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 8, 8, 32, 32, 0), -1, "") {
+            @Override
+            public void onButtonClick() {
+                if (selectedItem >= 0) {
+                    task.requiredItems.remove(task.requiredItems.get(selectedItem));
+                    if (task.requiredItems.size() <= selectedItem) {
+                        selectedItem = task.requiredItems.size() - 1;
+                    }
+                    getScreenRef().initPanel();
+                }
+            }
+        }.setIcon(ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
+
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 32, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 64, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPEED.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 96, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 128, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 160, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_TEMPERATURE_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 192, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_NEVER_SLEEPS.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 224, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_HUMIDITY_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 256, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_RAIN_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 32, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_CAVE_DWELLING.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 64, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_FLOWER_PROVIDER.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 96, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_FLOWERING.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 128, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_TERRITORY.getTexture()));
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 160, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_EFFECT.getTexture()));
 //endregion
 
 //region Options Area
@@ -223,5 +262,60 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(isMated(bee))));
 
         return tip;
+    }
+
+    private ArrayList<String> getBeeInfo(ItemStack bee) {
+        /*
+        Species
+        Lifespan
+        Production
+        Pollination
+        Fertility
+        Territory
+        Effect
+        Climate
+        Humidity
+        Nocturnal
+        Flyer
+        Dweller
+         */
+
+
+        ArrayList<String> info = new ArrayList<>();
+
+        // Task Item 1: Meadows Princess (forestry.speciesMeadows)
+        info.add(("Task Item " + selectedItem + ": ").concat(getDisplayName(bee)).concat(" (" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
+
+        // Accepted Lifespans: forestry.liefspanLong, forestry.lifespanElongated
+        info.add(("Accepted Lifespans: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.LIFESPAN, false))));
+
+        // Accepted Production Speeds: forestry.lifespanLong, forestry.lifespanElongated
+        info.add(("Accepted Production Speeds: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false))));
+
+        // Accepted Pollination Speeds: forestry.floweringAverage, forestry.floweringFastest
+        info.add(("Accepted Pollination Speeds: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWERING, false))));
+
+        // Accepted Fertility Rates: forestry.fertilityLow, forestry.fertilityHigh
+        info.add(("Accepted Fertility Rates: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FERTILITY, false))));
+
+        // Accepted Territory Sizes: forestry.territoryAverage, forestry.territoryLarge
+        info.add(("Accepted Territory Sizes: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TERRITORY, false))));
+
+        // Accepted Area Effects: forestry.effectNone, forestry.effectMiasmic
+        info.add(("Accepted Area Effects: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.EFFECT, false))));
+
+        // Accepted Climate Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
+        info.add(("Accepted Climate Tolerances: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE, false))));
+
+        // Accepted Humidity Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
+        info.add(("Accepted Humidity Tolerances: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.HUMIDITY_TOLERANCE, false))));
+
+        // Allow Nocturnal: No/Yes
+        info.add(("Accepted NEVER_SLEEPS: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.NEVER_SLEEPS, false))));
+        info.add(("Accepted TOLERATES_RAIN: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TOLERATES_RAIN, false))));
+        info.add(("Accepted CAVE_DWELLING: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.CAVE_DWELLING, false))));
+        info.add(("Accepted FLOWER_PROVIDER: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWER_PROVIDER, false))));
+
+        return info;
     }
 }

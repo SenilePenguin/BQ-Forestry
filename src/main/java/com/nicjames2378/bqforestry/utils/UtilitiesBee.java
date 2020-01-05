@@ -86,18 +86,22 @@ public class UtilitiesBee {
         // Provides an easy way for me to get the values of certain applicable Alleles
         //      and put them in order based on integer values
 
+        // Integers return themselves
         if (IAlleleInteger.class.isAssignableFrom(alleleClass)) {
             IAlleleInteger aa = (IAlleleInteger) item;
             return aa.getValue();
 
+            // Floats convert to integers
         } else if (IAlleleFloat.class.isAssignableFrom(alleleClass)) {
             IAlleleFloat aa = (IAlleleFloat) item;
             return (int) (aa.getValue() * 10);
 
+            // Booleans return 1 or 0
         } else if (IAlleleBoolean.class.isAssignableFrom(alleleClass)) {
             IAlleleBoolean aa = (IAlleleBoolean) item;
             return aa.getValue() ? 1 : 0;
 
+            // Tolerances have special rules to convert to integers
         } else if (IAlleleTolerance.class.isAssignableFrom(alleleClass)) {
             IAlleleTolerance aa = (IAlleleTolerance) item;
             String[] val = String.valueOf(aa.getValue()).toLowerCase().split("_");
@@ -113,6 +117,7 @@ public class UtilitiesBee {
                 return 0;
             }
 
+            // Areas return an integer equal to the area rather than the proportions
         } else if (IAlleleArea.class.isAssignableFrom(alleleClass)) {
             IAlleleArea aa = (IAlleleArea) item;
             Vec3i vec = aa.getValue();
@@ -120,6 +125,7 @@ public class UtilitiesBee {
             // return String.format("%1$s %2$s %3$s", vec.getX(), vec.getY(), vec.getZ()).replace(" ", "0");
         }
 
+        // Traits without handling return a -1
         return -1;
     }
 

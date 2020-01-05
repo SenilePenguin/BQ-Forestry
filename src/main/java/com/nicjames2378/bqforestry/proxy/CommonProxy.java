@@ -32,6 +32,10 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(ConfigHandler.INSTANCE);
     }
 
+    public void registerTheme() {
+        // Do nothing on server
+    }
+
     public void doDebugOutputs() {
         if (BQ_Forestry.hasForestry) UtilitiesBee.initialize();
     }

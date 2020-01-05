@@ -54,6 +54,7 @@ public class BQ_Forestry {
             log.error("Better Questing not found! This mod requires it!");
         }
 
+        proxy.registerTheme();
         proxy.doDebugOutputs();
     }
 
