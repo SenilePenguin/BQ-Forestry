@@ -1,27 +1,23 @@
 bqforestry.task.bee_retrieval=Получение пчел
 bqforestry.task.keycode=Ввод кода
 
-bqforestry.reward.bee=Награда за получение пчел
-bqforestry.reward.tree=Награда за получение дерева
-
 bqforestry.title.edit_bee_retrieval_landing=Изменение заданий на получение пчел
 bqforestry.title.edit_bee_retrieval_selection=Изменение задания на получение пчел
 bqforestry.title.edit_bee_retrieval=Изменить задание на получение пчел
 
 bqforestry.label.beegrowthstage=Стадия роста пчелы
-bqforestry.label.bee.enum.species=Виды
-bqforestry.label.bee.enum.speed=Скорость производства
-bqforestry.label.bee.enum.lifespan=Срок жизни
-bqforestry.label.bee.enum.fertility=Плодовитость
-bqforestry.label.bee.enum.temperature_tolerance=Устойчивость к температуре
-bqforestry.label.bee.enum.never_sleeps=Работает круглосуточно
-bqforestry.label.bee.enum.humidity_tolerance=Устойчивость к влажности
-bqforestry.label.bee.enum.tolerates_rain=Работает в дождь
-bqforestry.label.bee.enum.cave_dwelling=Работает под землей
-bqforestry.label.bee.enum.flower_provider=Цветы
-bqforestry.label.bee.enum.flowering=Скорость опыления
-bqforestry.label.bee.enum.territory=Рабочая территория
-bqforestry.label.bee.enum.effect=Эффект
+bqforestry.label.bee.species=Species
+bqforestry.label.bee.lifespan=Lifespans
+bqforestry.label.bee.speeds=Production Rates
+bqforestry.label.bee.flowering=Pollination Speeds
+bqforestry.label.bee.fertility=Fertility Rates
+bqforestry.label.bee.territory=Territory Sizes
+bqforestry.label.bee.effect=Area Effects
+bqforestry.label.bee.temp=Climate Tolerances
+bqforestry.label.bee.humidity=Humidity Tolerances
+bqforestry.label.bee.sleeps=Works at Night
+bqforestry.label.bee.rain=Tolerates Rain
+bqforestry.label.bee.dwelling=Works Underground
 bqforestry.label.keycode=Код:
 
 bqforestry.tooltip.delete=Удаляет эту запись из списка заданий.

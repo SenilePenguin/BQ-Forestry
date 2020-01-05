@@ -25,7 +25,6 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
-import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.themes.ThemeHandler;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
@@ -39,7 +38,6 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
@@ -51,7 +49,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
 
     private int selectedItem = 0;
 
-    public GuiEditTaskBeeRetrieval getScreenRef() {
+    private GuiEditTaskBeeRetrieval getScreenRef() {
         return this;
     }
 
@@ -134,7 +132,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                     refresh();
                 });
                 btnReqItem.setIcon(btnReqItem.getStoredValue().equals(selectedItem) ? ThemeHandler.ITEM_FRAME_SELECTED.getTexture() : ThemeHandler.ITEM_FRAME.getTexture());
-                btnReqItem.setTooltip(getHoverTooltip(taskItem.getBaseStack()));
+                btnReqItem.setTooltip(getHoverTooltip(taskItem.getBaseStack(), i));
                 btnReqItem.setActive(!btnReqItem.getStoredValue().equals(selectedItem));
 
                 cvBeeScroll.addPanel(btnReqItem);
@@ -151,7 +149,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                 PanelButton btnAddNew = new PanelButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), -1, "") {
                     @Override
                     public void onButtonClick() {
-                        task.requiredItems.add(TaskForestryRetrieval.getDefaultBee());
+                        task.requiredItems.add(selectedItem, TaskForestryRetrieval.getDefaultBee());
                         refresh();
                     }
                 };
@@ -187,8 +185,8 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
 
         CanvasEmpty cvBeeStats = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(4, 4, 4, 4), 0));
         cvBeeStatsHolder.addPanel(cvBeeStats);
-        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), "Retrieval Item #" + selectedItem).setFontSize(16).enableShadow(true));
-        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(selectedItem).getBaseStack()))));
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), TextFormatting.UNDERLINE.toString() + "Bee Retrieval Item #" + selectedItem).setFontSize(16).enableShadow(true));
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 24, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(selectedItem).getBaseStack()))));
 //endregion
 
 //region Category Area
@@ -208,7 +206,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                 }
             }
         }.setIcon(ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
-
+        
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 32, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 64, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPEED.getTexture()));
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 96, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
@@ -245,7 +243,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         getScreenRef().initGui();
     }
 
-    private ArrayList<String> getHoverTooltip(ItemStack bee) {
+    private ArrayList<String> getHoverTooltip(ItemStack bee, int index) {
         // Show information about the bee
         // Species: forestry.speciesCommon
         // Type:    Princess
@@ -254,12 +252,11 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         String GOLD = TextFormatting.GOLD.toString();
         String AQUA = TextFormatting.AQUA.toString();
 
+        // Index
+        tip.add((GOLD).concat("Bee Retrieval Item #").concat(String.valueOf(index)));
         // Species
-        tip.add(GOLD.concat("Species: ").concat(AQUA).concat(getTrait(bee, EnumBeeChromosome.SPECIES, true)[0]));
-        // Type
-        tip.add(GOLD.concat("Type: ").concat(AQUA).concat(getGrowthLevel(bee).get()));
-        // Mated
-        tip.add(GOLD.concat("Mated: ").concat(AQUA).concat(String.valueOf(isMated(bee))));
+        tip.add((AQUA).concat(getDisplayName(bee)));
+        tip.add((AQUA).concat("(" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
 
         return tip;
     }
@@ -287,45 +284,40 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         String DIV = GOLD.concat(", ").concat(AQUA);
 
         // Task Item 1: Meadows Princess (forestry.speciesMeadows)
-        info.add(GOLD.concat("Species: ").concat(AQUA).concat(getDisplayName(bee)).concat(" (" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.species")).concat(": ").concat(AQUA).concat(getDisplayName(bee)).concat(" (" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
 
         // Lifespans: forestry.liefspanLong, forestry.lifespanElongated
-        info.add(GOLD.concat("Lifespans: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.LIFESPAN, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.lifespan")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.LIFESPAN, false), DIV)));
 
         // Production Speeds: forestry.lifespanLong, forestry.lifespanElongated
-        info.add(GOLD.concat("Production Speeds: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false), DIV)));
-
-        BQ_Forestry.log.info("Prod Speeds");
-        BQ_Forestry.log.info("Flattened: " + StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false)));
-        BQ_Forestry.log.info("Flattened: " + Arrays.toString(getTrait(bee, EnumBeeChromosome.SPEED, false)));
-
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.speeds")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false), DIV)));
 
         // Pollination Speeds: forestry.floweringAverage, forestry.floweringFastest
-        info.add(GOLD.concat("Pollination Speeds: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWERING, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.flowering")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWERING, false), DIV)));
 
         // Fertility Rates: forestry.fertilityLow, forestry.fertilityHigh
-        info.add(GOLD.concat("Fertility Rates: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FERTILITY, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.fertility")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FERTILITY, false), DIV)));
 
         // Territory Sizes: forestry.territoryAverage, forestry.territoryLarge
-        info.add(GOLD.concat("Territory Sizes: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TERRITORY, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.territory")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TERRITORY, false), DIV)));
 
         // Area Effects: forestry.effectNone, forestry.effectMiasmic
-        info.add(GOLD.concat("Area Effects: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.EFFECT, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.effect")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.EFFECT, false), DIV)));
 
         // Climate Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
-        info.add(GOLD.concat("Climate Tolerances: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.temp")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE, false), DIV)));
 
         // Humidity Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
-        info.add(GOLD.concat("Humidity Tolerances: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.HUMIDITY_TOLERANCE, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.humidity")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.HUMIDITY_TOLERANCE, false), DIV)));
 
         // Works At Night: Yes/No/Only
-        info.add(GOLD.concat("Works At Night: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.NEVER_SLEEPS, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.sleeps")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.NEVER_SLEEPS, false), DIV)));
 
         // Tolerates Rain: Yes/No/Only
-        info.add(GOLD.concat("Tolerates Rain: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TOLERATES_RAIN, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.rain")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TOLERATES_RAIN, false), DIV)));
 
         // Works Underground: Yes/No/Only
-        info.add(GOLD.concat("Works Underground: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.CAVE_DWELLING, false), DIV)));
+        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.dwelling")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.CAVE_DWELLING, false), DIV)));
 
         return info;
     }

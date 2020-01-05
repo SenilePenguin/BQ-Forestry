@@ -1,27 +1,23 @@
 bqforestry.task.bee_retrieval=Bee Retrieval Task
 bqforestry.task.keycode=Key Code Task
 
-bqforestry.reward.bee=Forestry Bee Reward NYI
-bqforestry.reward.tree=Forestry Tree Reward NYI
-
 bqforestry.title.edit_bee_retrieval_landing=Edit Bee Retrieval Tasks
 bqforestry.title.edit_bee_retrieval_selection=Edit Bee Retrieval Task
 bqforestry.title.edit_bee_retrieval=Edit Bee Retrieval Task
 
 bqforestry.label.beegrowthstage=Bee Growth Stage
-bqforestry.label.bee.enum.species=Species
-bqforestry.label.bee.enum.speed=Speed
-bqforestry.label.bee.enum.lifespan=Lifespan
-bqforestry.label.bee.enum.fertility=Fertility
-bqforestry.label.bee.enum.temperature_tolerance=Temperature Tolerance
-bqforestry.label.bee.enum.never_sleeps=Nocturnal
-bqforestry.label.bee.enum.humidity_tolerance=Humidity Tolerance
-bqforestry.label.bee.enum.tolerates_rain=Works in Rain
-bqforestry.label.bee.enum.cave_dwelling=Works Underground
-bqforestry.label.bee.enum.flower_provider=Flowers
-bqforestry.label.bee.enum.flowering=Pollination Speed
-bqforestry.label.bee.enum.territory=Territory
-bqforestry.label.bee.enum.effect=Effect
+bqforestry.label.bee.species=Species
+bqforestry.label.bee.lifespan=Lifespans
+bqforestry.label.bee.speeds=Production Rates
+bqforestry.label.bee.flowering=Pollination Speeds
+bqforestry.label.bee.fertility=Fertility Rates
+bqforestry.label.bee.territory=Territory Sizes
+bqforestry.label.bee.effect=Area Effects
+bqforestry.label.bee.temp=Climate Tolerances
+bqforestry.label.bee.humidity=Humidity Tolerances
+bqforestry.label.bee.sleeps=Works at Night
+bqforestry.label.bee.rain=Tolerates Rain
+bqforestry.label.bee.dwelling=Works Underground
 bqforestry.label.keycode=Keycode:
 
 bqforestry.tooltip.delete=Deletes this entry from the task list.
