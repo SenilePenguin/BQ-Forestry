@@ -25,6 +25,7 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.themes.ThemeHandler;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
@@ -38,6 +39,7 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
@@ -185,10 +187,8 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
 
         CanvasEmpty cvBeeStats = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(4, 4, 4, 4), 0));
         cvBeeStatsHolder.addPanel(cvBeeStats);
-        /*cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.HALF_BOTTOM, new GuiPadding(0, 0, 0, 0), 0), String.format("Task Item %1$s: %2$s (%3$s)", selectedItem,
-                getDisplayName(task.requiredItems.get(selectedItem).getBaseStack(),
-                        getTrait(task.requiredItems.get(selectedItem).getBaseStack(), EnumBeeChromosome.SPECIES)
-                ))));*/
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), "Retrieval Item #" + selectedItem).setFontSize(16).enableShadow(true));
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(selectedItem).getBaseStack()))));
 //endregion
 
 //region Category Area
@@ -282,39 +282,50 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
 
 
         ArrayList<String> info = new ArrayList<>();
+        String GOLD = TextFormatting.GOLD.toString();
+        String AQUA = TextFormatting.AQUA.toString();
+        String DIV = GOLD.concat(", ").concat(AQUA);
 
         // Task Item 1: Meadows Princess (forestry.speciesMeadows)
-        info.add(("Task Item " + selectedItem + ": ").concat(getDisplayName(bee)).concat(" (" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
+        info.add(GOLD.concat("Species: ").concat(AQUA).concat(getDisplayName(bee)).concat(" (" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
 
-        // Accepted Lifespans: forestry.liefspanLong, forestry.lifespanElongated
-        info.add(("Accepted Lifespans: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.LIFESPAN, false))));
+        // Lifespans: forestry.liefspanLong, forestry.lifespanElongated
+        info.add(GOLD.concat("Lifespans: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.LIFESPAN, false), DIV)));
 
-        // Accepted Production Speeds: forestry.lifespanLong, forestry.lifespanElongated
-        info.add(("Accepted Production Speeds: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false))));
+        // Production Speeds: forestry.lifespanLong, forestry.lifespanElongated
+        info.add(GOLD.concat("Production Speeds: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false), DIV)));
 
-        // Accepted Pollination Speeds: forestry.floweringAverage, forestry.floweringFastest
-        info.add(("Accepted Pollination Speeds: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWERING, false))));
+        BQ_Forestry.log.info("Prod Speeds");
+        BQ_Forestry.log.info("Flattened: " + StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false)));
+        BQ_Forestry.log.info("Flattened: " + Arrays.toString(getTrait(bee, EnumBeeChromosome.SPEED, false)));
 
-        // Accepted Fertility Rates: forestry.fertilityLow, forestry.fertilityHigh
-        info.add(("Accepted Fertility Rates: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FERTILITY, false))));
 
-        // Accepted Territory Sizes: forestry.territoryAverage, forestry.territoryLarge
-        info.add(("Accepted Territory Sizes: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TERRITORY, false))));
+        // Pollination Speeds: forestry.floweringAverage, forestry.floweringFastest
+        info.add(GOLD.concat("Pollination Speeds: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWERING, false), DIV)));
 
-        // Accepted Area Effects: forestry.effectNone, forestry.effectMiasmic
-        info.add(("Accepted Area Effects: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.EFFECT, false))));
+        // Fertility Rates: forestry.fertilityLow, forestry.fertilityHigh
+        info.add(GOLD.concat("Fertility Rates: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FERTILITY, false), DIV)));
 
-        // Accepted Climate Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
-        info.add(("Accepted Climate Tolerances: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE, false))));
+        // Territory Sizes: forestry.territoryAverage, forestry.territoryLarge
+        info.add(GOLD.concat("Territory Sizes: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TERRITORY, false), DIV)));
 
-        // Accepted Humidity Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
-        info.add(("Accepted Humidity Tolerances: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.HUMIDITY_TOLERANCE, false))));
+        // Area Effects: forestry.effectNone, forestry.effectMiasmic
+        info.add(GOLD.concat("Area Effects: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.EFFECT, false), DIV)));
 
-        // Allow Nocturnal: No/Yes
-        info.add(("Accepted NEVER_SLEEPS: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.NEVER_SLEEPS, false))));
-        info.add(("Accepted TOLERATES_RAIN: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TOLERATES_RAIN, false))));
-        info.add(("Accepted CAVE_DWELLING: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.CAVE_DWELLING, false))));
-        info.add(("Accepted FLOWER_PROVIDER: ").concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWER_PROVIDER, false))));
+        // Climate Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
+        info.add(GOLD.concat("Climate Tolerances: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE, false), DIV)));
+
+        // Humidity Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
+        info.add(GOLD.concat("Humidity Tolerances: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.HUMIDITY_TOLERANCE, false), DIV)));
+
+        // Works At Night: Yes/No/Only
+        info.add(GOLD.concat("Works At Night: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.NEVER_SLEEPS, false), DIV)));
+
+        // Tolerates Rain: Yes/No/Only
+        info.add(GOLD.concat("Tolerates Rain: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TOLERATES_RAIN, false), DIV)));
+
+        // Works Underground: Yes/No/Only
+        info.add(GOLD.concat("Works Underground: ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.CAVE_DWELLING, false), DIV)));
 
         return info;
     }

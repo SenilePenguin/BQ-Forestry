@@ -1,5 +1,7 @@
 package com.nicjames2378.bqforestry.utils;
 
+import java.util.Arrays;
+
 public class StringUtils {
     public static int indexOfFirstCapital(String str) {
         for (int i = 0; i < str.length(); i++) {
@@ -34,9 +36,14 @@ public class StringUtils {
     }
 
     public static String flattenArray(String[] arr) {
-        //Arrays.toString(arr);
+        return flattenArray(arr, ", ");
+    }
 
-        if (arr == null) {
+    public static String flattenArray(String[] arr, String divider) {
+        //Arrays.toString(arr);
+        if (divider == null) divider = "";
+
+        if (arr == null || Arrays.toString(arr).equals("[]")) {
             return "Any";
         } else {
             int iMax = arr.length - 1;
@@ -54,18 +61,18 @@ public class StringUtils {
                         return b.toString();
                     }
 
-                    b.append(", ");
+                    b.append(divider);
                     ++i;
                 }
             }
         }
     }
 
-    public static String arrayToBool(String[] arr) {
+  /*  public static String arrayToBool(String[] arr) {
         if (arr == null || arr.length > 2 || arr.length <= 0) {
-            return flattenArray(arr);
+            return flattenArray(arr, ", ");
         } else {
-
+            if (arr[0].contains("False")) return
         }
-    }
+    }*/
 }
