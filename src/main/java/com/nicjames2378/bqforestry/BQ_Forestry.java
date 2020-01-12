@@ -21,7 +21,7 @@ public class BQ_Forestry {
     @Instance
     public static BQ_Forestry instance;
 
-    public static Logger log;
+    public static Logger log = null;
     public static boolean hasJEI = false;
     public static boolean hasForestry = false;
 
@@ -61,5 +61,11 @@ public class BQ_Forestry {
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
         event.registerServerCommand(new BQFCommandFindTrait());
+    }
+
+    public static void debug(String message) {
+        if (log != null && ConfigHandler.cfgDoDebugOutputs) {
+            log.info("[DEBUG] " + message);
+        }
     }
 }

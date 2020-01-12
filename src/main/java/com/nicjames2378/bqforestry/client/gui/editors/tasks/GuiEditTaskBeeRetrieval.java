@@ -8,13 +8,11 @@ import betterquesting.api.network.QuestingPacket;
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api.utils.RenderUtils;
-import betterquesting.api2.client.gui.GuiScreenCanvas;
 import betterquesting.api2.client.gui.controls.PanelButton;
 import betterquesting.api2.client.gui.controls.PanelButtonStorage;
 import betterquesting.api2.client.gui.misc.*;
 import betterquesting.api2.client.gui.panels.CanvasEmpty;
 import betterquesting.api2.client.gui.panels.CanvasTextured;
-import betterquesting.api2.client.gui.panels.IGuiPanel;
 import betterquesting.api2.client.gui.panels.bars.PanelHScrollBar;
 import betterquesting.api2.client.gui.panels.content.PanelGeneric;
 import betterquesting.api2.client.gui.panels.content.PanelLine;
@@ -26,6 +24,9 @@ import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
+import com.nicjames2378.bqforestry.BQ_Forestry;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.BQScreenCanvas;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.controls.factory.PanelToggleStorage;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels.BeePanelControls;
 import com.nicjames2378.bqforestry.client.themes.ThemeHandler;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
@@ -40,21 +41,15 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
-public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatileScreen {
+public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatileScreen {
     private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
-    private final IQuest quest;
-    private final TaskForestryRetrieval task;
-
-    private int selectedItem = 0;
+    final HashMap<EnumBeeChromosome, ArrayList<PanelToggleStorage>> mapOptions = new HashMap<>();
     private BeePanelControls selectedOption = BeePanelControls.None;
-
-    private GuiEditTaskBeeRetrieval getScreenRef() {
-        return this;
-    }
 
     public GuiEditTaskBeeRetrieval(GuiScreen parent, IQuest quest, TaskForestryRetrieval task) {
         super(parent);
@@ -67,7 +62,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         super.initPanel();
         Keyboard.enableRepeatEvents(true);
 
-        if (task.requiredItems.size() <= 0) selectedItem = -1;
+        if (task.requiredItems.size() <= 0) setSelectedIndex(getSelectedIndex() - 1);
 
         //Background
         CanvasTextured cvBackground = new CanvasTextured(new GuiTransform(), PresetTexture.PANEL_MAIN.getTexture());
@@ -127,16 +122,16 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                 // Item Frame icon (aka, button)
                 PanelButtonStorage<Integer> btnReqItem = new PanelButtonStorage<>(new GuiRectangle(i * buttonSize + (i * 2), 0, buttonSize, buttonSize, 0), -1, String.valueOf(i), i);
                 btnReqItem.setCallback(value -> {
-                    selectedItem = value;
+                    setSelectedIndex(value);
                     // Update buttons to reflect current selected
                     for (PanelButtonStorage<Integer> b : lstRequiredItemButtons) {
-                        b.setActive(!btnReqItem.getStoredValue().equals(selectedItem));
+                        b.setActive(!btnReqItem.getStoredValue().equals(getSelectedIndex()));
                     }
                     refresh();
                 });
-                btnReqItem.setIcon(btnReqItem.getStoredValue().equals(selectedItem) ? ThemeHandler.ITEM_FRAME_SELECTED.getTexture() : ThemeHandler.ITEM_FRAME.getTexture());
+                btnReqItem.setIcon(btnReqItem.getStoredValue().equals(getSelectedIndex()) ? ThemeHandler.ITEM_FRAME_SELECTED.getTexture() : ThemeHandler.ITEM_FRAME.getTexture());
                 btnReqItem.setTooltip(getHoverTooltip(taskItem.getBaseStack(), i));
-                btnReqItem.setActive(!btnReqItem.getStoredValue().equals(selectedItem));
+                btnReqItem.setActive(!btnReqItem.getStoredValue().equals(getSelectedIndex()));
 
                 cvBeeScroll.addPanel(btnReqItem);
                 lstRequiredItemButtons.add(btnReqItem);
@@ -152,7 +147,7 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
                 PanelButton btnAddNew = new PanelButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), -1, "") {
                     @Override
                     public void onButtonClick() {
-                        task.requiredItems.add(selectedItem, TaskForestryRetrieval.getDefaultBee());
+                        task.requiredItems.add(getSelectedIndex(), TaskForestryRetrieval.getDefaultBee());
                         refresh();
                     }
                 };
@@ -188,8 +183,8 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
 
         CanvasEmpty cvBeeStats = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(4, 4, 4, 4), 0));
         cvBeeStatsHolder.addPanel(cvBeeStats);
-        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), TextFormatting.UNDERLINE.toString() + "Bee Retrieval Item #" + selectedItem).setFontSize(16).enableShadow(true));
-        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 24, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(selectedItem).getBaseStack()))));
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getSelectedIndex()).setFontSize(16).enableShadow(true));
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 24, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getSelectedIndex()).getBaseStack()))));
 //endregion
 
 //region Category Area
@@ -200,17 +195,27 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 8, 8, 32, 32, 0), -1, "") {
             @Override
             public void onButtonClick() {
-                if (selectedItem >= 0) {
-                    task.requiredItems.remove(task.requiredItems.get(selectedItem));
-                    if (task.requiredItems.size() <= selectedItem) {
-                        selectedItem = task.requiredItems.size() - 1;
+                selectedOption = BeePanelControls.None;
+
+                if (getSelectedIndex() >= 0) {
+                    task.requiredItems.remove(task.requiredItems.get(getSelectedIndex()));
+                    if (task.requiredItems.size() <= getSelectedIndex()) {
+                        setSelectedIndex(task.requiredItems.size() - 1);
                     }
-                    getScreenRef().initPanel();
+                    refresh();
                 }
             }
         }.setIcon(ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
 
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 32, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+        // Species Button
+        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 40, 8, 32, 32, 0), -1, "") {
+            @Override
+            public void onButtonClick() {
+                selectedOption = BeePanelControls.BeeSpecies;
+                refresh();
+            }
+        }.setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 64, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPEED.getTexture()));
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 96, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 128, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
@@ -229,7 +234,8 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         CanvasTextured cvBeeOptions = new CanvasTextured(new GuiTransform(GuiAlign.HALF_RIGHT, 0, 0, cWidthHalf - 1, cHeight, 0), PresetTexture.ITEM_FRAME.getTexture());
         cvDataPanels.addPanel(cvBeeOptions);
 
-        cvDataPanels.addPanel((IGuiPanel) selectedOption.get());
+        selectedOption.get(this, cvBeeOptions);
+        BQ_Forestry.debug("Setting Panel to " + selectedOption.name());
 //endregion
     }
 
@@ -242,10 +248,6 @@ public class GuiEditTaskBeeRetrieval extends GuiScreenCanvas implements IVolatil
         tags.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
         tags.setTag("data", base);
         QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
-    }
-
-    private void refresh() {
-        getScreenRef().initGui();
     }
 
     private ArrayList<String> getHoverTooltip(ItemStack bee, int index) {

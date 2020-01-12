@@ -75,7 +75,7 @@ public class FactoryForestryDataControlArea {
 
     public FactoryForestryDataControlArea setLayout(int columns, int sizeY) {
         if (this.LAYOUT_COLUMNS != -1) {
-            BQ_Forestry.log.info("Layout already set!");
+            BQ_Forestry.debug("Layout already set!");
             return this;
         }
 

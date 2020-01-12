@@ -41,8 +41,6 @@ public class UtilitiesBee {
     }
 
     public static void initialize() {
-        boolean debug = ConfigHandler.cfgDoDebugOutputs;
-
         // TODO: Clean this?
         for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
             Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
@@ -54,8 +52,7 @@ public class UtilitiesBee {
 
                 int value = getValue(chromosome.getAlleleClass(), next);
                 //currentMap.put(value, next.toString());
-                if (debug)
-                    BQ_Forestry.log.info(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
+                BQ_Forestry.debug(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
             }
         }
     }

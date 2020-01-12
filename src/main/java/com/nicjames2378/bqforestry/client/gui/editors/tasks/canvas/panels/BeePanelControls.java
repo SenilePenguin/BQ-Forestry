@@ -3,6 +3,9 @@ package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels;
 import betterquesting.api2.client.gui.misc.GuiAlign;
 import betterquesting.api2.client.gui.misc.GuiPadding;
 import betterquesting.api2.client.gui.misc.GuiTransform;
+import betterquesting.api2.client.gui.panels.CanvasEmpty;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.BQScreenCanvas;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.IControlPanel;
 
 @SuppressWarnings("unused") // Stupid IntelliJ being a stupid whiner...
 public enum BeePanelControls {
@@ -16,7 +19,7 @@ public enum BeePanelControls {
         this.canvas = canvas;
     }
 
-    public IControlPanel get() {
-        return canvas.initialize();
+    public void get(BQScreenCanvas parent, CanvasEmpty container) {
+        canvas.initialize(parent, container);
     }
 }
