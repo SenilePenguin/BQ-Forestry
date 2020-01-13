@@ -21,10 +21,13 @@ bqforestry.label.bee.rain=Tolerates Rain
 bqforestry.label.bee.dwelling=Works Underground
 bqforestry.label.keycode=Keycode:
 
+bqforestry.panel.information.delete=WARNING! This operation CANNOT be undone! Are you sure you wish to delete task item #%s?
+
 bqforestry.tooltip.delete=Deletes this entry from the task list.
 bqforestry.tooltip.deleteWarning=WARNING! This change is irreversible!
 bqforestry.tooltip.add=Inserts a new entry at this location in the task list.
 
+bqforestry.btn.confirm=Confirm
 bqforestry.btn.consume=Consume: %s
 bqforestry.btn.autoconsume=Auto Consume: %s
 bqforestry.btn.onlymated=Only Mated: %s

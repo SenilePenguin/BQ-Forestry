@@ -36,13 +36,6 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
         super(rect);
     }
 
-    /*
-    When a control loads in, it will populate with all valid values.
-    It will also create an array for storing existing values on the current item.
-        This array will be used to set which value buttons are toggled by default
-
-     */
-
     @Override
     public void initialize(BQScreenCanvas gui, CanvasEmpty canvas) {
         species = getTrait(gui.getSelectedItem(), EnumBeeChromosome.SPECIES, true)[0];
@@ -91,7 +84,7 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
         canvas.addPanel(cvBeeDB);
 
         // Search Box
-        PanelTextField<String> txtSearch = new PanelTextField<String>(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, 0, 16), 0), "", FieldFilterString.INSTANCE);
+        PanelTextField<String> txtSearch = new PanelTextField<String>(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, 0, -18), 0), "", FieldFilterString.INSTANCE);
         txtSearch.setCallback(cvBeeDB::setSearchFilter).setWatermark("Search...");
         canvas.addPanel(txtSearch);
 
@@ -102,7 +95,7 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
         canvas.addPanel(scBeeBar);
 
         // Done Button
-        PanelButton doneButton = new PanelButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(0, -32, 0, 0), 0), -1, QuestTranslation.translate("gui.done")) {
+        PanelButton doneButton = new PanelButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(4, -28, 4, 4), 0), -1, QuestTranslation.translate("gui.done")) {
             @Override
             public void onButtonClick() {
                 /*
@@ -115,7 +108,7 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
                 boolean debug = ConfigHandler.cfgDoDebugOutputs;
 
                 if (debug)
-                    BQ_Forestry.debug(String.format("ControlSpecies: Setting Species for item #%1$s: - %2$s", gui.getSelectedItem(), species));
+                    BQ_Forestry.debug(String.format("ControlSpecies: Setting Species for item #%1$s: - %2$s", gui.getSelectedIndex(), species));
 
                 writeTrait(bee.getBaseStack(), EnumBeeChromosome.SPECIES, species);
 

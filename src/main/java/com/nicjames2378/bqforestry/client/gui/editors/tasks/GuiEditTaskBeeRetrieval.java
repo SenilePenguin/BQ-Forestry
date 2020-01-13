@@ -195,26 +195,35 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 8, 8, 32, 32, 0), -1, "") {
             @Override
             public void onButtonClick() {
-                selectedOption = BeePanelControls.None;
-
-                if (getSelectedIndex() >= 0) {
-                    task.requiredItems.remove(task.requiredItems.get(getSelectedIndex()));
-                    if (task.requiredItems.size() <= getSelectedIndex()) {
-                        setSelectedIndex(task.requiredItems.size() - 1);
-                    }
+                selectedOption = BeePanelControls.Trash;
+//                if (getSelectedIndex() >= 0) {
+//                    task.requiredItems.remove(task.requiredItems.get(getSelectedIndex()));
+//                    if (task.requiredItems.size() <= getSelectedIndex()) {
+//                        setSelectedIndex(task.requiredItems.size() - 1);
+//                    }
                     refresh();
-                }
+//                }
             }
         }.setIcon(ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
 
         // Species Button
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 40, 8, 32, 32, 0), -1, "") {
-            @Override
-            public void onButtonClick() {
-                selectedOption = BeePanelControls.BeeSpecies;
-                refresh();
-            }
-        }.setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+//        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 40, 8, 32, 32, 0), -1, "") {
+//            @Override
+//            public void onButtonClick() {
+//                selectedOption = BeePanelControls.BeeSpecies;
+//                refresh();
+//            }
+//        }.setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+
+
+        PanelButtonStorage<BeePanelControls> btnBeeSpecies = new PanelButtonStorage<>(new GuiTransform(GuiAlign.TOP_LEFT, 40, 8, 32, 32, 0), -1, "", BeePanelControls.BeeSpecies);
+        btnBeeSpecies.setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture());
+        btnBeeSpecies.setActive(task.requiredItems.size() > 0);
+        btnBeeSpecies.setCallback(value -> {
+            selectedOption = value;
+            refresh();
+        });
+        cvBeeCategories.addPanel(btnBeeSpecies);
 
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 64, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPEED.getTexture()));
         cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 96, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));

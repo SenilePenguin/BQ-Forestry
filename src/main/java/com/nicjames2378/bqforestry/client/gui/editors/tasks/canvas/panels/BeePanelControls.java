@@ -11,6 +11,7 @@ import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.
 public enum BeePanelControls {
     // new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0)
     None(new ControlEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0))),
+    Trash(new ControlTrash(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0))),
     BeeSpecies(new ControlSpecies(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0)));
 
     private final IControlPanel canvas;

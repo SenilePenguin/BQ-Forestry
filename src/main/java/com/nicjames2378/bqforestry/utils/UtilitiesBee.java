@@ -195,15 +195,19 @@ public class UtilitiesBee {
 
     // Gets a duplicate of a BigItemStack with it's it values possibly replaced to make Forestry not throw a fit.
     public static BigItemStack getSafeStack(BigItemStack stack) {
+        BQ_Forestry.debug("[getSafeStack]");
         BigItemStack safeStack = stack.copy();
         String stackDName = getDisplayName(safeStack.getBaseStack());
+        BQ_Forestry.debug("[getSafeStack] stackDName: " + stackDName);
         // If we get the displayName and it contains the error string,
         if (stackDName.contains(_INVALID_SPECIES_STRING)) {
+            BQ_Forestry.debug("[getSafeStack] ERROR!!");
             // Replace the NBT with something Forestry won't whine about
             safeStack.getBaseStack().setTagCompound(getBaseBee(DEFAULT_SPECIES).getTagCompound());
             // Then overwrite it's display name so people still know what they're looking to submit
             safeStack.getBaseStack().setStackDisplayName(stackDName);
         }
+
 
         return safeStack;
     }
@@ -307,6 +311,7 @@ public class UtilitiesBee {
 
             NBTTagCompound tagTrait = (NBTTagCompound) tagStupidSpeciesIsStupid.get(0); //getIndexFromChromosome(chromosome));
             tagTrait.setString("UID0", trait);
+            tagTrait.setString("UID1", trait);
 
         } else {
             // Can this line be removed? getCompoundTag should return a new one if it's not there, right?
