@@ -1,7 +1,6 @@
 package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels;
 
 import betterquesting.api.utils.BigItemStack;
-import betterquesting.api2.client.gui.controls.PanelButton;
 import betterquesting.api2.client.gui.controls.PanelButtonStorage;
 import betterquesting.api2.client.gui.controls.PanelTextField;
 import betterquesting.api2.client.gui.controls.filters.FieldFilterString;
@@ -95,7 +94,7 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
         canvas.addPanel(scBeeBar);
 
         // Done Button
-        PanelButton doneButton = new PanelButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(4, -28, 4, 4), 0), -1, QuestTranslation.translate("gui.done")) {
+        ConfirmButton doneButton = new ConfirmButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(4, -28, 4, 4), 0), -1, QuestTranslation.translate("gui.done")) {
             @Override
             public void onButtonClick() {
                 /*
@@ -103,15 +102,9 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
                 Then, when pressing done, check which of these values are toggled.
                 This will let us edit the bees in-place instead of recreating from the ground up. It will also let us change single NBT values at a time.
                  */
-
-                // For Debug only
-                boolean debug = ConfigHandler.cfgDoDebugOutputs;
-
-                if (debug)
-                    BQ_Forestry.debug(String.format("ControlSpecies: Setting Species for item #%1$s: - %2$s", gui.getSelectedIndex(), species));
+                BQ_Forestry.debug(String.format("ControlSpecies: Setting Species for item #%1$s: - %2$s", gui.getSelectedIndex(), species));
 
                 writeTrait(bee.getBaseStack(), EnumBeeChromosome.SPECIES, species);
-
                 gui.updateTaskItem(bee);
             }
         };

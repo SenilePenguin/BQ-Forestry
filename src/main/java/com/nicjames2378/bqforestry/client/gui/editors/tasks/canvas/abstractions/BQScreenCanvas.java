@@ -3,6 +3,7 @@ package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api2.client.gui.GuiScreenCanvas;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels.BeePanelControls;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
@@ -13,8 +14,8 @@ import static com.nicjames2378.bqforestry.utils.UtilitiesBee.getBaseBee;
 public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
     protected IQuest quest;
     protected TaskForestryRetrieval task;
-
     private int selectedItem = 0;
+    private BeePanelControls selectedOption = BeePanelControls.None;
 
     //region Getters and Setters
     public int getSelectedIndex() {
@@ -34,6 +35,17 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
             return getBaseBee(DEFAULT_SPECIES);
         }
     }
+
+    public BeePanelControls getSelectedOption() {
+        return selectedOption;
+    }
+
+    public void setSelectedOption(BeePanelControls control) {
+        if (selectedOption != control) {
+            this.selectedOption = control;
+            refresh();
+        }
+    }
     //endregion
 
     public BQScreenCanvas(GuiScreen parent) {
@@ -43,10 +55,10 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
     public void updateTaskItem(BigItemStack newItem) {
         if (newItem != null) {
             task.requiredItems.set(getSelectedIndex(), newItem);
-            refresh();
         } else {
             deleteTaskItem();
         }
+        refresh();
     }
 
     private void deleteTaskItem() {
@@ -55,7 +67,6 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
             if (task.requiredItems.size() <= getSelectedIndex()) {
                 setSelectedIndex(task.requiredItems.size() - 1);
             }
-            refresh();
         }
     }
 

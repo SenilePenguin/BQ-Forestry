@@ -74,9 +74,6 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
             // Name
             sb.append(safeStack.getBaseStack().getDisplayName());
 
-            // Also, should I //TODO: Add oreDict support?
-            // if (stack.hasOreDict()) sb.append(" (").append(stack.getOreDict()).append(")");
-
             // Requirements
             int reqs = 0;
             sb.append("\n").append(TextFormatting.GOLD).append("Requirements:").append(TextFormatting.RESET);

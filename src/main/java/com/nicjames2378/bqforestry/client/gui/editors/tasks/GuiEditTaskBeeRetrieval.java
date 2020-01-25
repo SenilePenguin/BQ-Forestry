@@ -19,6 +19,7 @@ import betterquesting.api2.client.gui.panels.content.PanelLine;
 import betterquesting.api2.client.gui.panels.content.PanelTextBox;
 import betterquesting.api2.client.gui.panels.lists.CanvasScrolling;
 import betterquesting.api2.client.gui.resources.colors.GuiColorStatic;
+import betterquesting.api2.client.gui.resources.textures.IGuiTexture;
 import betterquesting.api2.client.gui.resources.textures.ItemTexture;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
@@ -37,6 +38,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
@@ -49,7 +51,22 @@ import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatileScreen {
     private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
     final HashMap<EnumBeeChromosome, ArrayList<PanelToggleStorage>> mapOptions = new HashMap<>();
-    private BeePanelControls selectedOption = BeePanelControls.None;
+    private Tuple<Integer, Integer> _catCurrentCoords = new Tuple<>(8, 8);
+    private short catButtonSize = 32;
+
+    private Tuple<Integer, Integer> getCatCoords(int widthBounds) {
+        Tuple<Integer, Integer> current = _catCurrentCoords;
+        int x = _catCurrentCoords.getFirst() + catButtonSize;
+        int y = _catCurrentCoords.getSecond();
+
+        if (x > widthBounds - 8 - catButtonSize) {
+            x = 8;
+            y += catButtonSize;
+        }
+
+        _catCurrentCoords = new Tuple<>(x, y);
+        return current;
+    }
 
     public GuiEditTaskBeeRetrieval(GuiScreen parent, IQuest quest, TaskForestryRetrieval task) {
         super(parent);
@@ -61,6 +78,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
     public void initPanel() {
         super.initPanel();
         Keyboard.enableRepeatEvents(true);
+        _catCurrentCoords = new Tuple<>(8, 8);
 
         if (task.requiredItems.size() <= 0) setSelectedIndex(getSelectedIndex() - 1);
 
@@ -140,6 +158,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 //                cvBeeScroll.addPanel(iconFrame);
 
                 // Bee Icon
+                // TODO: Figure out bug where bees get wrong icon sometimes. Think it's linked to #16?
                 PanelGeneric btnReqItemIcon = new PanelGeneric(new GuiRectangle(i * buttonSize + (i * 2), 2, buttonSize - 2, buttonSize - 2, -1), new ItemTexture(getSafeStack(taskItem)));
                 cvBeeScroll.addPanel(btnReqItemIcon);
             } else {
@@ -191,60 +210,31 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         CanvasTextured cvBeeCategories = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, cHeightThird * 2, cWidthHalf - 1, cHeightThird + 1, 0), PresetTexture.ITEM_FRAME.getTexture());
         cvDataPanels.addPanel(cvBeeCategories);
 
-        // Trash/Delete Button
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 8, 8, 32, 32, 0), -1, "") {
-            @Override
-            public void onButtonClick() {
-                selectedOption = BeePanelControls.Trash;
-//                if (getSelectedIndex() >= 0) {
-//                    task.requiredItems.remove(task.requiredItems.get(getSelectedIndex()));
-//                    if (task.requiredItems.size() <= getSelectedIndex()) {
-//                        setSelectedIndex(task.requiredItems.size() - 1);
-//                    }
-                    refresh();
-//                }
-            }
-        }.setIcon(ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
+        boolean isActive = task.requiredItems.size() > 0;
+        int catWidthBounds = cvBeeCategories.getTransform().getWidth();
 
-        // Species Button
-//        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 40, 8, 32, 32, 0), -1, "") {
-//            @Override
-//            public void onButtonClick() {
-//                selectedOption = BeePanelControls.BeeSpecies;
-//                refresh();
-//            }
-//        }.setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
-
-
-        PanelButtonStorage<BeePanelControls> btnBeeSpecies = new PanelButtonStorage<>(new GuiTransform(GuiAlign.TOP_LEFT, 40, 8, 32, 32, 0), -1, "", BeePanelControls.BeeSpecies);
-        btnBeeSpecies.setIcon(ThemeHandler.ICON_GENOME_SPECIES.getTexture());
-        btnBeeSpecies.setActive(task.requiredItems.size() > 0);
-        btnBeeSpecies.setCallback(value -> {
-            selectedOption = value;
-            refresh();
-        });
-        cvBeeCategories.addPanel(btnBeeSpecies);
-
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 64, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_SPEED.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 96, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 128, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 160, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_TEMPERATURE_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 192, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_NEVER_SLEEPS.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 224, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_HUMIDITY_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 256, 64, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_RAIN_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 32, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_CAVE_DWELLING.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 64, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_FLOWER_PROVIDER.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 96, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_FLOWERING.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 128, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_TERRITORY.getTexture()));
-        cvBeeCategories.addPanel(new PanelButton(new GuiTransform(GuiAlign.TOP_LEFT, 160, 96, 32, 32, 0), -1, "").setIcon(ThemeHandler.ICON_GENOME_EFFECT.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.BeeSpeed, ThemeHandler.ICON_GENOME_SPEED.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_TEMPERATURE_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_NEVER_SLEEPS.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_HUMIDITY_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_RAIN_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_CAVE_DWELLING.getTexture()));
+        //cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_FLOWER_PROVIDER.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_FLOWERING.getTexture()));
+        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_TERRITORY.getTexture()));
+        //cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_EFFECT.getTexture()));
 //endregion
 
 //region Options Area
         CanvasTextured cvBeeOptions = new CanvasTextured(new GuiTransform(GuiAlign.HALF_RIGHT, 0, 0, cWidthHalf - 1, cHeight, 0), PresetTexture.ITEM_FRAME.getTexture());
         cvDataPanels.addPanel(cvBeeOptions);
 
-        selectedOption.get(this, cvBeeOptions);
-        BQ_Forestry.debug("Setting Panel to " + selectedOption.name());
+        getSelectedOption().get(this, cvBeeOptions);
+        BQ_Forestry.debug("Setting Panel to " + getSelectedOption().name());
 //endregion
     }
 
@@ -257,6 +247,15 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         tags.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
         tags.setTag("data", base);
         QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
+    }
+
+    private PanelButtonStorage<BeePanelControls> getPanel(boolean active, int bounds, BeePanelControls panel, IGuiTexture icon) {
+        Tuple<Integer, Integer> coords = getCatCoords(bounds);
+        PanelButtonStorage<BeePanelControls> btnBeePanel = new PanelButtonStorage<>(new GuiTransform(GuiAlign.TOP_LEFT, coords.getFirst(), coords.getSecond(), catButtonSize, catButtonSize, 0), -1, "", panel);
+        btnBeePanel.setIcon(icon);
+        btnBeePanel.setActive(active);
+        btnBeePanel.setCallback(this::setSelectedOption);
+        return btnBeePanel;
     }
 
     private ArrayList<String> getHoverTooltip(ItemStack bee, int index) {
@@ -300,6 +299,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         String DIV = GOLD.concat(", ").concat(AQUA);
 
         // Task Item 1: Meadows Princess (forestry.speciesMeadows)
+        // TODO: #16 Sometimes bees are showing the wrong DisplayNames (but correct species tags?)
         info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.species")).concat(": ").concat(AQUA).concat(getDisplayName(bee)).concat(" (" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
 
         // Lifespans: forestry.liefspanLong, forestry.lifespanElongated
