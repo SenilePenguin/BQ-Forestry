@@ -1,4 +1,4 @@
-package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas;
+package com.nicjames2378.bqforestry.client.gui.editors.panels.canvas;
 
 import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.lists.CanvasSearch;

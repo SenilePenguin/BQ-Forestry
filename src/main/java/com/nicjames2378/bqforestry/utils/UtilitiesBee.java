@@ -195,7 +195,6 @@ public class UtilitiesBee {
 
     // Gets a duplicate of a BigItemStack with it's it values possibly replaced to make Forestry not throw a fit.
     public static BigItemStack getSafeStack(BigItemStack stack) {
-        BQ_Forestry.debug("[getSafeStack]");
         BigItemStack safeStack = stack.copy();
         String stackDName = getDisplayName(safeStack.getBaseStack());
         BQ_Forestry.debug("[getSafeStack] stackDName: " + stackDName);
@@ -291,6 +290,38 @@ public class UtilitiesBee {
         return ret;
     }
 
+    public static void clearTraits(ItemStack bee, EnumBeeChromosome chromosome) {
+        // This shouldn't have happened....
+        if (bee == null) throw new NullPointerException();
+
+        NBTTagCompound tag = bee.getTagCompound();
+        if (tag == null) tag = new NBTTagCompound();
+
+        NBTTagCompound tagGenome = tag.getCompoundTag("Genome");
+
+        // forestry will crash if we clear the species trait, so we'll default it instead
+        if (chromosome == EnumBeeChromosome.SPECIES) {
+            writeTrait(bee, chromosome, DEFAULT_SPECIES);
+        } else {
+            // Can this line be removed? getCompoundTag should return a new one if it's not there, right?
+            if (!tagGenome.hasKey("ChromosomesList")) tagGenome.setTag("ChromosomesList", new NBTTagCompound());
+
+            NBTTagCompound tagChromosomesList = tagGenome.getCompoundTag("ChromosomesList");
+            // The TagCompound is a assigned a new NBTTagList if it doesn't exist
+
+            if (!tagChromosomesList.hasKey(chromosome.getName())) {
+                tagChromosomesList.setTag(chromosome.getName(), new NBTTagList());
+            }
+            NBTTagList nbtTraitList = tagChromosomesList.getTagList(chromosome.getName(), 8); //8=TAG_String
+
+            // Have to use a temporary variable for storing the count or else we get an issue where only half are deleted each time
+            int a = nbtTraitList.tagCount();
+            for (int i = 0; i < a; i++) {
+                nbtTraitList.removeTag(0);
+            }
+        }
+    }
+
     public static void writeTrait(ItemStack bee, EnumBeeChromosome chromosome, String trait) {
         // This shouldn't have happened....
         if (bee == null) throw new NullPointerException();
@@ -324,7 +355,15 @@ public class UtilitiesBee {
                 tagChromosomesList.setTag(chromosome.getName(), new NBTTagList());
             }
             NBTTagList nbtTraitList = tagChromosomesList.getTagList(chromosome.getName(), 8); //8=TAG_String
-            nbtTraitList.appendTag(new NBTTagString(trait));
+
+            NBTTagString str = new NBTTagString(trait);
+            boolean doWrite = true;
+            for (int i = 0; i < nbtTraitList.tagCount(); i++) {
+                if (nbtTraitList.get(i).equals(str)) {
+                    doWrite = false;
+                }
+            }
+            if (doWrite) nbtTraitList.appendTag(new NBTTagString(trait));
         }
     }
 

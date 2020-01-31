@@ -17,15 +17,17 @@ bqforestry.label.bee.effect=Area Effects
 bqforestry.label.bee.temp=Climate Tolerances
 bqforestry.label.bee.humidity=Humidity Tolerances
 bqforestry.label.bee.sleeps=Works at Night
-bqforestry.label.bee.rain=Tolerates Rain
+bqforestry.label.bee.rain=Works in Rain
 bqforestry.label.bee.dwelling=Works Underground
+bqforestry.label.bee.flowers=Suitable Flowers
 bqforestry.label.keycode=Keycode:
 
 bqforestry.panel.information.delete=WARNING! This operation CANNOT be undone! Are you sure you wish to delete task item #%s?
 
 bqforestry.tooltip.delete=Deletes this entry from the task list.
 bqforestry.tooltip.deleteWarning=WARNING! This change is irreversible!
-bqforestry.tooltip.add=Inserts a new entry at this location in the task list.
+bqforestry.tooltip.add=Adds a new item to the left of the selected item in the task list.
+bqforestry.tooltip.add.before=Adds a new item to the right of the selected item in the task list.
 
 bqforestry.btn.confirm=Confirm
 bqforestry.btn.consume=Consume: %s

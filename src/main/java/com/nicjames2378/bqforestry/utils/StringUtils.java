@@ -35,12 +35,21 @@ public class StringUtils {
         return new String(new char[amount]).replace('\u0000', character);
     }
 
+    public interface IStringStyle {
+        String stylize(String s);
+    }
+
     public static String flattenArray(String[] arr) {
-        return flattenArray(arr, ", ");
+        return flattenArray(arr, ", ", null);
     }
 
     public static String flattenArray(String[] arr, String divider) {
-        //Arrays.toString(arr);
+        return flattenArray(arr, divider, null);
+    }
+
+    public static String flattenArray(String[] arr, String divider, IStringStyle style) {
+        // Arrays.toString(arr);
+        // "Custom coded" to remove 'syntactic sugar'
         if (divider == null) divider = "";
 
         if (arr == null || Arrays.toString(arr).equals("[]")) {
@@ -55,7 +64,11 @@ public class StringUtils {
                 int i = 0;
 
                 while (true) {
-                    b.append(arr[i]);
+                    if (style == null) {
+                        b.append(arr[i]);
+                    } else {
+                        b.append(style.stylize(arr[i]));
+                    }
                     if (i == iMax) {
                         //return b.append(']').toString();
                         return b.toString();

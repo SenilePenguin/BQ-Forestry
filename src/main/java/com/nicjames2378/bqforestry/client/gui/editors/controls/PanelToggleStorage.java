@@ -1,4 +1,4 @@
-package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.controls.factory;
+package com.nicjames2378.bqforestry.client.gui.editors.controls;
 
 import betterquesting.api.misc.ICallback;
 import betterquesting.api2.client.gui.controls.PanelButtonStorage;

@@ -7,7 +7,6 @@ import betterquesting.api.enums.EnumPacketAction;
 import betterquesting.api.network.QuestingPacket;
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
-import betterquesting.api.utils.RenderUtils;
 import betterquesting.api2.client.gui.controls.PanelButton;
 import betterquesting.api2.client.gui.controls.PanelButtonStorage;
 import betterquesting.api2.client.gui.misc.*;
@@ -18,7 +17,6 @@ import betterquesting.api2.client.gui.panels.content.PanelGeneric;
 import betterquesting.api2.client.gui.panels.content.PanelLine;
 import betterquesting.api2.client.gui.panels.content.PanelTextBox;
 import betterquesting.api2.client.gui.panels.lists.CanvasScrolling;
-import betterquesting.api2.client.gui.resources.colors.GuiColorStatic;
 import betterquesting.api2.client.gui.resources.textures.IGuiTexture;
 import betterquesting.api2.client.gui.resources.textures.ItemTexture;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
@@ -26,9 +24,10 @@ import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.BQ_Forestry;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.BQScreenCanvas;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.controls.factory.PanelToggleStorage;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels.BeePanelControls;
+import com.nicjames2378.bqforestry.client.gui.editors.controls.BQButton;
+import com.nicjames2378.bqforestry.client.gui.editors.controls.PanelToggleStorage;
+import com.nicjames2378.bqforestry.client.gui.editors.panels.PanesBee;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.abstractions.BQScreenCanvas;
 import com.nicjames2378.bqforestry.client.themes.ThemeHandler;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
@@ -46,20 +45,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.nicjames2378.bqforestry.utils.StringUtils.flattenArray;
+import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatileScreen {
     private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
     final HashMap<EnumBeeChromosome, ArrayList<PanelToggleStorage>> mapOptions = new HashMap<>();
     private Tuple<Integer, Integer> _catCurrentCoords = new Tuple<>(8, 8);
+    private int catWidthBounds = 0;
     private short catButtonSize = 32;
 
-    private Tuple<Integer, Integer> getCatCoords(int widthBounds) {
+    private Tuple<Integer, Integer> getCatCoords() {
         Tuple<Integer, Integer> current = _catCurrentCoords;
         int x = _catCurrentCoords.getFirst() + catButtonSize;
         int y = _catCurrentCoords.getSecond();
 
-        if (x > widthBounds - 8 - catButtonSize) {
+        if (x > catWidthBounds - 8 - catButtonSize) {
             x = 8;
             y += catButtonSize;
         }
@@ -126,7 +128,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         int buttonSize = cvBeeScrollContainer.getTransform().getHeight() - 4;
 
         // Scroll Area
-        CanvasScrolling cvBeeScroll = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 4, buttonSize, 0), 0));
+        CanvasScrolling cvBeeScroll = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(buttonSize, 4, buttonSize, 0), 0));
         cvBeeScrollContainer.addPanel(cvBeeScroll);
 
         // RequiredItems Buttons
@@ -161,25 +163,41 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
                 // TODO: Figure out bug where bees get wrong icon sometimes. Think it's linked to #16?
                 PanelGeneric btnReqItemIcon = new PanelGeneric(new GuiRectangle(i * buttonSize + (i * 2), 2, buttonSize - 2, buttonSize - 2, -1), new ItemTexture(getSafeStack(taskItem)));
                 cvBeeScroll.addPanel(btnReqItemIcon);
-            } else {
-                // AddNew button
-                PanelButton btnAddNew = new PanelButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), -1, "") {
-                    @Override
-                    public void onButtonClick() {
-                        task.requiredItems.add(getSelectedIndex(), TaskForestryRetrieval.getDefaultBee());
-                        refresh();
-                    }
-                };
-                btnAddNew.setTextHighlight(new GuiColorStatic(128, 128, 128, 255), new GuiColorStatic(0, 255, 0, 255), new GuiColorStatic(0, 255, 0, 255));
-                btnAddNew.setIcon(ThemeHandler.ICON_ITEM_ADD.getTexture());
-                btnAddNew.setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.tooltip.add"), 128, mc.fontRenderer));
-
-                cvBeeScrollContainer.addPanel(btnAddNew);
             }
         }
 
+//        PanelButton btnAddNew = new PanelButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), -1, "") {
+//            @Override
+//            public void onButtonClick() {
+//                task.requiredItems.add(TaskForestryRetrieval.getDefaultBee());
+//                refresh();
+//            }
+//        };
+//        btnAddNew.setIcon(ThemeHandler.ICON_ITEM_ADD.getTexture());
+//        btnAddNew.setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.tooltip.add"), 128, mc.fontRenderer));
+
+        // Add New Before Button
+        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(0, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add.before", mc.fontRenderer,
+                () -> {
+                    task.requiredItems.add(getSelectedIndex(), TaskForestryRetrieval.getDefaultBee());
+                    refresh();
+                })
+        );
+
+        // Add New After Button
+        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add", mc.fontRenderer,
+                () -> {
+                    if (getSelectedIndex() + 1 >= task.requiredItems.size()) {
+                        task.requiredItems.add(TaskForestryRetrieval.getDefaultBee());
+                    } else {
+                        task.requiredItems.add(getSelectedIndex() + 1, TaskForestryRetrieval.getDefaultBee());
+                    }
+                    refresh();
+                })
+        );
+
         // Scrollbar
-        PanelHScrollBar scBeeScrollBarH = new PanelHScrollBar(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, buttonSize + 2, -4), -10));
+        PanelHScrollBar scBeeScrollBarH = new PanelHScrollBar(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(buttonSize + 2, 0, buttonSize + 2, -4), -10));
         scBeeScrollBarH.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
         cvBeeScroll.setScrollDriverX(scBeeScrollBarH);
         cvBeeScrollContainer.addPanel(scBeeScrollBarH);
@@ -210,23 +228,22 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         CanvasTextured cvBeeCategories = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, cHeightThird * 2, cWidthHalf - 1, cHeightThird + 1, 0), PresetTexture.ITEM_FRAME.getTexture());
         cvDataPanels.addPanel(cvBeeCategories);
 
-        boolean isActive = task.requiredItems.size() > 0;
-        int catWidthBounds = cvBeeCategories.getTransform().getWidth();
+        catWidthBounds = cvBeeCategories.getTransform().getWidth();
 
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.BeeSpeed, ThemeHandler.ICON_GENOME_SPEED.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_TEMPERATURE_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_NEVER_SLEEPS.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_HUMIDITY_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_RAIN_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_CAVE_DWELLING.getTexture()));
-        //cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_FLOWER_PROVIDER.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_FLOWERING.getTexture()));
-        cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_TERRITORY.getTexture()));
-        //cvBeeCategories.addPanel(getPanel(isActive, catWidthBounds, BeePanelControls.None, ThemeHandler.ICON_GENOME_EFFECT.getTexture()));
+        cvBeeCategories.addPanel(getPanel(PanesBee.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
+        cvBeeCategories.addPanel(/* Species             */ getPanel(PanesBee.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+        cvBeeCategories.addPanel(/* Lifespans           */ getPanel(PanesBee.BeeLifespan, ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
+        cvBeeCategories.addPanel(/* Production Rates    */ getPanel(PanesBee.BeeSpeed, ThemeHandler.ICON_GENOME_SPEED.getTexture()));
+        cvBeeCategories.addPanel(/* Pollination Speeds  */ getPanel(PanesBee.BeeFloweringSpeed, ThemeHandler.ICON_GENOME_FLOWERING.getTexture()));
+        cvBeeCategories.addPanel(/* Fertility Rates     */ getPanel(PanesBee.BeeFertility, ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
+        cvBeeCategories.addPanel(/* Territory Sizes     */ getPanel(PanesBee.BeeTerritory, ThemeHandler.ICON_GENOME_TERRITORY.getTexture()));
+        cvBeeCategories.addPanel(/* Area Effects        */ getPanel(PanesBee.BeeEffect, ThemeHandler.ICON_GENOME_EFFECT.getTexture()));
+        cvBeeCategories.addPanel(/* Climate Tolerances  */ getPanel(PanesBee.BeeTemperature, ThemeHandler.ICON_GENOME_TEMPERATURE_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(/* Humidity Tolerances */ getPanel(PanesBee.BeeHumidity, ThemeHandler.ICON_GENOME_HUMIDITY_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(/* Works at Night      */ getPanel(PanesBee.BeeSleep, ThemeHandler.ICON_GENOME_NEVER_SLEEPS.getTexture()));
+        cvBeeCategories.addPanel(/* Works in Rain       */ getPanel(PanesBee.BeeRain, ThemeHandler.ICON_GENOME_RAIN_TOLERANCE.getTexture()));
+        cvBeeCategories.addPanel(/* Works Underground   */ getPanel(PanesBee.BeeCave, ThemeHandler.ICON_GENOME_CAVE_DWELLING.getTexture()));
+        cvBeeCategories.addPanel(/* Suitable Flowers    */ getPanel(PanesBee.BeeFlowerProvider, ThemeHandler.ICON_GENOME_FLOWER_PROVIDER.getTexture()));
 //endregion
 
 //region Options Area
@@ -249,11 +266,11 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
     }
 
-    private PanelButtonStorage<BeePanelControls> getPanel(boolean active, int bounds, BeePanelControls panel, IGuiTexture icon) {
-        Tuple<Integer, Integer> coords = getCatCoords(bounds);
-        PanelButtonStorage<BeePanelControls> btnBeePanel = new PanelButtonStorage<>(new GuiTransform(GuiAlign.TOP_LEFT, coords.getFirst(), coords.getSecond(), catButtonSize, catButtonSize, 0), -1, "", panel);
+    private PanelButtonStorage<PanesBee> getPanel(PanesBee panel, IGuiTexture icon) {
+        Tuple<Integer, Integer> coords = getCatCoords();
+        PanelButtonStorage<PanesBee> btnBeePanel = new PanelButtonStorage<>(new GuiTransform(GuiAlign.TOP_LEFT, coords.getFirst(), coords.getSecond(), catButtonSize, catButtonSize, 0), -1, "", panel);
         btnBeePanel.setIcon(icon);
-        btnBeePanel.setActive(active);
+        btnBeePanel.setActive(task.requiredItems.size() > 0);
         btnBeePanel.setCallback(this::setSelectedOption);
         return btnBeePanel;
     }
@@ -277,64 +294,37 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
     }
 
     private ArrayList<String> getBeeInfo(ItemStack bee) {
-        /*
-        Species
-        Lifespan
-        Production
-        Pollination
-        Fertility
-        Territory
-        Effect
-        Climate
-        Humidity
-        Nocturnal
-        Flyer
-        Dweller
-         */
-
-
         ArrayList<String> info = new ArrayList<>();
+
+        // TODO: #16 Sometimes bees are showing the wrong DisplayNames (but correct species tags?)
+        info.add(getInfoString("bqforestry.label.bee.species", bee, EnumBeeChromosome.SPECIES));
+        info.add(getInfoString("bqforestry.label.bee.lifespan", bee, EnumBeeChromosome.LIFESPAN));
+        info.add(getInfoString("bqforestry.label.bee.speeds", bee, EnumBeeChromosome.SPEED));
+        info.add(getInfoString("bqforestry.label.bee.flowering", bee, EnumBeeChromosome.FLOWERING));
+        info.add(getInfoString("bqforestry.label.bee.fertility", bee, EnumBeeChromosome.FERTILITY));
+        info.add(getInfoString("bqforestry.label.bee.territory", bee, EnumBeeChromosome.TERRITORY));
+        info.add(getInfoString("bqforestry.label.bee.effect", bee, EnumBeeChromosome.EFFECT));
+        info.add(getInfoString("bqforestry.label.bee.temp", bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE));
+        info.add(getInfoString("bqforestry.label.bee.humidity", bee, EnumBeeChromosome.HUMIDITY_TOLERANCE));
+        info.add(getInfoString("bqforestry.label.bee.sleeps", bee, EnumBeeChromosome.NEVER_SLEEPS));
+        info.add(getInfoString("bqforestry.label.bee.rain", bee, EnumBeeChromosome.TOLERATES_RAIN));
+        info.add(getInfoString("bqforestry.label.bee.dwelling", bee, EnumBeeChromosome.CAVE_DWELLING));
+        info.add(getInfoString("bqforestry.label.bee.flowers", bee, EnumBeeChromosome.FLOWER_PROVIDER));
+        return info;
+    }
+
+    private String getInfoString(String translationKey, ItemStack bee, EnumBeeChromosome chromosome) {
         String GOLD = TextFormatting.GOLD.toString();
         String AQUA = TextFormatting.AQUA.toString();
         String DIV = GOLD.concat(", ").concat(AQUA);
 
-        // Task Item 1: Meadows Princess (forestry.speciesMeadows)
-        // TODO: #16 Sometimes bees are showing the wrong DisplayNames (but correct species tags?)
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.species")).concat(": ").concat(AQUA).concat(getDisplayName(bee)).concat(" (" + getTrait(bee, EnumBeeChromosome.SPECIES, true)[0] + ")"));
+        StringUtils.IStringStyle style = (str) -> str.substring(indexOfFirstCapital(str));
+        String ret = GOLD.concat(QuestTranslation.translate(translationKey)).concat(": ").concat(AQUA);
 
-        // Lifespans: forestry.liefspanLong, forestry.lifespanElongated
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.lifespan")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.LIFESPAN, false), DIV)));
+        if (chromosome == EnumBeeChromosome.SPECIES) {
+            return ret.concat(getDisplayName(bee)).concat(" (" + getTrait(bee, chromosome, true)[0]) + ")";
+        }
 
-        // Production Speeds: forestry.lifespanLong, forestry.lifespanElongated
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.speeds")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.SPEED, false), DIV)));
-
-        // Pollination Speeds: forestry.floweringAverage, forestry.floweringFastest
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.flowering")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FLOWERING, false), DIV)));
-
-        // Fertility Rates: forestry.fertilityLow, forestry.fertilityHigh
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.fertility")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.FERTILITY, false), DIV)));
-
-        // Territory Sizes: forestry.territoryAverage, forestry.territoryLarge
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.territory")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TERRITORY, false), DIV)));
-
-        // Area Effects: forestry.effectNone, forestry.effectMiasmic
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.effect")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.EFFECT, false), DIV)));
-
-        // Climate Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.temp")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE, false), DIV)));
-
-        // Humidity Tolerances: forestry.toleranceBoth5, forestry.toleranceNone
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.humidity")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.HUMIDITY_TOLERANCE, false), DIV)));
-
-        // Works At Night: Yes/No/Only
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.sleeps")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.NEVER_SLEEPS, false), DIV)));
-
-        // Tolerates Rain: Yes/No/Only
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.rain")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.TOLERATES_RAIN, false), DIV)));
-
-        // Works Underground: Yes/No/Only
-        info.add(GOLD.concat(QuestTranslation.translate("bqforestry.label.bee.dwelling")).concat(": ").concat(AQUA).concat(StringUtils.flattenArray(getTrait(bee, EnumBeeChromosome.CAVE_DWELLING, false), DIV)));
-
-        return info;
+        return ret.concat(flattenArray(getTrait(bee, chromosome, false), DIV, style));
     }
 }

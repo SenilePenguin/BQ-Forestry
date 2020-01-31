@@ -1,4 +1,4 @@
-package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels;
+package com.nicjames2378.bqforestry.client.gui.editors.panels;
 
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api2.client.gui.controls.PanelButtonStorage;
@@ -12,9 +12,10 @@ import betterquesting.api2.client.gui.resources.textures.ItemTexture;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.BQ_Forestry;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.CanvasBeeDatabase;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.BQScreenCanvas;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.IControlPanel;
+import com.nicjames2378.bqforestry.client.gui.editors.controls.BQButton;
+import com.nicjames2378.bqforestry.client.gui.editors.panels.canvas.CanvasBeeDatabase;
+import com.nicjames2378.bqforestry.client.gui.editors.panels.templates.TemplateEmpty;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.abstractions.BQScreenCanvas;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.logic.BigBeeStack;
 import forestry.api.apiculture.EnumBeeChromosome;
@@ -26,12 +27,12 @@ import java.util.List;
 
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
-public class ControlSpecies extends CanvasEmpty implements IControlPanel {
+public class PanelBeeSpecies extends TemplateEmpty {
 
     private final List<PanelButtonStorage<String>> lstSpeciesButtons = new ArrayList<>();
     private String species = DEFAULT_SPECIES;
 
-    public ControlSpecies(IGuiRect rect) {
+    public PanelBeeSpecies(IGuiRect rect) {
         super(rect);
     }
 
@@ -63,15 +64,6 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
                     for (PanelButtonStorage<String> b : lstSpeciesButtons) {
                         b.setActive(!b.getStoredValue().equals(species));
                     }
-
-//                    // Update Types buttons to reflect current selected species
-/*                    for (PanelButtonStorage<String> b : lstTypeButtons) {
-                        b.setActive(!b.getStoredValue().equals(gui.getSelectedSpecies()));
-                        b.setIcon(new ItemTexture(new BigItemStack(getBaseBee(
-                                gui.getSelectedSpecies(),
-                                UtilitiesBee.BeeTypes.valueOf(b.getStoredValue()))
-                        )), 8);
-                    }*/
                 });
                 btnBeeSpecies.setTooltip(getBeeTooltip(entry.getModID(), entry.getUID()));
 
@@ -94,14 +86,9 @@ public class ControlSpecies extends CanvasEmpty implements IControlPanel {
         canvas.addPanel(scBeeBar);
 
         // Done Button
-        ConfirmButton doneButton = new ConfirmButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(4, -28, 4, 4), 0), -1, QuestTranslation.translate("gui.done")) {
+        BQButton.ConfirmButton doneButton = new BQButton.ConfirmButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(4, -28, 4, 4), 0), -1, QuestTranslation.translate("gui.done")) {
             @Override
             public void onButtonClick() {
-                /*
-                Need to have each control panel keep a record of valid values.
-                Then, when pressing done, check which of these values are toggled.
-                This will let us edit the bees in-place instead of recreating from the ground up. It will also let us change single NBT values at a time.
-                 */
                 BQ_Forestry.debug(String.format("ControlSpecies: Setting Species for item #%1$s: - %2$s", gui.getSelectedIndex(), species));
 
                 writeTrait(bee.getBaseStack(), EnumBeeChromosome.SPECIES, species);

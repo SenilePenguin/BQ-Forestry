@@ -13,7 +13,6 @@ import betterquesting.api2.storage.DBEntry;
 import betterquesting.api2.utils.ParticipantInfo;
 import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.tasks.GuiEditTaskBeeRetrieval;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.GuiEditTaskBeeRetrievalLanding;
 import com.nicjames2378.bqforestry.client.tasks.PanelTaskForestryRetrieval;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.factory.FactoryTaskForestryRetrieval;
@@ -422,7 +421,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getTaskEditor(GuiScreen parent, DBEntry<IQuest> quest) {
-        return ConfigHandler.cfgDoDebugOutputs ? new GuiEditTaskBeeRetrieval(parent, quest.getValue(), this) : new GuiEditTaskBeeRetrievalLanding(parent, quest.getValue(), this);
+        return new GuiEditTaskBeeRetrieval(parent, quest.getValue(), this);
     }
 
     public void setUserProgress(UUID uuid, int[] progress) {

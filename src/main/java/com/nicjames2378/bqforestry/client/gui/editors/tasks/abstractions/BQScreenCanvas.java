@@ -1,9 +1,9 @@
-package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions;
+package com.nicjames2378.bqforestry.client.gui.editors.tasks.abstractions;
 
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api2.client.gui.GuiScreenCanvas;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels.BeePanelControls;
+import com.nicjames2378.bqforestry.client.gui.editors.panels.PanesBee;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,7 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
     protected IQuest quest;
     protected TaskForestryRetrieval task;
     private int selectedItem = 0;
-    private BeePanelControls selectedOption = BeePanelControls.None;
+    private PanesBee selectedOption = PanesBee.None;
 
     //region Getters and Setters
     public int getSelectedIndex() {
@@ -36,11 +36,11 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
         }
     }
 
-    public BeePanelControls getSelectedOption() {
+    public PanesBee getSelectedOption() {
         return selectedOption;
     }
 
-    public void setSelectedOption(BeePanelControls control) {
+    public void setSelectedOption(PanesBee control) {
         if (selectedOption != control) {
             this.selectedOption = control;
             refresh();

@@ -1,4 +1,4 @@
-package com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.panels;
+package com.nicjames2378.bqforestry.client.gui.editors.panels;
 
 import betterquesting.api2.client.gui.misc.GuiAlign;
 import betterquesting.api2.client.gui.misc.GuiPadding;
@@ -7,12 +7,14 @@ import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.CanvasEmpty;
 import betterquesting.api2.client.gui.panels.content.PanelTextBox;
 import betterquesting.api2.utils.QuestTranslation;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.BQScreenCanvas;
-import com.nicjames2378.bqforestry.client.gui.editors.tasks.canvas.abstractions.IControlPanel;
+import com.nicjames2378.bqforestry.client.gui.editors.panels.templates.TemplateEmpty;
+import com.nicjames2378.bqforestry.client.gui.editors.tasks.abstractions.BQScreenCanvas;
 
-public class ControlTrash extends CanvasEmpty implements IControlPanel {
+import static com.nicjames2378.bqforestry.client.gui.editors.controls.BQButton.*;
 
-    public ControlTrash(IGuiRect rect) {
+public class PanelTrash extends TemplateEmpty {
+
+    public PanelTrash(IGuiRect rect) {
         super(rect);
     }
 
@@ -31,8 +33,9 @@ public class ControlTrash extends CanvasEmpty implements IControlPanel {
                 gui.updateTaskItem(null);
             }
         };
-        // Change colors of Trash button to make it stand out
-        btnConfirm.setTextHighlight(ConfirmButton.GREY, ConfirmButton.RED, ConfirmButton.GREEN);
+
+        // Change colors for Trash button to make it stand out
+        btnConfirm.setTextHighlight(GREY, RED, GREEN);
         canvas.addPanel(btnConfirm);
     }
 }
