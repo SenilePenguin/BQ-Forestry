@@ -44,14 +44,12 @@ public class UtilitiesBee {
         // TODO: Clean this?
         for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
             Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
-            //TreeMap<Integer, String> currentMap = new TreeMap<>();
 
             Iterator iterator = alleles.iterator();
             for (int i = 0; i < alleles.size(); i++) {
                 Object next = iterator.next();
 
                 int value = getValue(chromosome.getAlleleClass(), next);
-                //currentMap.put(value, next.toString());
                 BQ_Forestry.debug(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
             }
         }
@@ -70,12 +68,28 @@ public class UtilitiesBee {
         TreeMap<Integer, String> orderedMap = new TreeMap<>();
 
         Iterator iterator = alleles.iterator();
+        short counter = 0;
         for (int i = 0; i < alleles.size(); i++) {
             Object next = iterator.next();
 
             int value = getValue(chromosome.getAlleleClass(), next);
+            if (value < 0) counter++;
             orderedMap.put((value >= 0 ? value : i), next.toString());
         }
+
+        // Special handling for String-based values that cannot be easily sorted in getValue.
+        // This will just alphabetize them for the sake of cleanliness.
+        if (counter >= 2) {
+            TreeMap<Integer, String> newOrder = new TreeMap<>();
+            SortedSet<String> set = new TreeSet<>(orderedMap.values());
+            Iterator iter = set.iterator();
+            for (int i = 0; i < set.size(); i++) {
+                newOrder.put(i, (String) iter.next());
+            }
+            return newOrder;
+        }
+
+        // If we didn't have to do special handling, return the original map.
         return orderedMap;
     }
 

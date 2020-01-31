@@ -26,8 +26,8 @@ bqforestry.panel.information.delete=WARNING! This operation CANNOT be undone! Ar
 
 bqforestry.tooltip.delete=Deletes this entry from the task list.
 bqforestry.tooltip.deleteWarning=WARNING! This change is irreversible!
-bqforestry.tooltip.add=Adds a new item to the left of the selected item in the task list.
-bqforestry.tooltip.add.before=Adds a new item to the right of the selected item in the task list.
+bqforestry.tooltip.add.left=Adds a new item to the left of the selected item in the task list.
+bqforestry.tooltip.add.right=Adds a new item to the right of the selected item in the task list.
 
 bqforestry.btn.confirm=Confirm
 bqforestry.btn.consume=Consume: %s

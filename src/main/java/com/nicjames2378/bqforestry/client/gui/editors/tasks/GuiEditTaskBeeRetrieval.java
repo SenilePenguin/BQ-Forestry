@@ -155,9 +155,6 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 
                 cvBeeScroll.addPanel(btnReqItem);
                 lstRequiredItemButtons.add(btnReqItem);
-//                PanelGeneric iconFrame = new PanelGeneric(new GuiRectangle(i * buttonSize + (i * 2), 0, buttonSize, buttonSize, 0), PresetTexture.ITEM_FRAME.getTexture());
-//                iconFrame.setTooltip(getHoverTooltip(taskItem.getBaseStack()));
-//                cvBeeScroll.addPanel(iconFrame);
 
                 // Bee Icon
                 // TODO: Figure out bug where bees get wrong icon sometimes. Think it's linked to #16?
@@ -166,18 +163,8 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
             }
         }
 
-//        PanelButton btnAddNew = new PanelButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), -1, "") {
-//            @Override
-//            public void onButtonClick() {
-//                task.requiredItems.add(TaskForestryRetrieval.getDefaultBee());
-//                refresh();
-//            }
-//        };
-//        btnAddNew.setIcon(ThemeHandler.ICON_ITEM_ADD.getTexture());
-//        btnAddNew.setTooltip(RenderUtils.splitString(QuestTranslation.translate("bqforestry.tooltip.add"), 128, mc.fontRenderer));
-
         // Add New Before Button
-        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(0, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add.before", mc.fontRenderer,
+        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(0, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add.left", mc.fontRenderer,
                 () -> {
                     task.requiredItems.add(getSelectedIndex(), TaskForestryRetrieval.getDefaultBee());
                     refresh();
@@ -185,7 +172,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         );
 
         // Add New After Button
-        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add", mc.fontRenderer,
+        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add.right", mc.fontRenderer,
                 () -> {
                     if (getSelectedIndex() + 1 >= task.requiredItems.size()) {
                         task.requiredItems.add(TaskForestryRetrieval.getDefaultBee());
@@ -220,6 +207,9 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 
         CanvasEmpty cvBeeStats = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(4, 4, 4, 4), 0));
         cvBeeStatsHolder.addPanel(cvBeeStats);
+
+        // TODO: Make this scrollable
+
         cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getSelectedIndex()).setFontSize(16).enableShadow(true));
         cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 24, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getSelectedIndex()).getBaseStack()))));
 //endregion
@@ -229,6 +219,8 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         cvDataPanels.addPanel(cvBeeCategories);
 
         catWidthBounds = cvBeeCategories.getTransform().getWidth();
+
+        // TODO: Make this scrollable
 
         cvBeeCategories.addPanel(getPanel(PanesBee.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
         cvBeeCategories.addPanel(/* Species             */ getPanel(PanesBee.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));

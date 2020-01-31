@@ -1,12 +1,16 @@
 package com.nicjames2378.bqforestry.client.gui.editors.panels.templates;
 
-import betterquesting.api2.client.gui.misc.*;
+import betterquesting.api2.client.gui.misc.GuiAlign;
+import betterquesting.api2.client.gui.misc.GuiPadding;
+import betterquesting.api2.client.gui.misc.GuiTransform;
+import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.CanvasEmpty;
 import betterquesting.api2.client.gui.panels.IGuiPanel;
 import betterquesting.api2.client.gui.panels.bars.PanelVScrollBar;
+import betterquesting.api2.client.gui.panels.content.PanelTextBox;
 import betterquesting.api2.client.gui.panels.lists.CanvasScrolling;
+import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.utils.QuestTranslation;
-import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.controls.BQButton;
 import com.nicjames2378.bqforestry.client.gui.editors.controls.FactoryForestryDataControlArea;
 import com.nicjames2378.bqforestry.client.gui.editors.controls.PanelToggleStorage;
@@ -25,6 +29,7 @@ import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class TemplateToggleableList extends TemplateEmpty {
+    private String translationTitleKey = "";
     private EnumBeeChromosome chromosome = EnumBeeChromosome.SPEED;
     private ArrayList<PanelToggleStorage> values = new ArrayList<>();
 
@@ -32,9 +37,10 @@ public class TemplateToggleableList extends TemplateEmpty {
         return chromosome;
     }
 
-    public TemplateToggleableList(EnumBeeChromosome chromosome) {
+    public TemplateToggleableList(EnumBeeChromosome chromosome, String translationKeyTitle) {
         super(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));
         this.chromosome = chromosome;
+        this.translationTitleKey = translationKeyTitle;
     }
 
     public TemplateToggleableList(IGuiRect rect) {
@@ -45,10 +51,14 @@ public class TemplateToggleableList extends TemplateEmpty {
     public void initialize(BQScreenCanvas gui, CanvasEmpty canvas) {
         BigBeeStack bee = new BigBeeStack(gui.getSelectedItem());
 
-        CanvasScrolling canvasScrolling = new CanvasScrolling(new GuiRectangle(0, 0, canvas.getTransform().getWidth(), canvas.getTransform().getHeight(), 0));//, PresetTexture.QUEST_MAIN_3.getTexture());
+        // Title
+        canvas.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(16, 8, 16, -32), 0), QuestTranslation.translate(translationTitleKey)).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor()));
+
+        CanvasScrolling canvasScrolling = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 20, 0, 32), 0));//, PresetTexture.QUEST_MAIN_3.getTexture());
         canvas.addPanel(canvasScrolling);
 
-        FactoryForestryDataControlArea dataArea = new FactoryForestryDataControlArea(canvasScrolling, 70/*canvasScrolling.getTransform().getWidth() / 2 - 70*/, 40, 140);
+        // Factory to automatically make the button controls and format them
+        FactoryForestryDataControlArea dataArea = new FactoryForestryDataControlArea(canvasScrolling, 0, 40, 160);
         dataArea.setTitle(capitalizeFirst(getChromosomeValue().getName()), false)
                 .setLayout(1, 16)
                 .setPanels(getButtonsForChromosome(getChromosomeValue(), dataArea, gui))
@@ -64,8 +74,6 @@ public class TemplateToggleableList extends TemplateEmpty {
         BQButton.ConfirmButton doneButton = new BQButton.ConfirmButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(4, -28, 4, 4), 0), -1, QuestTranslation.translate("gui.done")) {
             @Override
             public void onButtonClick() {
-                BQ_Forestry.debug(String.format("ControlSpeed: Setting Speed for item #%1$s", gui.getSelectedIndex()));
-
                 // Clear all traits for this chromosome and write only the enabled ones
                 clearTraits(bee.getBaseStack(), getChromosomeValue());
                 for (PanelToggleStorage panel : values) {

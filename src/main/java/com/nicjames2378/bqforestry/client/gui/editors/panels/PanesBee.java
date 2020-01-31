@@ -15,19 +15,24 @@ public enum PanesBee {
     None(new TemplateEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0))),
     Trash(new PanelTrash(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0))),
     BeeSpecies(new PanelBeeSpecies(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0))),
+    BeeLifespan(new TemplateToggleableList(EnumBeeChromosome.LIFESPAN, "bqforestry.label.bee.lifespan")),
+    BeeSpeed(new TemplateToggleableList(EnumBeeChromosome.SPEED, "bqforestry.label.bee.speeds")),
+    BeeFloweringSpeed(new TemplateToggleableList(EnumBeeChromosome.FLOWERING, "bqforestry.label.bee.flowering")),
+    BeeFertility(new TemplateToggleableList(EnumBeeChromosome.FERTILITY, "bqforestry.label.bee.fertility")),
+    BeeTerritory(new TemplateToggleableList(EnumBeeChromosome.TERRITORY, "bqforestry.label.bee.territory")),
+    BeeEffect(new TemplateToggleableList(EnumBeeChromosome.EFFECT, "bqforestry.label.bee.effect")),
+    BeeTemperature(new TemplateToggleableList(EnumBeeChromosome.TEMPERATURE_TOLERANCE, "bqforestry.label.bee.temp")),
+    BeeHumidity(new TemplateToggleableList(EnumBeeChromosome.HUMIDITY_TOLERANCE, "bqforestry.label.bee.humidity")),
+    BeeSleep(new TemplateToggleableList(EnumBeeChromosome.NEVER_SLEEPS, "bqforestry.label.bee.sleeps")),
+    BeeRain(new TemplateToggleableList(EnumBeeChromosome.TOLERATES_RAIN, "bqforestry.label.bee.rain")),
+    BeeCave(new TemplateToggleableList(EnumBeeChromosome.CAVE_DWELLING, "bqforestry.label.bee.dwelling")),
+    BeeFlowerProvider(new TemplateToggleableList(EnumBeeChromosome.FLOWER_PROVIDER, "bqforestry.label.bee.flowers"));
 
-    BeeSpeed(new TemplateToggleableList(EnumBeeChromosome.SPEED)),
-    BeeLifespan(new TemplateToggleableList(EnumBeeChromosome.LIFESPAN)),
-    BeeFertility(new TemplateToggleableList(EnumBeeChromosome.FERTILITY)),
-    BeeTemperature(new TemplateToggleableList(EnumBeeChromosome.TEMPERATURE_TOLERANCE)),
-    BeeSleep(new TemplateToggleableList(EnumBeeChromosome.NEVER_SLEEPS)),
-    BeeHumidity(new TemplateToggleableList(EnumBeeChromosome.HUMIDITY_TOLERANCE)),
-    BeeRain(new TemplateToggleableList(EnumBeeChromosome.TOLERATES_RAIN)),
-    BeeCave(new TemplateToggleableList(EnumBeeChromosome.CAVE_DWELLING)),
-    BeeFlowerProvider(new TemplateToggleableList(EnumBeeChromosome.FLOWER_PROVIDER)),
-    BeeFloweringSpeed(new TemplateToggleableList(EnumBeeChromosome.FLOWERING)),
-    BeeTerritory(new TemplateToggleableList(EnumBeeChromosome.TERRITORY)),
-    BeeEffect(new TemplateToggleableList(EnumBeeChromosome.EFFECT));
+    // TODO: Implement changing of the "type" or "growth" of the bees. This was an oversight...
+    // TODO: Make another template for True/False items since there's really no need for a while list when a checkbox will work.
+    // TODO: Can we make the flower providers show some of the applicable blocks? Could be interesting...
+    // TODO: How can we make the temp and humidity tolerances look nicer and easier to understand?
+    // TODO: Need a visual for territory? More visual all around!!
 
     private final IPanel canvas;
 

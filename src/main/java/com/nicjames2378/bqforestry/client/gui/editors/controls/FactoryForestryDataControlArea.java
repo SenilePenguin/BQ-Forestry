@@ -1,11 +1,10 @@
 package com.nicjames2378.bqforestry.client.gui.editors.controls;
 
-import betterquesting.api2.client.gui.misc.*;
+import betterquesting.api2.client.gui.misc.GuiRectangle;
+import betterquesting.api2.client.gui.misc.IGuiRect;
 import betterquesting.api2.client.gui.panels.CanvasEmpty;
 import betterquesting.api2.client.gui.panels.IGuiCanvas;
 import betterquesting.api2.client.gui.panels.IGuiPanel;
-import betterquesting.api2.client.gui.panels.content.PanelTextBox;
-import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.BQ_Forestry;
 
@@ -55,7 +54,10 @@ public class FactoryForestryDataControlArea {
     }
 
     private int getNextX() {
-        return LAYOUT_SIZE_X * getCurrentColumn();
+        int parentHalfWidth = parent.getTransform().getWidth() / 2;
+        int factoryHalfWidth = (LAYOUT_COLUMNS * LAYOUT_SIZE_X) / 2;
+
+        return (parentHalfWidth - factoryHalfWidth) + LAYOUT_SIZE_X * getCurrentColumn();
     }
 
     private int getNextY() {
@@ -99,12 +101,10 @@ public class FactoryForestryDataControlArea {
         CanvasEmpty built = new CanvasEmpty(rect);
         parent.addPanel(built);
 
-        PanelTextBox tbx = new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 0, 0, -16), 0), titleText).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor());
-        built.addPanel(tbx);
-        IGuiRect r = tbx.getTransform();
+//        PanelTextBox tbx = new PanelTextBox(new GuiTransform(GuiAlign.TOP_CENTER, new GuiPadding(0, 0, 0, -16), 0), titleText).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor());
+//        built.addPanel(tbx);
 
         for (IGuiPanel panel : panels) {
-            IGuiRect t = panel.getTransform();
             built.addPanel(panel);
         }
 
