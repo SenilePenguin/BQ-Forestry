@@ -27,7 +27,11 @@ public enum ThemeHandler {
     ICON_GENOME_FLOWER_PROVIDER("icon_genome_flower_provider"),
     ICON_GENOME_FLOWERING("icon_genome_flowering"),
     ICON_GENOME_TERRITORY("icon_genome_territory"),
-    ICON_GENOME_EFFECT("icon_genome_effect");
+    ICON_GENOME_EFFECT("icon_genome_effect"),
+    ICON_GENOME_BEE_GROWTH("icon_genome_bee_growth"),
+    ICON_CHECK_YES("icon_check_yes"),
+    ICON_CHECK_NO("icon_check_no"),
+    ICON_CHECK_BOTH("icon_check_both");
 
     public static final ResourceLocation TX_FRAMES = new ResourceLocation("bqforestry", "textures/gui/frames.png");
     public static final ResourceLocation TX_ICONS = new ResourceLocation("bqforestry", "textures/gui/buttons.png");
@@ -45,8 +49,8 @@ public enum ThemeHandler {
         reg.setDefaultTexture(ITEM_FRAME.key, new SlicedTexture(TX_FRAMES, new GuiRectangle(0, 0, 12, 12), new GuiPadding(1, 1, 1, 1)));
         reg.setDefaultTexture(ITEM_FRAME_SELECTED.key, new SlicedTexture(TX_FRAMES, new GuiRectangle(12, 0, 12, 12), new GuiPadding(1, 1, 1, 1)));
         reg.setDefaultTexture(ICON_ITEM_ADD.key, new SimpleTexture(TX_ICONS, new GuiRectangle(0, 0, 24, 24)).maintainAspect(true));
-        reg.setDefaultTexture(ICON_ITEM_REMOVE.key, new SimpleTexture(TX_ICONS, new GuiRectangle(48, 0, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_GENOME_SPECIES.key, new SimpleTexture(TX_ICONS, new GuiRectangle(24, 0, 24, 24)).maintainAspect(true));
+        reg.setDefaultTexture(ICON_ITEM_REMOVE.key, new SimpleTexture(TX_ICONS, new GuiRectangle(48, 0, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_GENOME_SPEED.key, new SimpleTexture(TX_ICONS, new GuiRectangle(72, 0, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_GENOME_LIFESPAN.key, new SimpleTexture(TX_ICONS, new GuiRectangle(96, 0, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_GENOME_FERTILITY.key, new SimpleTexture(TX_ICONS, new GuiRectangle(120, 0, 24, 24)).maintainAspect(true));
@@ -59,5 +63,10 @@ public enum ThemeHandler {
         reg.setDefaultTexture(ICON_GENOME_FLOWERING.key, new SimpleTexture(TX_ICONS, new GuiRectangle(48, 24, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_GENOME_TERRITORY.key, new SimpleTexture(TX_ICONS, new GuiRectangle(72, 24, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_GENOME_EFFECT.key, new SimpleTexture(TX_ICONS, new GuiRectangle(96, 24, 24, 24)).maintainAspect(true));
+        reg.setDefaultTexture(ICON_GENOME_BEE_GROWTH.key, new SimpleTexture(TX_ICONS, new GuiRectangle(120, 24, 24, 24)).maintainAspect(true));
+
+        reg.setDefaultTexture(ICON_CHECK_YES.key, new SimpleTexture(TX_ICONS, new GuiRectangle(0, 72, 24, 24)).maintainAspect(true));
+        reg.setDefaultTexture(ICON_CHECK_NO.key, new SimpleTexture(TX_ICONS, new GuiRectangle(24, 72, 24, 24)).maintainAspect(true));
+        reg.setDefaultTexture(ICON_CHECK_BOTH.key, new SimpleTexture(TX_ICONS, new GuiRectangle(48, 72, 24, 24)).maintainAspect(true));
     }
 }

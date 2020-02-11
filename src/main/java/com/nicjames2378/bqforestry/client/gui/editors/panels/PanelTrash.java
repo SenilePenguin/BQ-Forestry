@@ -14,6 +14,10 @@ import static com.nicjames2378.bqforestry.client.gui.editors.controls.BQButton.*
 
 public class PanelTrash extends TemplateEmpty {
 
+    public PanelTrash() {
+        super(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));
+    }
+
     public PanelTrash(IGuiRect rect) {
         super(rect);
     }

@@ -32,6 +32,10 @@ public class PanelBeeSpecies extends TemplateEmpty {
     private final List<PanelButtonStorage<String>> lstSpeciesButtons = new ArrayList<>();
     private String species = DEFAULT_SPECIES;
 
+    public PanelBeeSpecies() {
+        super(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));
+    }
+
     public PanelBeeSpecies(IGuiRect rect) {
         super(rect);
     }
@@ -52,7 +56,7 @@ public class PanelBeeSpecies extends TemplateEmpty {
             protected boolean addResult(IAllele entry, int index, int cachedWidth) {
                 String beeUID = entry.getUID();
 
-                this.addPanel(new PanelGeneric(new GuiRectangle(0, index * 24, 24, 24, -1), new ItemTexture(new BigItemStack(getBaseBee(beeUID, bee.beeType)))));
+                this.addPanel(new PanelGeneric(new GuiRectangle(0, index * 24, 24, 24, -1), new ItemTexture(new BigItemStack(getBaseBee(beeUID, bee.getBeeType())))));
                 this.addPanel(new PanelGeneric(new GuiRectangle(0, index * 24, 24, 24, 0), PresetTexture.ITEM_FRAME.getTexture()));
 
                 PanelButtonStorage<String> btnBeeSpecies = new PanelButtonStorage<>(new GuiRectangle(24, index * 24, cachedWidth - 24, 24, 0), -1, entry.getAlleleName(), entry.getUID());

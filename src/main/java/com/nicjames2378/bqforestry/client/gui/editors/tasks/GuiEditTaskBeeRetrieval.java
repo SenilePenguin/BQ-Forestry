@@ -223,6 +223,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         // TODO: Make this scrollable
 
         cvBeeCategories.addPanel(getPanel(PanesBee.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
+        cvBeeCategories.addPanel(getPanel(PanesBee.BeeGrowth, ThemeHandler.ICON_GENOME_BEE_GROWTH.getTexture()));
         cvBeeCategories.addPanel(/* Species             */ getPanel(PanesBee.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
         cvBeeCategories.addPanel(/* Lifespans           */ getPanel(PanesBee.BeeLifespan, ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
         cvBeeCategories.addPanel(/* Production Rates    */ getPanel(PanesBee.BeeSpeed, ThemeHandler.ICON_GENOME_SPEED.getTexture()));

@@ -28,7 +28,7 @@ import static com.nicjames2378.bqforestry.utils.StringUtils.capitalizeFirst;
 import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
-public class TemplateToggleableList extends TemplateEmpty {
+public class TemplateToggleableChromosomes extends TemplateEmpty {
     private String translationTitleKey = "";
     private EnumBeeChromosome chromosome = EnumBeeChromosome.SPEED;
     private ArrayList<PanelToggleStorage> values = new ArrayList<>();
@@ -37,13 +37,13 @@ public class TemplateToggleableList extends TemplateEmpty {
         return chromosome;
     }
 
-    public TemplateToggleableList(EnumBeeChromosome chromosome, String translationKeyTitle) {
+    public TemplateToggleableChromosomes(EnumBeeChromosome chromosome, String translationKeyTitle) {
         super(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));
         this.chromosome = chromosome;
         this.translationTitleKey = translationKeyTitle;
     }
 
-    public TemplateToggleableList(IGuiRect rect) {
+    public TemplateToggleableChromosomes(IGuiRect rect) {
         super(rect);
     }
 
