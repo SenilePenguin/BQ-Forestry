@@ -11,6 +11,7 @@ import betterquesting.api2.client.gui.panels.lists.CanvasScrolling;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.BQ_Forestry;
+import com.nicjames2378.bqforestry.logic.BigBeeStack;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import com.nicjames2378.bqforestry.utils.UtilitiesBee;
 import mezz.jei.Internal;
@@ -56,7 +57,7 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
         int listW = cvList.getTransform().getWidth();
 
         for (int i = 0; i < task.requiredItems.size(); i++) {
-            BigItemStack stack = task.requiredItems.get(i);
+            BigBeeStack stack = new BigBeeStack(task.requiredItems.get(i));
 
             // Have to do some trickery here to ensure we don't get a crash for non Forestry-certified items. Smh
             BigItemStack safeStack = UtilitiesBee.getSafeStack(stack);
@@ -76,7 +77,11 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
 
             // Requirements
             int reqs = 0;
-            sb.append("\n").append(TextFormatting.GOLD).append("Requirements:").append(TextFormatting.RESET);
+            sb.append("\n").append(TextFormatting.GOLD).append("Requirements:\n").append(TextFormatting.RESET);
+
+            appendRequirements(sb, stack);
+
+
             reqs += tryAddRequirement(sb, reqs, UtilitiesBee.isMated(stack.getBaseStack()), QuestTranslation.translate("bqforestry.requirements.mated"));
             if (reqs == 0) sb.append(" None");
 
@@ -91,6 +96,17 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
             PanelTextBox text = new PanelTextBox(new GuiRectangle(36, i * 38 + 2, listW - 36, 40, 0), sb.toString());
             text.setColor(PresetColor.TEXT_MAIN.getColor());
             cvList.addPanel(text);
+        }
+    }
+
+    private void appendRequirements(StringBuilder sb, BigBeeStack stack) {
+        String space = "   ";
+
+        //TODO: Needs to cut out excess?
+        //      Possibly needs to scroll as we can't see everything.
+
+        for (String s : UtilitiesBee.getBeeInfo(stack.getBaseStack())) {
+            sb.append(space).append(s).append("\n");
         }
     }
 

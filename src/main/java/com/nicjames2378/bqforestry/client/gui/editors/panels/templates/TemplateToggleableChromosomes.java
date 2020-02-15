@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.nicjames2378.bqforestry.utils.StringUtils.capitalizeFirst;
 import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
@@ -54,12 +53,12 @@ public class TemplateToggleableChromosomes extends TemplateEmpty {
         // Title
         canvas.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(16, 8, 16, -32), 0), QuestTranslation.translate(translationTitleKey)).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor()));
 
-        CanvasScrolling canvasScrolling = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 20, 0, 32), 0));//, PresetTexture.QUEST_MAIN_3.getTexture());
+        CanvasScrolling canvasScrolling = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 20, 0, 32), 0));
         canvas.addPanel(canvasScrolling);
 
         // Factory to automatically make the button controls and format them
-        FactoryForestryDataControlArea dataArea = new FactoryForestryDataControlArea(canvasScrolling, 0, 40, 160);
-        dataArea.setTitle(capitalizeFirst(getChromosomeValue().getName()), false)
+        FactoryForestryDataControlArea dataArea = new FactoryForestryDataControlArea(canvasScrolling, 0, 16, 160);
+        dataArea//.setTitle(capitalizeFirst(getChromosomeValue().getName()), false)
                 .setLayout(1, 16)
                 .setPanels(getButtonsForChromosome(getChromosomeValue(), dataArea, gui))
                 .buildCanvas();

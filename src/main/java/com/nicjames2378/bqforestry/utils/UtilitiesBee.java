@@ -1,6 +1,7 @@
 package com.nicjames2378.bqforestry.utils;
 
 import betterquesting.api.utils.BigItemStack;
+import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import forestry.api.apiculture.EnumBeeChromosome;
@@ -15,6 +16,9 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.*;
+
+import static com.nicjames2378.bqforestry.utils.StringUtils.flattenArray;
+import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 
 public class UtilitiesBee {
     private static String[] cacheGrowthStages;
@@ -211,13 +215,13 @@ public class UtilitiesBee {
     public static BigItemStack getSafeStack(BigItemStack stack) {
         BigItemStack safeStack = stack.copy();
         String stackDName = getDisplayName(safeStack.getBaseStack());
-        BQ_Forestry.debug("[getSafeStack] stackDName: " + stackDName);
+//        BQ_Forestry.debug("[getSafeStack] stackDName: " + stackDName);
         // If we get the displayName and it contains the error string,
         if (stackDName.contains(_INVALID_SPECIES_STRING)) {
-            BQ_Forestry.debug("[getSafeStack] ERROR!!");
+//            BQ_Forestry.debug("[getSafeStack] ERROR!!");
             // Replace the NBT with something Forestry won't whine about
             safeStack.getBaseStack().setTagCompound(getBaseBee(DEFAULT_SPECIES).getTagCompound());
-            // Then overwrite it's display name so people still know what they're looking to submit
+            // Then overwrite it's display name so people still know what they're looking at
             safeStack.getBaseStack().setStackDisplayName(stackDName);
         }
 
@@ -449,6 +453,41 @@ public class UtilitiesBee {
             }
         }
         return false;
+    }
+
+    public static ArrayList<String> getBeeInfo(ItemStack bee) {
+        ArrayList<String> info = new ArrayList<>();
+
+        // TODO: #16 Sometimes bees are showing the wrong DisplayNames (but correct species tags?)
+        info.add(getInfoString("bqforestry.label.bee.species", bee, EnumBeeChromosome.SPECIES));
+        info.add(getInfoString("bqforestry.label.bee.lifespan", bee, EnumBeeChromosome.LIFESPAN));
+        info.add(getInfoString("bqforestry.label.bee.speeds", bee, EnumBeeChromosome.SPEED));
+        info.add(getInfoString("bqforestry.label.bee.flowering", bee, EnumBeeChromosome.FLOWERING));
+        info.add(getInfoString("bqforestry.label.bee.fertility", bee, EnumBeeChromosome.FERTILITY));
+        info.add(getInfoString("bqforestry.label.bee.territory", bee, EnumBeeChromosome.TERRITORY));
+        info.add(getInfoString("bqforestry.label.bee.effect", bee, EnumBeeChromosome.EFFECT));
+        info.add(getInfoString("bqforestry.label.bee.temp", bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE));
+        info.add(getInfoString("bqforestry.label.bee.humidity", bee, EnumBeeChromosome.HUMIDITY_TOLERANCE));
+        info.add(getInfoString("bqforestry.label.bee.sleeps", bee, EnumBeeChromosome.NEVER_SLEEPS));
+        info.add(getInfoString("bqforestry.label.bee.rain", bee, EnumBeeChromosome.TOLERATES_RAIN));
+        info.add(getInfoString("bqforestry.label.bee.dwelling", bee, EnumBeeChromosome.CAVE_DWELLING));
+        info.add(getInfoString("bqforestry.label.bee.flowers", bee, EnumBeeChromosome.FLOWER_PROVIDER));
+        return info;
+    }
+
+    private static String getInfoString(String translationKey, ItemStack bee, EnumBeeChromosome chromosome) {
+        String GOLD = TextFormatting.GOLD.toString();
+        String AQUA = TextFormatting.AQUA.toString();
+        String DIV = GOLD.concat(", ").concat(AQUA);
+
+        StringUtils.IStringStyle style = (str) -> str.substring(indexOfFirstCapital(str));
+        String ret = GOLD.concat(QuestTranslation.translate(translationKey)).concat(": ").concat(AQUA);
+
+        if (chromosome == EnumBeeChromosome.SPECIES) {
+            return ret.concat(getDisplayName(bee)).concat(" (" + getTrait(bee, chromosome, true)[0]) + ")";
+        }
+
+        return ret.concat(flattenArray(getTrait(bee, chromosome, false), DIV, style));
     }
 
     public static void listAllSpecies() {

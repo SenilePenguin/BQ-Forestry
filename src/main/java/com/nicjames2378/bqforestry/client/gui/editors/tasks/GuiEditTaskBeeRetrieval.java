@@ -31,7 +31,6 @@ import com.nicjames2378.bqforestry.client.gui.editors.tasks.abstractions.BQScree
 import com.nicjames2378.bqforestry.client.themes.ThemeHandler;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
-import com.nicjames2378.bqforestry.utils.StringUtils;
 import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
@@ -45,8 +44,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.nicjames2378.bqforestry.utils.StringUtils.flattenArray;
-import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatileScreen {
@@ -286,38 +283,5 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         return tip;
     }
 
-    private ArrayList<String> getBeeInfo(ItemStack bee) {
-        ArrayList<String> info = new ArrayList<>();
 
-        // TODO: #16 Sometimes bees are showing the wrong DisplayNames (but correct species tags?)
-        info.add(getInfoString("bqforestry.label.bee.species", bee, EnumBeeChromosome.SPECIES));
-        info.add(getInfoString("bqforestry.label.bee.lifespan", bee, EnumBeeChromosome.LIFESPAN));
-        info.add(getInfoString("bqforestry.label.bee.speeds", bee, EnumBeeChromosome.SPEED));
-        info.add(getInfoString("bqforestry.label.bee.flowering", bee, EnumBeeChromosome.FLOWERING));
-        info.add(getInfoString("bqforestry.label.bee.fertility", bee, EnumBeeChromosome.FERTILITY));
-        info.add(getInfoString("bqforestry.label.bee.territory", bee, EnumBeeChromosome.TERRITORY));
-        info.add(getInfoString("bqforestry.label.bee.effect", bee, EnumBeeChromosome.EFFECT));
-        info.add(getInfoString("bqforestry.label.bee.temp", bee, EnumBeeChromosome.TEMPERATURE_TOLERANCE));
-        info.add(getInfoString("bqforestry.label.bee.humidity", bee, EnumBeeChromosome.HUMIDITY_TOLERANCE));
-        info.add(getInfoString("bqforestry.label.bee.sleeps", bee, EnumBeeChromosome.NEVER_SLEEPS));
-        info.add(getInfoString("bqforestry.label.bee.rain", bee, EnumBeeChromosome.TOLERATES_RAIN));
-        info.add(getInfoString("bqforestry.label.bee.dwelling", bee, EnumBeeChromosome.CAVE_DWELLING));
-        info.add(getInfoString("bqforestry.label.bee.flowers", bee, EnumBeeChromosome.FLOWER_PROVIDER));
-        return info;
-    }
-
-    private String getInfoString(String translationKey, ItemStack bee, EnumBeeChromosome chromosome) {
-        String GOLD = TextFormatting.GOLD.toString();
-        String AQUA = TextFormatting.AQUA.toString();
-        String DIV = GOLD.concat(", ").concat(AQUA);
-
-        StringUtils.IStringStyle style = (str) -> str.substring(indexOfFirstCapital(str));
-        String ret = GOLD.concat(QuestTranslation.translate(translationKey)).concat(": ").concat(AQUA);
-
-        if (chromosome == EnumBeeChromosome.SPECIES) {
-            return ret.concat(getDisplayName(bee)).concat(" (" + getTrait(bee, chromosome, true)[0]) + ")";
-        }
-
-        return ret.concat(flattenArray(getTrait(bee, chromosome, false), DIV, style));
-    }
 }
