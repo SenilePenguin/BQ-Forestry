@@ -81,11 +81,17 @@ public class StringUtils {
         }
     }
 
-  /*  public static String arrayToBool(String[] arr) {
-        if (arr == null || arr.length > 2 || arr.length <= 0) {
-            return flattenArray(arr, ", ");
-        } else {
-            if (arr[0].contains("False")) return
+    public static int getCount(String string, String substring) {
+        int lastIndex = 0;
+        int count = 0;
+
+        while (lastIndex != -1) {
+            lastIndex = string.indexOf(substring, lastIndex);
+            if (lastIndex != -1) {
+                count++;
+                lastIndex += substring.length();
+            }
         }
-    }*/
+        return count;
+    }
 }

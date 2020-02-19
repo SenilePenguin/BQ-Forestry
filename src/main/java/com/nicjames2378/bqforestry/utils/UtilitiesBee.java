@@ -45,7 +45,7 @@ public class UtilitiesBee {
     }
 
     public static void initialize() {
-        // TODO: Clean this?
+        // TODO: Clean this? <---- WHAT DID I MEAN???
         for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
             Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
 
