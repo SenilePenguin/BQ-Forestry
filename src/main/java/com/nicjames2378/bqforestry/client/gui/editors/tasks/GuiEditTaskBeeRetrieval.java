@@ -79,7 +79,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         Keyboard.enableRepeatEvents(true);
         _catCurrentCoords = new Tuple<>(8, 8);
 
-        if (task.requiredItems.size() <= 0) setSelectedIndex(getSelectedIndex() - 1);
+        if (task.requiredItems.size() <= 0) setSelectedIndex(0);//getSelectedIndex() - 1);
 
         //Background
         CanvasTextured cvBackground = new CanvasTextured(new GuiTransform(), PresetTexture.PANEL_MAIN.getTexture());
@@ -206,9 +206,11 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         cvBeeStatsHolder.addPanel(cvBeeStats);
 
         // TODO: Make this scrollable
-
-        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getSelectedIndex()).setFontSize(16).enableShadow(true));
-        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 24, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getSelectedIndex()).getBaseStack()))));
+        int getIndex = getSelectedIndex();
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getIndex).setFontSize(16).enableShadow(true));
+        if (getIndex > 0) {
+            cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 24, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getIndex).getBaseStack()))));
+        }
 //endregion
 
 //region Category Area
