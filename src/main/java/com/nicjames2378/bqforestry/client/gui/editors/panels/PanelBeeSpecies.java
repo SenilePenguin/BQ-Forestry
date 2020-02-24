@@ -84,7 +84,7 @@ public class PanelBeeSpecies extends TemplateEmpty {
         canvas.addPanel(txtSearch);
 
         // Scrollbar
-        PanelVScrollBar scBeeBar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 16, 0, 32), 0));
+        PanelVScrollBar scBeeBar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 18, 0, 32), 0));
         cvBeeDB.setScrollDriverY(scBeeBar);
         scBeeBar.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
         canvas.addPanel(scBeeBar);

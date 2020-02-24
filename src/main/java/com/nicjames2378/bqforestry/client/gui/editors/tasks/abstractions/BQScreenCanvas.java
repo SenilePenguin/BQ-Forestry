@@ -46,6 +46,10 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
             refresh();
         }
     }
+
+    public TaskForestryRetrieval getTaskReference() {
+        return task;
+    }
     //endregion
 
     public BQScreenCanvas(GuiScreen parent) {

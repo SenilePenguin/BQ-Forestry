@@ -60,29 +60,35 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
         int listW = cvList.getTransform().getWidth();
         int currentY = 38;
 
-        for (int i = 0; i < task.requiredItems.size(); i++) {
-            BigBeeStack beeStack = new BigBeeStack(task.requiredItems.get(i));
-            // Have to do some trickery here to ensure we don't get a crash for non Forestry-certified items. Smh
-            BigItemStack safeStack = UtilitiesBee.getSafeStack(task.requiredItems.get(i));
+        if (task.requiredItems.size() > 0) {
+            for (int i = 0; i < task.requiredItems.size(); i++) {
+                BigBeeStack beeStack = new BigBeeStack(task.requiredItems.get(i));
+                // Have to do some trickery here to ensure we don't get a crash for non Forestry-certified items. Smh
+                BigItemStack safeStack = UtilitiesBee.getSafeStack(task.requiredItems.get(i));
 
-            String info = getInfo(beeStack, i);
-            // Add 1 for the last line
-            int lines = 1 + StringUtils.getCount(info, "\n");
-            // And additional lines for buffer space, then multiply by text height (9)
-            int height = (lines + 2) * 9;
-            StringUtils.IStringStyle style = (str) -> str.replaceAll("%%1", TextFormatting.GOLD.toString()).replaceAll("%%2", TextFormatting.AQUA.toString());
+                String info = getInfo(beeStack, i);
+                // Add 1 for the last line
+                int lines = 1 + StringUtils.getCount(info, "\n");
+                // And additional lines for buffer space, then multiply by text height (9)
+                int height = (lines + 2) * 9;
+                StringUtils.IStringStyle style = (str) -> str.replaceAll("%%1", TextFormatting.GOLD.toString()).replaceAll("%%2", TextFormatting.AQUA.toString());
 
-            // ItemSlot
-            PanelItemSlot slot = new PanelItemSlot(new GuiRectangle(0, currentY, 32, 32, 0), -1, safeStack, false, true);
-            if (BQ_Forestry.hasJEI) slot.setCallback(value -> lookupRecipe(value.getBaseStack()));
-            cvList.addPanel(slot);
+                // ItemSlot
+                PanelItemSlot slot = new PanelItemSlot(new GuiRectangle(0, currentY, 32, 32, 0), -1, safeStack, false, true);
+                if (BQ_Forestry.hasJEI) slot.setCallback(value -> lookupRecipe(value.getBaseStack()));
+                cvList.addPanel(slot);
 
-            // Use 2px offset to make things look prettier
-            PanelTextBox text = new PanelTextBox(new GuiRectangle(36, currentY + 2, listW - 36, height - 2, 0), style.stylize(info));
-            text.setColor(PresetColor.TEXT_MAIN.getColor());
+                // Use 2px offset to make things look prettier
+                PanelTextBox text = new PanelTextBox(new GuiRectangle(36, currentY + 2, listW - 36, height - 2, 0), style.stylize(info));
+                text.setColor(PresetColor.TEXT_MAIN.getColor());
+                cvList.addPanel(text);
+
+                currentY += height;
+            }
+        } else {
+            PanelTextBox text = new PanelTextBox(new GuiRectangle(36, currentY + 2, listW - 36, 40, 0), "No  Quest Items Found!");
+            text.setColor(PresetColor.TEXT_MAIN.getColor()).setFontSize(12);
             cvList.addPanel(text);
-
-            currentY += height;
         }
     }
 

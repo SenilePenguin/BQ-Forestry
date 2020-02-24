@@ -33,6 +33,11 @@ public class PanelTrash extends TemplateEmpty {
         ConfirmButton btnConfirm = new ConfirmButton(new GuiTransform(GuiAlign.BOTTOM_EDGE, new GuiPadding(4, -28, 4, 4), 0), -1, QuestTranslation.translate("bqforestry.btn.confirm")) {
             @Override
             public void onButtonClick() {
+                // If we delete this and there are no other items, empty the pane
+                if (gui.getTaskReference().requiredItems.size() <= 1) {
+                    gui.setSelectedOption(PanesBee.None);
+                }
+
                 // Passing a null will delete the task item
                 gui.updateTaskItem(null);
             }

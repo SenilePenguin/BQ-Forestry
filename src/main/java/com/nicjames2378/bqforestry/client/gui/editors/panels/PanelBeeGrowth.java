@@ -7,7 +7,9 @@ import betterquesting.api2.client.gui.misc.GuiPadding;
 import betterquesting.api2.client.gui.misc.GuiRectangle;
 import betterquesting.api2.client.gui.misc.GuiTransform;
 import betterquesting.api2.client.gui.panels.CanvasEmpty;
+import betterquesting.api2.client.gui.panels.bars.PanelVScrollBar;
 import betterquesting.api2.client.gui.panels.content.PanelTextBox;
+import betterquesting.api2.client.gui.panels.lists.CanvasScrolling;
 import betterquesting.api2.client.gui.resources.textures.ItemTexture;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.utils.QuestTranslation;
@@ -43,17 +45,28 @@ public class PanelBeeGrowth extends TemplateEmpty {
         canvas.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(16, 8, 16, -32), 0), QuestTranslation.translate("bqforestry.label.beegrowthstage")).setAlignment(1).setColor(PresetColor.TEXT_HEADER.getColor()));
 
         int lHW = canvas.getTransform().getWidth() / 2;
-        int workingY = 0;
+        int workingY = 18;
         boolean isLeft = true;
         String[] types = UtilitiesBee.getGrowthStages();
 
-        workingY += 18;
+        // Scroll Area
+        CanvasScrolling cvScrollable = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 20, 8, 30), 0));
+        canvas.addPanel(cvScrollable);
+
+        // Scrollbar
+        PanelVScrollBar vScrollbar = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 20, 0, 30), 0));
+        cvScrollable.setScrollDriverY(vScrollbar);
+        vScrollbar.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
+        canvas.addPanel(vScrollbar);
+
+        // I am unsure why, but the controls in the scrolling area are misaligned without first having this empty canvas?
+        cvScrollable.addPanel(BQScreenCanvas.BUG_FIX1);
 
         for (int t = 0; t < types.length; t++) {
             // Type Button Text
             String formattedType = (types[t].equals(growthLevel.get()) ? TextFormatting.GREEN : "") + types[t].substring(0, 1).toUpperCase() + types[t].substring(1).toLowerCase();
             PanelTextBox lblBeeType = new PanelTextBox(new GuiRectangle(lHW + (isLeft ? -66 : 4), (Math.floorDiv(t, 2)) * 64 + 54 + workingY, 70, 16, -1), formattedType);
-            canvas.addPanel(lblBeeType);
+            cvScrollable.addPanel(lblBeeType);
             lstGrowthLabels.add(lblBeeType);
 
             // Type Button
@@ -80,7 +93,7 @@ public class PanelBeeGrowth extends TemplateEmpty {
                     UtilitiesBee.BeeTypes.valueOf(btnBeeType.getStoredValue()))
             )), 8);
 
-            canvas.addPanel(btnBeeType);
+            cvScrollable.addPanel(btnBeeType);
             lstGrowthButtons.add(btnBeeType);
 
             // Inverts isLeft

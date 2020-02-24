@@ -13,6 +13,7 @@ import betterquesting.api2.client.gui.misc.*;
 import betterquesting.api2.client.gui.panels.CanvasEmpty;
 import betterquesting.api2.client.gui.panels.CanvasTextured;
 import betterquesting.api2.client.gui.panels.bars.PanelHScrollBar;
+import betterquesting.api2.client.gui.panels.bars.PanelVScrollBar;
 import betterquesting.api2.client.gui.panels.content.PanelGeneric;
 import betterquesting.api2.client.gui.panels.content.PanelLine;
 import betterquesting.api2.client.gui.panels.content.PanelTextBox;
@@ -58,7 +59,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         int x = _catCurrentCoords.getFirst() + catButtonSize;
         int y = _catCurrentCoords.getSecond();
 
-        if (x > catWidthBounds - 8 - catButtonSize) {
+        if (x > catWidthBounds - 16 - catButtonSize) {
             x = 8;
             y += catButtonSize;
         }
@@ -202,40 +203,46 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         CanvasTextured cvBeeStatsHolder = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, 0, cWidthHalf - 1, cHeightThird * 2 - 2, 0), PresetTexture.ITEM_FRAME.getTexture());
         cvDataPanels.addPanel(cvBeeStatsHolder);
 
-        CanvasEmpty cvBeeStats = new CanvasEmpty(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(4, 4, 4, 4), 0));
-        cvBeeStatsHolder.addPanel(cvBeeStats);
-
-        // TODO: Make this scrollable
         int getIndex = getSelectedIndex();
-        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(0, 4, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getIndex).setFontSize(16).enableShadow(true));
-        if (getIndex > 0) {
-            cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 24, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getIndex).getBaseStack()))));
+        cvBeeStatsHolder.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(8, 8, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getIndex).setFontSize(16).enableShadow(true));
+        if (getIndex >= 0) {
+            cvBeeStatsHolder.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(12, 28, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getIndex).getBaseStack()))));
         }
 //endregion
 
 //region Category Area
         CanvasTextured cvBeeCategories = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, cHeightThird * 2, cWidthHalf - 1, cHeightThird + 1, 0), PresetTexture.ITEM_FRAME.getTexture());
         cvDataPanels.addPanel(cvBeeCategories);
-
         catWidthBounds = cvBeeCategories.getTransform().getWidth();
 
-        // TODO: Make this scrollable
+        // Categories Scroll Area
+        CanvasScrolling cvScrollCategories = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 2, 8, 2), 0));
+        cvBeeCategories.addPanel(cvScrollCategories);
 
-        cvBeeCategories.addPanel(getPanel(PanesBee.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
-        cvBeeCategories.addPanel(getPanel(PanesBee.BeeGrowth, ThemeHandler.ICON_GENOME_BEE_GROWTH.getTexture()));
-        cvBeeCategories.addPanel(/* Species             */ getPanel(PanesBee.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
-        cvBeeCategories.addPanel(/* Lifespans           */ getPanel(PanesBee.BeeLifespan, ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
-        cvBeeCategories.addPanel(/* Production Rates    */ getPanel(PanesBee.BeeSpeed, ThemeHandler.ICON_GENOME_SPEED.getTexture()));
-        cvBeeCategories.addPanel(/* Pollination Speeds  */ getPanel(PanesBee.BeeFloweringSpeed, ThemeHandler.ICON_GENOME_FLOWERING.getTexture()));
-        cvBeeCategories.addPanel(/* Fertility Rates     */ getPanel(PanesBee.BeeFertility, ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
-        cvBeeCategories.addPanel(/* Territory Sizes     */ getPanel(PanesBee.BeeTerritory, ThemeHandler.ICON_GENOME_TERRITORY.getTexture()));
-        cvBeeCategories.addPanel(/* Area Effects        */ getPanel(PanesBee.BeeEffect, ThemeHandler.ICON_GENOME_EFFECT.getTexture()));
-        cvBeeCategories.addPanel(/* Climate Tolerances  */ getPanel(PanesBee.BeeTemperature, ThemeHandler.ICON_GENOME_TEMPERATURE_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(/* Humidity Tolerances */ getPanel(PanesBee.BeeHumidity, ThemeHandler.ICON_GENOME_HUMIDITY_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(/* Works at Night      */ getPanel(PanesBee.BeeSleep, ThemeHandler.ICON_GENOME_NEVER_SLEEPS.getTexture()));
-        cvBeeCategories.addPanel(/* Works in Rain       */ getPanel(PanesBee.BeeRain, ThemeHandler.ICON_GENOME_RAIN_TOLERANCE.getTexture()));
-        cvBeeCategories.addPanel(/* Works Underground   */ getPanel(PanesBee.BeeCave, ThemeHandler.ICON_GENOME_CAVE_DWELLING.getTexture()));
-        cvBeeCategories.addPanel(/* Suitable Flowers    */ getPanel(PanesBee.BeeFlowerProvider, ThemeHandler.ICON_GENOME_FLOWER_PROVIDER.getTexture()));
+        // Categories Scrollbar
+        PanelVScrollBar vScrollCategories = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 2, 0, 2), 0));
+        cvScrollCategories.setScrollDriverY(vScrollCategories);
+        vScrollCategories.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
+        cvBeeCategories.addPanel(vScrollCategories);
+
+        // I am unsure why, but the controls in the scrolling area are misaligned without first having this empty canvas?
+        cvScrollCategories.addPanel(BUG_FIX1);
+
+        cvScrollCategories.addPanel(getPanel(PanesBee.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
+        cvScrollCategories.addPanel(getPanel(PanesBee.BeeGrowth, ThemeHandler.ICON_GENOME_BEE_GROWTH.getTexture()));
+        cvScrollCategories.addPanel(/* Species             */ getPanel(PanesBee.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
+        cvScrollCategories.addPanel(/* Lifespans           */ getPanel(PanesBee.BeeLifespan, ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
+        cvScrollCategories.addPanel(/* Production Rates    */ getPanel(PanesBee.BeeSpeed, ThemeHandler.ICON_GENOME_SPEED.getTexture()));
+        cvScrollCategories.addPanel(/* Pollination Speeds  */ getPanel(PanesBee.BeeFloweringSpeed, ThemeHandler.ICON_GENOME_FLOWERING.getTexture()));
+        cvScrollCategories.addPanel(/* Fertility Rates     */ getPanel(PanesBee.BeeFertility, ThemeHandler.ICON_GENOME_FERTILITY.getTexture()));
+        cvScrollCategories.addPanel(/* Territory Sizes     */ getPanel(PanesBee.BeeTerritory, ThemeHandler.ICON_GENOME_TERRITORY.getTexture()));
+        cvScrollCategories.addPanel(/* Area Effects        */ getPanel(PanesBee.BeeEffect, ThemeHandler.ICON_GENOME_EFFECT.getTexture()));
+        cvScrollCategories.addPanel(/* Climate Tolerances  */ getPanel(PanesBee.BeeTemperature, ThemeHandler.ICON_GENOME_TEMPERATURE_TOLERANCE.getTexture()));
+        cvScrollCategories.addPanel(/* Humidity Tolerances */ getPanel(PanesBee.BeeHumidity, ThemeHandler.ICON_GENOME_HUMIDITY_TOLERANCE.getTexture()));
+        cvScrollCategories.addPanel(/* Works at Night      */ getPanel(PanesBee.BeeSleep, ThemeHandler.ICON_GENOME_NEVER_SLEEPS.getTexture()));
+        cvScrollCategories.addPanel(/* Works in Rain       */ getPanel(PanesBee.BeeRain, ThemeHandler.ICON_GENOME_RAIN_TOLERANCE.getTexture()));
+        cvScrollCategories.addPanel(/* Works Underground   */ getPanel(PanesBee.BeeCave, ThemeHandler.ICON_GENOME_CAVE_DWELLING.getTexture()));
+        cvScrollCategories.addPanel(/* Suitable Flowers    */ getPanel(PanesBee.BeeFlowerProvider, ThemeHandler.ICON_GENOME_FLOWER_PROVIDER.getTexture()));
 //endregion
 
 //region Options Area

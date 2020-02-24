@@ -71,8 +71,12 @@ public class ConfigHandler {
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(Reference.MOD_ID)) {
-            config.save();
-            loadVarsFromConfig();
+            doConfigSave();
         }
+    }
+
+    public static void doConfigSave() {
+        config.save();
+        loadVarsFromConfig();
     }
 }
