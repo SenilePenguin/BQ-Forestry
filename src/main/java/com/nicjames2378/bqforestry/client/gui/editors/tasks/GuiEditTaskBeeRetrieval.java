@@ -3,7 +3,6 @@ package com.nicjames2378.bqforestry.client.gui.editors.tasks;
 import betterquesting.api.api.ApiReference;
 import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.client.gui.misc.IVolatileScreen;
-import betterquesting.api.enums.EnumPacketAction;
 import betterquesting.api.network.QuestingPacket;
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
@@ -23,6 +22,7 @@ import betterquesting.api2.client.gui.resources.textures.ItemTexture;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
+import betterquesting.api2.storage.DBEntry;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.gui.editors.controls.BQButton;
@@ -36,6 +36,7 @@ import forestry.api.apiculture.EnumBeeChromosome;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
@@ -68,7 +69,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         return current;
     }
 
-    public GuiEditTaskBeeRetrieval(GuiScreen parent, IQuest quest, TaskForestryRetrieval task) {
+    public GuiEditTaskBeeRetrieval(GuiScreen parent, DBEntry<IQuest> quest, TaskForestryRetrieval task) {
         super(parent);
         this.quest = quest;
         this.task = task;
@@ -255,14 +256,15 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
     }
 
     private void sendChanges() {
-        NBTTagCompound base = new NBTTagCompound();
-        base.setTag("config", quest.writeToNBT(new NBTTagCompound()));
-        base.setTag("progress", quest.writeProgressToNBT(new NBTTagCompound(), null));
-        NBTTagCompound tags = new NBTTagCompound();
-        tags.setInteger("action", EnumPacketAction.EDIT.ordinal()); // Action: Update data
-        tags.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
-        tags.setTag("data", base);
-        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
+        NBTTagCompound payload = new NBTTagCompound();
+        NBTTagList dataList = new NBTTagList();
+        NBTTagCompound entry = new NBTTagCompound();
+        entry.setInteger("questID", quest.getID());
+        entry.setTag("config", quest.getValue().writeToNBT(new NBTTagCompound()));
+        dataList.appendTag(entry);
+        payload.setTag("data", dataList);
+        payload.setInteger("action", 0); // Action: Update data
+        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, payload));
     }
 
     private PanelButtonStorage<PanesBee> getPanel(PanesBee panel, IGuiTexture icon) {

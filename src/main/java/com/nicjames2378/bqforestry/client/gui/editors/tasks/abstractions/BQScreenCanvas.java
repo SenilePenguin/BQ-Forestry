@@ -3,6 +3,10 @@ package com.nicjames2378.bqforestry.client.gui.editors.tasks.abstractions;
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.BigItemStack;
 import betterquesting.api2.client.gui.GuiScreenCanvas;
+import betterquesting.api2.client.gui.misc.GuiAlign;
+import betterquesting.api2.client.gui.misc.GuiTransform;
+import betterquesting.api2.client.gui.panels.CanvasEmpty;
+import betterquesting.api2.storage.DBEntry;
 import com.nicjames2378.bqforestry.client.gui.editors.panels.PanesBee;
 import com.nicjames2378.bqforestry.tasks.TaskForestryRetrieval;
 import net.minecraft.client.gui.GuiScreen;
@@ -12,7 +16,8 @@ import static com.nicjames2378.bqforestry.utils.UtilitiesBee.DEFAULT_SPECIES;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.getBaseBee;
 
 public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
-    protected IQuest quest;
+    public static final CanvasEmpty BUG_FIX1 = new CanvasEmpty(new GuiTransform(GuiAlign.TOP_LEFT, 0, 0, 0, 0, 0));
+    protected DBEntry<IQuest> quest;
     protected TaskForestryRetrieval task;
     private int selectedItem = 0;
     private PanesBee selectedOption = PanesBee.None;
