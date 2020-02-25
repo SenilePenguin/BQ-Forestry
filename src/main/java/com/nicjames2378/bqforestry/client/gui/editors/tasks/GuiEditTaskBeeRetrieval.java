@@ -201,7 +201,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 //endregion
 
 //region Stats Display Area
-        CanvasTextured cvBeeStatsHolder = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, 0, cWidthHalf - 1, cHeightThird * 2 - 2, 0), PresetTexture.ITEM_FRAME.getTexture());
+        CanvasTextured cvBeeStatsHolder = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, 0, cWidthHalf - 1, cHeightThird * 2 - 2, 0), PresetTexture.PANEL_INNER.getTexture());
         cvDataPanels.addPanel(cvBeeStatsHolder);
 
         int getIndex = getSelectedIndex();
@@ -212,7 +212,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 //endregion
 
 //region Category Area
-        CanvasTextured cvBeeCategories = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, cHeightThird * 2, cWidthHalf - 1, cHeightThird + 1, 0), PresetTexture.ITEM_FRAME.getTexture());
+        CanvasTextured cvBeeCategories = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, cHeightThird * 2, cWidthHalf - 1, cHeightThird + 1, 0), PresetTexture.PANEL_INNER.getTexture());
         cvDataPanels.addPanel(cvBeeCategories);
         catWidthBounds = cvBeeCategories.getTransform().getWidth();
 
@@ -247,7 +247,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 //endregion
 
 //region Options Area
-        CanvasTextured cvBeeOptions = new CanvasTextured(new GuiTransform(GuiAlign.HALF_RIGHT, 0, 0, cWidthHalf - 1, cHeight, 0), PresetTexture.ITEM_FRAME.getTexture());
+        CanvasTextured cvBeeOptions = new CanvasTextured(new GuiTransform(GuiAlign.HALF_RIGHT, 0, 0, cWidthHalf - 1, cHeight, 0), PresetTexture.PANEL_INNER.getTexture());
         cvDataPanels.addPanel(cvBeeOptions);
 
         getSelectedOption().get(this, cvBeeOptions);
