@@ -421,7 +421,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getTaskEditor(GuiScreen parent, DBEntry<IQuest> quest) {
-        return new GuiEditTaskBeeRetrieval(parent, quest.getValue(), this);
+        return new GuiEditTaskBeeRetrieval(parent, quest, this);
     }
 
     public void setUserProgress(UUID uuid, int[] progress) {

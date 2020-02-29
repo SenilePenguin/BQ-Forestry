@@ -132,6 +132,6 @@ public class TaskKeyCode implements ITask {
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getTaskEditor(GuiScreen parent, DBEntry<IQuest> quest) {
-        return new GuiEditTaskKeyCode(parent, quest.getValue(), this);
+        return new GuiEditTaskKeyCode(parent, quest, this);
     }
 }

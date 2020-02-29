@@ -3,7 +3,6 @@ package com.nicjames2378.bqforestry.client.gui.editors.tasks;
 import betterquesting.api.api.ApiReference;
 import betterquesting.api.api.QuestingAPI;
 import betterquesting.api.client.gui.misc.IVolatileScreen;
-import betterquesting.api.enums.EnumPacketAction;
 import betterquesting.api.network.QuestingPacket;
 import betterquesting.api.questing.IQuest;
 import betterquesting.api.utils.RenderUtils;
@@ -21,24 +20,27 @@ import betterquesting.api2.client.gui.panels.content.PanelTextBox;
 import betterquesting.api2.client.gui.themes.presets.PresetColor;
 import betterquesting.api2.client.gui.themes.presets.PresetLine;
 import betterquesting.api2.client.gui.themes.presets.PresetTexture;
+import betterquesting.api2.storage.DBEntry;
 import betterquesting.api2.utils.QuestTranslation;
 import com.nicjames2378.bqforestry.tasks.TaskKeyCode;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 public class GuiEditTaskKeyCode extends GuiScreenCanvas implements IVolatileScreen {
     private static final ResourceLocation QUEST_EDIT = new ResourceLocation("betterquesting:quest_edit");
-    private final IQuest quest;
+    //    private final IQuest quest;
+    private final DBEntry<IQuest> quest;
     private final TaskKeyCode task;
 
     public GuiEditTaskKeyCode getScreenRef() {
         return this;
     }
 
-    public GuiEditTaskKeyCode(GuiScreen parent, IQuest quest, TaskKeyCode task) {
+    public GuiEditTaskKeyCode(GuiScreen parent, DBEntry<IQuest> quest, TaskKeyCode task) {
         super(parent);
         this.quest = quest;
         this.task = task;
@@ -102,14 +104,41 @@ public class GuiEditTaskKeyCode extends GuiScreenCanvas implements IVolatileScre
 //endregion
     }
 
+//    private void sendChanges() {
+//        NBTTagCompound base = new NBTTagCompound();
+//        base.setTag("config", quest.writeToNBT(new NBTTagCompound()));
+//        base.setTag("progress", quest.writeProgressToNBT(new NBTTagCompound(), null));
+//        NBTTagCompound tags = new NBTTagCompound();
+//        tags.setInteger("action", EnumPacketAction.EDIT.ordinal());
+//        tags.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
+//        tags.setTag("data", base);
+//        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
+//    }
+//
+//    private void sendChanges() {
+//        NBTTagCompound entry = new NBTTagCompound();
+//        NBTTagCompound payload = new NBTTagCompound();
+//
+//        entry.setTag("progress", quest.writeProgressToNBT(new NBTTagCompound(), null));
+//
+//        payload.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
+//        entry.setTag("config", quest.writeToNBT(new NBTTagCompound()));
+//
+//        payload.setTag("data", entry);
+//        payload.setInteger("action", EnumPacketAction.EDIT.ordinal());
+//
+//        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, payload));
+//    }
+
     private void sendChanges() {
-        NBTTagCompound base = new NBTTagCompound();
-        base.setTag("config", quest.writeToNBT(new NBTTagCompound()));
-        base.setTag("progress", quest.writeProgressToNBT(new NBTTagCompound(), null));
-        NBTTagCompound tags = new NBTTagCompound();
-        tags.setInteger("action", EnumPacketAction.EDIT.ordinal());
-        tags.setInteger("questID", QuestingAPI.getAPI(ApiReference.QUEST_DB).getID(quest));
-        tags.setTag("data", base);
-        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, tags));
+        NBTTagCompound payload = new NBTTagCompound();
+        NBTTagList dataList = new NBTTagList();
+        NBTTagCompound entry = new NBTTagCompound();
+        entry.setInteger("questID", quest.getID());
+        entry.setTag("config", quest.getValue().writeToNBT(new NBTTagCompound()));
+        dataList.appendTag(entry);
+        payload.setTag("data", dataList);
+        payload.setInteger("action", 0); // Action: Update data
+        QuestingAPI.getAPI(ApiReference.PACKET_SENDER).sendToServer(new QuestingPacket(QUEST_EDIT, payload));
     }
 }

@@ -46,10 +46,9 @@ dependencies {
     //compile "some.group:artifact:version:classifier"
     //compile "some.group:artifact:version"
 
-    compile files("libs/BetterQuesting-3.5.312.jar")
-    //compile files("libs/BetterQuesting-3.5.300.jar")
-    compile files("libs/forestry_1.12.2-5.8.2.394.jar")
-    compile files("libs/jei_1.12.2-4.15.0.268.jar")
+    compile files("libs/BetterQuesting-3.5.323.jar")
+    compile files("libs/forestry_1.12.2-5.8.2.414.jar")
+    compile files("libs/jei_1.12.2-4.15.0.291.jar")
 }
 
 processResources {
