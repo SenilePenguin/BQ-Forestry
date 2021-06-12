@@ -24,6 +24,7 @@ public class BQ_Forestry {
     public static Logger log = null;
     public static boolean hasJEI = false;
     public static boolean hasForestry = false;
+    public static boolean hasGendustry = false; // Technically not needed, but better to be safe
 
     @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.COMMON_PROXY_CLASS)
     public static CommonProxy proxy;
@@ -41,6 +42,7 @@ public class BQ_Forestry {
     public static void Init(FMLInitializationEvent event) {
         hasJEI = Loader.isModLoaded("jei");
         hasForestry = Loader.isModLoaded("forestry");
+        hasGendustry = Loader.isModLoaded("gendustry");
 
         //proxy.Init(event);
     }
@@ -58,14 +60,14 @@ public class BQ_Forestry {
         proxy.doDebugOutputs();
     }
 
-    @EventHandler
-    public void serverStart(FMLServerStartingEvent event) {
-        event.registerServerCommand(new BQFCommandFindTrait());
-    }
-
     public static void debug(String message) {
         if (log != null && ConfigHandler.cfgDoDebugOutputs) {
             log.info("[DEBUG] " + message);
         }
+    }
+
+    @EventHandler
+    public void serverStart(FMLServerStartingEvent event) {
+        event.registerServerCommand(new BQFCommandFindTrait());
     }
 }

@@ -35,10 +35,6 @@ public class StringUtils {
         return new String(new char[amount]).replace('\u0000', character);
     }
 
-    public interface IStringStyle {
-        String stylize(String s);
-    }
-
     public static String flattenArray(String[] arr) {
         return flattenArray(arr, ", ", null);
     }
@@ -93,5 +89,9 @@ public class StringUtils {
             }
         }
         return count;
+    }
+
+    public interface IStringStyle {
+        String stylize(String s);
     }
 }

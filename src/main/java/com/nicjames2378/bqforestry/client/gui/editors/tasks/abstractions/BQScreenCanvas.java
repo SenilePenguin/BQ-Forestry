@@ -22,6 +22,10 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
     private int selectedItem = 0;
     private PanesBee selectedOption = PanesBee.None;
 
+    public BQScreenCanvas(GuiScreen parent) {
+        super(parent);
+    }
+
     //region Getters and Setters
     public int getSelectedIndex() {
         return selectedItem;
@@ -51,14 +55,10 @@ public class BQScreenCanvas extends GuiScreenCanvas implements ISelections {
             refresh();
         }
     }
+    //endregion
 
     public TaskForestryRetrieval getTaskReference() {
         return task;
-    }
-    //endregion
-
-    public BQScreenCanvas(GuiScreen parent) {
-        super(parent);
     }
 
     public void updateTaskItem(BigItemStack newItem) {

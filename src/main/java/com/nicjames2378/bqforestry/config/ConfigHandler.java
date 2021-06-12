@@ -12,23 +12,19 @@ import java.io.File;
 public class ConfigHandler {
     public static final ConfigHandler INSTANCE = new ConfigHandler();
     public static Configuration config;
-
-    private static String key = "bqforestry.config.";
-    private static String CATEGORY_FORESTRY = "forestry";
-    private static String CATEGORY_OTHER = "other";
-    private static String CATEGORY_DEBUG = "debug";
-    private static int configVersion = 2;
-
     public static boolean cfgDefaultCommandCopy = true;
     public static float cfgScrollSpeed = 2.0f;
     public static boolean cfgAutoConsume = false;
     public static boolean cfgConsume = false;
     public static boolean cfgOnlyMated = false;
     public static String cfgBeeType = UtilitiesBee.BeeTypes.princess.get();
-
     public static boolean cfgCaseSensitiveKeyCodes = true;
-
     public static boolean cfgDoDebugOutputs = true;
+    private static String key = "bqforestry.config.";
+    private static String CATEGORY_FORESTRY = "forestry";
+    private static String CATEGORY_OTHER = "other";
+    private static String CATEGORY_DEBUG = "debug";
+    private static int configVersion = 2;
 
     public static void initialize(File file) {
         config = new Configuration(file);
@@ -68,15 +64,15 @@ public class ConfigHandler {
         cfgCaseSensitiveKeyCodes = config.getBoolean("Case Sensitive Keycodes", CATEGORY_OTHER, true, "Should keycodes be case sensitive?", key + "casesensitivekeycodes");
     }
 
+    public static void doConfigSave() {
+        config.save();
+        loadVarsFromConfig();
+    }
+
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(Reference.MOD_ID)) {
             doConfigSave();
         }
-    }
-
-    public static void doConfigSave() {
-        config.save();
-        loadVarsFromConfig();
     }
 }

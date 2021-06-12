@@ -6,6 +6,7 @@ import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.config.ConfigHandler;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.*;
+import net.bdew.gendustry.custom.BeeSpecies;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,39 +22,17 @@ import static com.nicjames2378.bqforestry.utils.StringUtils.flattenArray;
 import static com.nicjames2378.bqforestry.utils.StringUtils.indexOfFirstCapital;
 
 public class UtilitiesBee {
-    private static String[] cacheGrowthStages;
-
     public static final String DEFAULT_SPECIES = "forestry.speciesCommon";
     public static final String _INVALID_SPECIES_STRING = "(MISSING) ";
-
-    @SuppressWarnings("unused") // Stupid IntelliJ being a stupid whiner...
-    public enum BeeTypes {
-        larvae("larvae"),
-        drone("drone"),
-        princess("princess"),
-        queen("queen");
-
-        private final String text;
-
-        BeeTypes(final String text) {
-            this.text = text;
-        }
-
-        public String get() {
-            return text;
-        }
-    }
+    private static String[] cacheGrowthStages;
 
     public static void initialize() {
         for (EnumBeeChromosome chromosome : EnumBeeChromosome.values()) {
-            Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
+            TreeMap<Integer, String> orderedMap = getAllelesForChromosome(chromosome);
 
-            Iterator iterator = alleles.iterator();
-            for (int i = 0; i < alleles.size(); i++) {
-                Object next = iterator.next();
-
-                int value = getValue(chromosome.getAlleleClass(), next);
-                BQ_Forestry.debug(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), i + 1, alleles.size(), next.toString(), value));
+            int counter = 0;
+            for (Map.Entry<Integer, String> entry : getAllelesForChromosome(chromosome).entrySet()) {
+                BQ_Forestry.debug(String.format("%1$s %2$d / %3$d found: %4$s (%5$s)", chromosome.toString(), counter + 1, orderedMap.size(), entry.getValue(), entry.getKey()));
             }
         }
     }
@@ -69,18 +48,37 @@ public class UtilitiesBee {
     public static TreeMap<Integer, String> getAllelesForChromosome(EnumBeeChromosome chromosome) {
         Collection<IAllele> alleles = AlleleManager.alleleRegistry.getRegisteredAlleles(chromosome);
         TreeMap<Integer, String> orderedMap = new TreeMap<>();
+        //boolean gendustryFound = false;
 
         Iterator iterator = alleles.iterator();
         short counter = 0;
         for (int i = 0; i < alleles.size(); i++) {
             Object next = iterator.next();
+            String value;
 
-            int value = getValue(chromosome.getAlleleClass(), next);
-            if (value < 0) counter++;
-            orderedMap.put((value >= 0 ? value : i), next.toString());
+            // If the allele is from Gendustry, we need to do some special processing. >:(
+            if (BQ_Forestry.hasGendustry && next.getClass().equals(BeeSpecies.class)) {
+                /*
+                    Gendustry Information
+                    - next.getClass() = net.bdew.gendustry.custom.BeeSpecies
+                    - (BeeSpecies) next.getUID() = gendustry.bee.black
+
+                    - chromosome.getAlleleClass() = interface forestry.api.apiculture.IAlleleBeeSpecies
+                    - BeeSpecies.class.isAssignableFrom(chromosome.getAlleleClass()) = FALSE
+                 */
+                BeeSpecies gendustryBeeSpecies = (BeeSpecies) next;
+                value = gendustryBeeSpecies.getUID();
+            } else {
+                value = next.toString();
+            }
+
+            int position = getPosition(chromosome.getAlleleClass(), next);
+            if (position < 0) counter++;
+
+            orderedMap.put((position >= 0 ? position : i), value);
         }
 
-        // Special handling for String-based values that cannot be easily sorted in getValue.
+        // Special handling for String-based values that cannot be easily sorted in getPosition.
         // This will just alphabetize them for the sake of cleanliness.
         if (counter >= 2) {
             TreeMap<Integer, String> newOrder = new TreeMap<>();
@@ -96,7 +94,7 @@ public class UtilitiesBee {
         return orderedMap;
     }
 
-    private static int getValue(Class<? extends IAllele> alleleClass, Object item) {
+    private static int getPosition(Class<? extends IAllele> alleleClass, Object item) {
         // Provides an easy way for me to get the values of certain applicable Alleles
         //      and put them in order based on integer values
 
@@ -210,7 +208,7 @@ public class UtilitiesBee {
         return bee;
     }
 
-    // Gets a duplicate of a BigItemStack with it's it values possibly replaced to make Forestry not throw a fit.
+    // Gets a duplicate of a BigItemStack with it's values possibly replaced to make Forestry not throw a fit.
     public static BigItemStack getSafeStack(BigItemStack stack) {
         BigItemStack safeStack = stack.copy();
         String stackDName = getDisplayName(safeStack.getBaseStack());
@@ -451,13 +449,13 @@ public class UtilitiesBee {
                 return true;
             }
         }
+        BQ_Forestry.debug(String.format("DATABASE_ERR: Allele %1$s is NOT in database for %2$s!", trait, chromosome.toString()));
         return false;
     }
 
     public static ArrayList<String> getBeeInfo(ItemStack bee) {
         ArrayList<String> info = new ArrayList<>();
 
-        // TODO: #16 Sometimes bees are showing the wrong DisplayNames (but correct species tags?)
         info.add(getInfoString("bqforestry.label.bee.species", bee, EnumBeeChromosome.SPECIES));
         info.add(getInfoString("bqforestry.label.bee.lifespan", bee, EnumBeeChromosome.LIFESPAN));
         info.add(getInfoString("bqforestry.label.bee.speeds", bee, EnumBeeChromosome.SPEED));
@@ -501,5 +499,23 @@ public class UtilitiesBee {
         }
 
         BQ_Forestry.log.info("===========================================================");
+    }
+
+    @SuppressWarnings("unused") // Stupid IntelliJ being a stupid whiner...
+    public enum BeeTypes {
+        larvae("larvae"),
+        drone("drone"),
+        princess("princess"),
+        queen("queen");
+
+        private final String text;
+
+        BeeTypes(final String text) {
+            this.text = text;
+        }
+
+        public String get() {
+            return text;
+        }
     }
 }

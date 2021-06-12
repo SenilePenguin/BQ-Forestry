@@ -9,6 +9,16 @@ import forestry.api.genetics.IAllele;
 import java.util.*;
 
 public abstract class CanvasBeeDatabase extends CanvasSearch<IAllele, IAllele> {
+    private static final Comparator<IAllele> advComparator = (o1, o2) -> {
+        if (o1 != null && o2 == null) {
+            return -1;
+        } else if (o1 == null && o2 != null) {
+            return 1;
+        }
+
+        return o1.getAlleleName().compareTo(o2.getAlleleName());
+    };
+
     public CanvasBeeDatabase(IGuiRect rect) {
         super(rect);
     }
@@ -29,14 +39,4 @@ public abstract class CanvasBeeDatabase extends CanvasSearch<IAllele, IAllele> {
             results.add(value);
         }
     }
-
-    private static final Comparator<IAllele> advComparator = (o1, o2) -> {
-        if (o1 != null && o2 == null) {
-            return -1;
-        } else if (o1 == null && o2 != null) {
-            return 1;
-        }
-
-        return o1.getAlleleName().compareTo(o2.getAlleleName());
-    };
 }

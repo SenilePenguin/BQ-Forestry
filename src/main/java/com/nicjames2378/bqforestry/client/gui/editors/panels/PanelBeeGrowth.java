@@ -29,9 +29,9 @@ import java.util.List;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class PanelBeeGrowth extends TemplateEmpty {
-    private BeeTypes growthLevel = BeeTypes.valueOf(ConfigHandler.cfgBeeType);
     private final List<PanelButtonStorage<String>> lstGrowthButtons = new ArrayList<>();
     private final List<PanelTextBox> lstGrowthLabels = new ArrayList<>();
+    private BeeTypes growthLevel = BeeTypes.valueOf(ConfigHandler.cfgBeeType);
 
     public PanelBeeGrowth() {
         super(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));

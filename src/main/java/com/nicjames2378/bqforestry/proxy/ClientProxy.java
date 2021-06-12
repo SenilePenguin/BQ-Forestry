@@ -1,6 +1,6 @@
 package com.nicjames2378.bqforestry.proxy;
 
-import betterquesting.client.themes.ThemeRegistry;
+import com.nicjames2378.bqforestry.BQ_Forestry;
 import com.nicjames2378.bqforestry.client.themes.ThemeHandler;
 import com.nicjames2378.bqforestry.utils.Reference;
 import net.minecraftforge.fml.common.Mod;
@@ -17,6 +17,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     // Only register the theme information on the client side
     public void registerTheme() {
-        ThemeHandler.registerTextures(ThemeRegistry.INSTANCE);
+        BQ_Forestry.debug("Registering Themes!");
+        ThemeHandler.registerTextures();
     }
 }

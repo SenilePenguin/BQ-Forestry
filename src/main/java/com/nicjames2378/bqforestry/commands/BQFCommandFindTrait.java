@@ -27,12 +27,6 @@ import static net.minecraft.command.CommandBase.getListOfStringsMatchingLastWord
 public class BQFCommandFindTrait implements ICommand {
     private String commandKey = "/findtrait";
 
-    private enum ValidChromosomes {
-        INVALID,
-        Bee
-//        Tree
-    }
-
     private static ValidChromosomes getEnumValid(ICommandSender sender) {
         if (sender.getCommandSenderEntity() instanceof EntityPlayer) {
             // Gets player and held item
@@ -59,6 +53,12 @@ public class BQFCommandFindTrait implements ICommand {
                 break;
         }
         return values;
+    }
+
+    private static void copyToClipboard(String message) {
+        StringSelection stringSelection = new StringSelection(message);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
     }
 
     @Override
@@ -153,12 +153,6 @@ public class BQFCommandFindTrait implements ICommand {
         );
     }
 
-    private static void copyToClipboard(String message) {
-        StringSelection stringSelection = new StringSelection(message);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, null);
-    }
-
     private TextComponentTranslation format(TextFormatting color, String str, Object... args) {
         TextComponentTranslation ret = new TextComponentTranslation(str, args);
         ret.getStyle().setColor(color);
@@ -189,5 +183,11 @@ public class BQFCommandFindTrait implements ICommand {
     @Override
     public int compareTo(ICommand iCommand) {
         return 0;
+    }
+
+    private enum ValidChromosomes {
+        INVALID,
+        Bee
+//        Tree
     }
 }

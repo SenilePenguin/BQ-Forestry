@@ -36,14 +36,14 @@ public class GuiEditTaskKeyCode extends GuiScreenCanvas implements IVolatileScre
     private final DBEntry<IQuest> quest;
     private final TaskKeyCode task;
 
-    public GuiEditTaskKeyCode getScreenRef() {
-        return this;
-    }
-
     public GuiEditTaskKeyCode(GuiScreen parent, DBEntry<IQuest> quest, TaskKeyCode task) {
         super(parent);
         this.quest = quest;
         this.task = task;
+    }
+
+    public GuiEditTaskKeyCode getScreenRef() {
+        return this;
     }
 
     @Override

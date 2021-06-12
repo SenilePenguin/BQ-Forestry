@@ -23,10 +23,6 @@ public class BQButton {
     }
 
     public static class AddButton extends PanelButton {
-        public interface addCallBack {
-            void activate();
-        }
-
         addCallBack callBack = () -> {
         };
 
@@ -49,6 +45,10 @@ public class BQButton {
         @Override
         public void onButtonClick() {
             callBack.activate();
+        }
+
+        public interface addCallBack {
+            void activate();
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.nicjames2378.bqforestry.client.themes;
 
+import betterquesting.api.api.ApiReference;
+import betterquesting.api.api.QuestingAPI;
 import betterquesting.api2.client.gui.misc.GuiPadding;
 import betterquesting.api2.client.gui.misc.GuiRectangle;
 import betterquesting.api2.client.gui.resources.textures.IGuiTexture;
@@ -33,19 +35,16 @@ public enum ThemeHandler {
     ICON_CHECK_NO("icon_check_no"),
     ICON_CHECK_BOTH("icon_check_both");
 
-    public static final ResourceLocation TX_FRAMES = new ResourceLocation("bqforestry", "textures/gui/frames.png");
-    public static final ResourceLocation TX_ICONS = new ResourceLocation("bqforestry", "textures/gui/buttons.png");
+    public static final ResourceLocation TX_FRAMES = new ResourceLocation(Reference.MOD_ID, "textures/gui/frames.png");
+    public static final ResourceLocation TX_ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/buttons.png");
     private final ResourceLocation key;
 
     private ThemeHandler(String key) {
         this.key = new ResourceLocation(Reference.MOD_ID, key);
     }
 
-    public IGuiTexture getTexture() {
-        return ThemeRegistry.INSTANCE.getTexture(this.key);
-    }
-
-    public static void registerTextures(IThemeRegistry reg) {
+    public static void registerTextures() {
+        IThemeRegistry reg = QuestingAPI.getAPI(ApiReference.THEME_REG);
         reg.setDefaultTexture(ITEM_FRAME.key, new SlicedTexture(TX_FRAMES, new GuiRectangle(0, 0, 12, 12), new GuiPadding(1, 1, 1, 1)));
         reg.setDefaultTexture(ITEM_FRAME_SELECTED.key, new SlicedTexture(TX_FRAMES, new GuiRectangle(12, 0, 12, 12), new GuiPadding(1, 1, 1, 1)));
         reg.setDefaultTexture(ICON_ITEM_ADD.key, new SimpleTexture(TX_ICONS, new GuiRectangle(0, 0, 24, 24)).maintainAspect(true));
@@ -68,5 +67,9 @@ public enum ThemeHandler {
         reg.setDefaultTexture(ICON_CHECK_YES.key, new SimpleTexture(TX_ICONS, new GuiRectangle(0, 72, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_CHECK_NO.key, new SimpleTexture(TX_ICONS, new GuiRectangle(24, 72, 24, 24)).maintainAspect(true));
         reg.setDefaultTexture(ICON_CHECK_BOTH.key, new SimpleTexture(TX_ICONS, new GuiRectangle(48, 72, 24, 24)).maintainAspect(true));
+    }
+
+    public IGuiTexture getTexture() {
+        return ThemeRegistry.INSTANCE.getTexture(this.key);
     }
 }

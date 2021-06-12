@@ -40,6 +40,21 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
         this.task = task;
     }
 
+    private static String getInfoString(String translationKey, ItemStack bee, EnumBeeChromosome chromosome) {
+        String GOLD = "%%1";//TextFormatting.GOLD.toString();
+        String AQUA = "%%2";//TextFormatting.AQUA.toString();
+        String DIV = GOLD.concat(", ").concat(AQUA);
+
+        StringUtils.IStringStyle style = (str) -> str.substring(indexOfFirstCapital(str));
+        String ret = GOLD.concat(QuestTranslation.translate(translationKey)).concat(": ").concat(AQUA);
+
+        if (chromosome == EnumBeeChromosome.SPECIES) {
+            return ret.concat(getDisplayName(bee)).concat(" (" + getTrait(bee, chromosome, true)[0]) + ")";
+        }
+
+        return ret.concat(flattenArray(getTrait(bee, chromosome, false), DIV, style));
+    }
+
     @Override
     public void initPanel() {
         super.initPanel();
@@ -70,7 +85,7 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
                 // Add 1 for the last line
                 int lines = 1 + StringUtils.getCount(info, "\n");
                 // And additional lines for buffer space, then multiply by text height (9)
-                int height = (lines + 2) * 9;
+                int height = (lines + 1) * 9;
                 StringUtils.IStringStyle style = (str) -> str.replaceAll("%%1", TextFormatting.GOLD.toString()).replaceAll("%%2", TextFormatting.AQUA.toString());
 
                 // ItemSlot
@@ -90,21 +105,6 @@ public class PanelTaskForestryRetrieval extends CanvasEmpty {
             text.setColor(PresetColor.TEXT_MAIN.getColor()).setFontSize(12);
             cvList.addPanel(text);
         }
-    }
-
-    private static String getInfoString(String translationKey, ItemStack bee, EnumBeeChromosome chromosome) {
-        String GOLD = "%%1";//TextFormatting.GOLD.toString();
-        String AQUA = "%%2";//TextFormatting.AQUA.toString();
-        String DIV = GOLD.concat(", ").concat(AQUA);
-
-        StringUtils.IStringStyle style = (str) -> str.substring(indexOfFirstCapital(str));
-        String ret = GOLD.concat(QuestTranslation.translate(translationKey)).concat(": ").concat(AQUA);
-
-        if (chromosome == EnumBeeChromosome.SPECIES) {
-            return ret.concat(getDisplayName(bee)).concat(" (" + getTrait(bee, chromosome, true)[0]) + ")";
-        }
-
-        return ret.concat(flattenArray(getTrait(bee, chromosome, false), DIV, style));
     }
 
     private ArrayList<String> getInfoList(ItemStack bee) {

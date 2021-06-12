@@ -55,6 +55,12 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
     private int catWidthBounds = 0;
     private short catButtonSize = 32;
 
+    public GuiEditTaskBeeRetrieval(GuiScreen parent, DBEntry<IQuest> quest, TaskForestryRetrieval task) {
+        super(parent);
+        this.quest = quest;
+        this.task = task;
+    }
+
     private Tuple<Integer, Integer> getCatCoords() {
         Tuple<Integer, Integer> current = _catCurrentCoords;
         int x = _catCurrentCoords.getFirst() + catButtonSize;
@@ -67,12 +73,6 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 
         _catCurrentCoords = new Tuple<>(x, y);
         return current;
-    }
-
-    public GuiEditTaskBeeRetrieval(GuiScreen parent, DBEntry<IQuest> quest, TaskForestryRetrieval task) {
-        super(parent);
-        this.quest = quest;
-        this.task = task;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         int buttonSize = cvBeeScrollContainer.getTransform().getHeight() - 4;
 
         // Scroll Area
-        CanvasScrolling cvBeeScroll = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(buttonSize, 4, buttonSize, 0), 0));
+        CanvasScrolling cvBeeScroll = new CanvasScrolling(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(buttonSize + 4, 4, buttonSize + 4, 0), 0));
         cvBeeScrollContainer.addPanel(cvBeeScroll);
 
         // RequiredItems Buttons
@@ -156,7 +156,6 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
                 lstRequiredItemButtons.add(btnReqItem);
 
                 // Bee Icon
-                // TODO: Figure out bug where bees get wrong icon sometimes. Think it's linked to #16?
                 PanelGeneric btnReqItemIcon = new PanelGeneric(new GuiRectangle(i * buttonSize + (i * 2), 2, buttonSize - 2, buttonSize - 2, -1), new ItemTexture(getSafeStack(taskItem)));
                 cvBeeScroll.addPanel(btnReqItemIcon);
             }
@@ -171,7 +170,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         );
 
         // Add New After Button
-        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - buttonSize, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add.right", mc.fontRenderer,
+        cvBeeScrollContainer.addPanel(new BQButton.AddButton(new GuiRectangle(cvBeeScrollContainer.getTransform().getWidth() - 1 - buttonSize, 4, buttonSize, buttonSize, 0), "bqforestry.tooltip.add.right", mc.fontRenderer,
                 () -> {
                     if (getSelectedIndex() + 1 >= task.requiredItems.size()) {
                         task.requiredItems.add(TaskForestryRetrieval.getDefaultBee());
@@ -183,12 +182,10 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         );
 
         // Scrollbar
-        PanelHScrollBar scBeeScrollBarH = new PanelHScrollBar(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(buttonSize + 2, 0, buttonSize + 2, -4), -10));
+        PanelHScrollBar scBeeScrollBarH = new PanelHScrollBar(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(buttonSize + 4, 0, buttonSize + 3, -4), -10));
         scBeeScrollBarH.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
         cvBeeScroll.setScrollDriverX(scBeeScrollBarH);
         cvBeeScrollContainer.addPanel(scBeeScrollBarH);
-
-//        scBeeScrollBarH.setEnabled(cvBeeScroll.getScrollBounds().getHeight() > 0);
 //endregion
 
 //region Data Panels
@@ -201,17 +198,23 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 //endregion
 
 //region Stats Display Area
-        CanvasTextured cvBeeStatsHolder = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, 0, cWidthHalf - 1, cHeightThird * 2 - 2, 0), PresetTexture.PANEL_INNER.getTexture());
-        cvDataPanels.addPanel(cvBeeStatsHolder);
+        CanvasTextured cvBeeStats = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, 0, cWidthHalf - 1, cHeightThird * 2 - 2, 0), PresetTexture.PANEL_INNER.getTexture());
+        cvDataPanels.addPanel(cvBeeStats);
 
         int getIndex = getSelectedIndex();
-        cvBeeStatsHolder.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(8, 8, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getIndex).setFontSize(16).enableShadow(true));
+        cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.TOP_EDGE, new GuiPadding(8, 8, 0, -32), -10), TextFormatting.UNDERLINE.toString() + QuestTranslation.translate("bqforestry.label.beeretrievallabel") + getIndex).setFontSize(16).enableShadow(true));
         if (getIndex >= 0) {
-            cvBeeStatsHolder.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(12, 28, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getIndex).getBaseStack()))));
+            cvBeeStats.addPanel(new PanelTextBox(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(12, 28, 0, 0), 0), String.join("\n", getBeeInfo(task.requiredItems.get(getIndex).getBaseStack()))));
         }
 //endregion
 
 //region Category Area
+        /*
+                cvDataPanels
+                |---> cvBeeCategories
+                      |---> cvScrollCategories
+         */
+
         CanvasTextured cvBeeCategories = new CanvasTextured(new GuiTransform(GuiAlign.HALF_LEFT, 0, cHeightThird * 2, cWidthHalf - 1, cHeightThird + 1, 0), PresetTexture.PANEL_INNER.getTexture());
         cvDataPanels.addPanel(cvBeeCategories);
         catWidthBounds = cvBeeCategories.getTransform().getWidth();
@@ -221,7 +224,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         cvBeeCategories.addPanel(cvScrollCategories);
 
         // Categories Scrollbar
-        PanelVScrollBar vScrollCategories = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 2, 0, 2), 0));
+        PanelVScrollBar vScrollCategories = new PanelVScrollBar(new GuiTransform(GuiAlign.RIGHT_EDGE, new GuiPadding(-8, 2, 1, 2), 0));
         cvScrollCategories.setScrollDriverY(vScrollCategories);
         vScrollCategories.setScrollSpeed(ConfigHandler.cfgScrollSpeed);
         cvBeeCategories.addPanel(vScrollCategories);
@@ -229,8 +232,8 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
         // I am unsure why, but the controls in the scrolling area are misaligned without first having this empty canvas?
         cvScrollCategories.addPanel(BUG_FIX1);
 
-        cvScrollCategories.addPanel(getPanel(PanesBee.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
-        cvScrollCategories.addPanel(getPanel(PanesBee.BeeGrowth, ThemeHandler.ICON_GENOME_BEE_GROWTH.getTexture()));
+        cvScrollCategories.addPanel(/* Trash Panel         */getPanel(PanesBee.Trash, ThemeHandler.ICON_ITEM_REMOVE.getTexture()));
+        cvScrollCategories.addPanel(/* Growth Status       */getPanel(PanesBee.BeeGrowth, ThemeHandler.ICON_GENOME_BEE_GROWTH.getTexture()));
         cvScrollCategories.addPanel(/* Species             */ getPanel(PanesBee.BeeSpecies, ThemeHandler.ICON_GENOME_SPECIES.getTexture()));
         cvScrollCategories.addPanel(/* Lifespans           */ getPanel(PanesBee.BeeLifespan, ThemeHandler.ICON_GENOME_LIFESPAN.getTexture()));
         cvScrollCategories.addPanel(/* Production Rates    */ getPanel(PanesBee.BeeSpeed, ThemeHandler.ICON_GENOME_SPEED.getTexture()));
@@ -247,7 +250,7 @@ public class GuiEditTaskBeeRetrieval extends BQScreenCanvas implements IVolatile
 //endregion
 
 //region Options Area
-        CanvasTextured cvBeeOptions = new CanvasTextured(new GuiTransform(GuiAlign.HALF_RIGHT, 0, 0, cWidthHalf - 1, cHeight, 0), PresetTexture.PANEL_INNER.getTexture());
+        CanvasTextured cvBeeOptions = new CanvasTextured(new GuiTransform(GuiAlign.HALF_RIGHT, 0, 0, cWidthHalf - 1, cHeight + 1, 0), PresetTexture.PANEL_INNER.getTexture());
         cvDataPanels.addPanel(cvBeeOptions);
 
         getSelectedOption().get(this, cvBeeOptions);

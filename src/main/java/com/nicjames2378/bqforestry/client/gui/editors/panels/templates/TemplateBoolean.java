@@ -25,14 +25,10 @@ import java.util.HashMap;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class TemplateBoolean extends TemplateEmpty {
+    private static HashMap<State, Tuple<IGuiTexture, IGuiColor>> stateTexMap = new HashMap<>();
     private String translationTitleKey = "";
     private EnumBeeChromosome chromosome = EnumBeeChromosome.CAVE_DWELLING;
-    private static HashMap<State, Tuple<IGuiTexture, IGuiColor>> stateTexMap = new HashMap<>();
     private State value = State.EITHER;
-
-    protected EnumBeeChromosome getChromosomeValue() {
-        return chromosome;
-    }
 
     public TemplateBoolean(EnumBeeChromosome chromosome, String translationKeyTitle) {
         super(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));
@@ -47,6 +43,10 @@ public class TemplateBoolean extends TemplateEmpty {
 
     public TemplateBoolean(IGuiRect rect) {
         super(rect);
+    }
+
+    protected EnumBeeChromosome getChromosomeValue() {
+        return chromosome;
     }
 
     @Override

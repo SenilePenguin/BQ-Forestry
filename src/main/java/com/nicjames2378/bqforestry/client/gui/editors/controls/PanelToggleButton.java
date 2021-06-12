@@ -4,31 +4,6 @@ import betterquesting.api2.client.gui.controls.PanelButton;
 import betterquesting.api2.client.gui.misc.IGuiRect;
 
 public class PanelToggleButton extends PanelButton {
-    public enum State {
-        ON("forestry.boolTrue"),
-        OFF("forestry.boolFalse"),
-        EITHER("");
-
-        private final String nbtText;
-        private static State[] vals = values();
-
-        State(String nbtText) {
-            this.nbtText = nbtText;
-        }
-
-        public String get() {
-            return nbtText;
-        }
-
-        public State next() {
-            if (this.ordinal() == State.values().length - 1) {
-                return vals[0];
-            } else {
-                return vals[(this.ordinal() + 1) % vals.length];
-            }
-        }
-    }
-
     private State state = State.EITHER;
 
     public PanelToggleButton(IGuiRect rect, int id, String txt) {
@@ -51,5 +26,30 @@ public class PanelToggleButton extends PanelButton {
 
     public State incrementToggledStatus() {
         return state = state.next();
+    }
+
+    public enum State {
+        ON("forestry.boolTrue"),
+        OFF("forestry.boolFalse"),
+        EITHER("");
+
+        private static State[] vals = values();
+        private final String nbtText;
+
+        State(String nbtText) {
+            this.nbtText = nbtText;
+        }
+
+        public String get() {
+            return nbtText;
+        }
+
+        public State next() {
+            if (this.ordinal() == State.values().length - 1) {
+                return vals[0];
+            } else {
+                return vals[(this.ordinal() + 1) % vals.length];
+            }
+        }
     }
 }

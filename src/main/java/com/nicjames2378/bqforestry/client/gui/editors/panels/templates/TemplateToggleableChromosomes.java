@@ -32,10 +32,6 @@ public class TemplateToggleableChromosomes extends TemplateEmpty {
     private EnumBeeChromosome chromosome = EnumBeeChromosome.SPEED;
     private ArrayList<PanelToggleStorage> values = new ArrayList<>();
 
-    protected EnumBeeChromosome getChromosomeValue() {
-        return chromosome;
-    }
-
     public TemplateToggleableChromosomes(EnumBeeChromosome chromosome, String translationKeyTitle) {
         super(new GuiTransform(GuiAlign.FULL_BOX, new GuiPadding(0, 0, 0, 0), 0));
         this.chromosome = chromosome;
@@ -44,6 +40,10 @@ public class TemplateToggleableChromosomes extends TemplateEmpty {
 
     public TemplateToggleableChromosomes(IGuiRect rect) {
         super(rect);
+    }
+
+    protected EnumBeeChromosome getChromosomeValue() {
+        return chromosome;
     }
 
     @Override

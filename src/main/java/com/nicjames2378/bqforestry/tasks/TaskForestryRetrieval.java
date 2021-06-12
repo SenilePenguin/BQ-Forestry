@@ -39,10 +39,6 @@ import java.util.*;
 import static com.nicjames2378.bqforestry.utils.UtilitiesBee.*;
 
 public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
-    public static BigItemStack getDefaultBee() {
-        return new BigItemStack(getBaseBee(UtilitiesBee.DEFAULT_SPECIES, UtilitiesBee.BeeTypes.valueOf(ConfigHandler.cfgBeeType), ConfigHandler.cfgOnlyMated));
-    }
-
     public final NonNullList<BigItemStack> requiredItems = new NonNullList<BigItemStack>() {
         {
             add(getDefaultBee());
@@ -52,6 +48,10 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
     private final HashMap<UUID, int[]> userProgress = new HashMap<>();
     public boolean consume = ConfigHandler.cfgConsume;
     public boolean autoConsume = ConfigHandler.cfgAutoConsume;
+
+    public static BigItemStack getDefaultBee() {
+        return new BigItemStack(getBaseBee(UtilitiesBee.DEFAULT_SPECIES, UtilitiesBee.BeeTypes.valueOf(ConfigHandler.cfgBeeType), ConfigHandler.cfgOnlyMated));
+    }
 
     @Override
     public String getUnlocalisedName() {
@@ -114,6 +114,7 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
 
             // Jump the loop if the slot is empty
             if (stack.isEmpty()) continue;
+
             int remStack = stack.getCount(); // Allows the stack detection to split across multiple requirements
 
             // Iterate through the required items
@@ -121,45 +122,28 @@ public class TaskForestryRetrieval implements ITaskInventory { //}, IItemTask {
                 BigItemStack rStack = requiredItems.get(j);
 
                 // If the item isn't even the correct item (DERP!)
-                if (rStack.getBaseStack().isItemEqual(stack)) continue;
+                if (!rStack.getBaseStack().isItemEqual(stack)) continue;
 
                 // What does this do???
                 if (progress[j] >= rStack.stackSize) continue;
 
                 // If we require mated and the player's item isn't
-                if (isMated(rStack.getBaseStack()) && !isMated(stack))
-                    continue;
+                if (isMated(rStack.getBaseStack()) && !isMated(stack)) continue;
 
                 // Gets a list of valid alleles from the quest bee item
                 HashMap<EnumBeeChromosome, HashSet<String>> map = getAllTraits(rStack.getBaseStack(), false);
                 boolean nbtIsValid = false;
 
-                BQ_Forestry.debug("================");
-                for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
-                    BQ_Forestry.debug(String.format("SubmitItemDEBUG: Chromosome %1$s", entry.getKey()));
-
-                    for (String s : entry.getValue()) {
-                        BQ_Forestry.debug(String.format("                      Value %1$s", s));
-                    }
-                }
-                BQ_Forestry.debug("");
-
                 // Iterates through all valid alleles
                 for (Map.Entry<EnumBeeChromosome, HashSet<String>> entry : map.entrySet()) {
                     // Safe to use [0] here since we don't currently support secondary traits anywhere else
                     String submissionTrait = getTrait(stack, entry.getKey(), true)[0];
-                    BQ_Forestry.debug(String.format("SubmitItem: Chromosome %1$s (Wanted: %2$s)", entry.getKey(), entry.getValue()));
+                    BQ_Forestry.debug(String.format("BeeRetrieval_SubmitItem: Chromosome %1$s (Wanted: %2$s)", entry.getKey(), entry.getValue()));
 
                     // If the bee's trait is anywhere in the set, carry on. Otherwise break the loop.
-                    if (entry.getValue().contains(submissionTrait)) {
-                        BQ_Forestry.debug(String.format("                      Value [%1$s] is VALID", submissionTrait));
-                        // Set flag saying the NBT is still valid
-                        nbtIsValid = true;
-                    } else { // The trait was not found in the compatible traits list. Abort!
-                        BQ_Forestry.debug(String.format("                      Value [%1$s] is INVALID", submissionTrait));
-                        nbtIsValid = false;
-                        break; // If we didn't find a valid allele for the required category, stop looping
-                    }
+                    nbtIsValid = entry.getValue().contains(submissionTrait);
+                    BQ_Forestry.debug(String.format("                      Value [%1$s] is %2$s", submissionTrait, nbtIsValid ? "VALID" : "INVALID"));
+                    if (!nbtIsValid) break;
                 }
 
                 // Did we have at least one NBT from each list of required values?

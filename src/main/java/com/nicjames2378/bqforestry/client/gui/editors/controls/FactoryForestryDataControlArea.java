@@ -31,13 +31,13 @@ public class FactoryForestryDataControlArea {
         this.w = w;
     }
 
+    public IGuiPanel[] getPanels() {
+        return this.panels;
+    }
+
     public FactoryForestryDataControlArea setPanels(IGuiPanel[] panels) {
         this.panels = panels;
         return this;
-    }
-
-    public IGuiPanel[] getPanels() {
-        return this.panels;
     }
 
     public FactoryForestryDataControlArea setTitle(String title, boolean isLangKey) {
