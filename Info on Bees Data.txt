@@ -1,0 +1,228 @@
+forestry:bee_princess_ge
+
+https://ftbwiki.org/Bee_Breeding#Genetics
+
+tag
+	Genome
+		Chromosomes
+			0 Species
+				EnumBeeChromosome.SPECIES			
+			1 Speed
+				EnumBeeChromosome.SPEED			
+			2 Lifespan
+				EnumBeeChromosome.LIFESPAN			
+			3 Fertility
+				EnumBeeChromosome.FERTILITY			
+			4 Tolerance
+				EnumBeeChromosome.TEMPERATURE_TOLERANCE			
+			5 BoolFalse
+				EnumBeeChromosome.NEVER_SLEEPS		
+			6 Tolerance
+				EnumBeeChromosome.HUMIDITY_TOLERANCE			
+			7 BoolFalse
+				EnumBeeChromosome.TOLERATES_RAIN			
+			8 BoolFalse
+				EnumBeeChromosome.CAVE_DWELLING			
+			9 Flowers
+				EnumBeeChromosome.FLOWER_PROVIDER			
+			10 FloweringSpeed
+				EnumBeeChromosome.FLOWERING			
+			11 TerritorySize
+				EnumBeeChromosome.TERRITORY
+			12 Effect
+				EnumBeeChromosome.EFFECT
+	Mate
+		Species
+		Speed
+		Lifespan
+		Fertility
+		Tolerance
+		BoolFalse
+		Tolerance
+		BoolFalse
+		BoolFalse
+		Flowers 
+		FloweringSpeed
+		TerritorySize
+		Effect
+		
+
+		SPECIES					Species
+	SPEED						Production
+	LIFESPAN					Lifespan
+	FERTILITY					Fertility
+	TEMPERATURE_TOLERANCE		Climate Tolerance
+	NEVER_SLEEPS				Nocturnal
+	HUMIDITY_TOLERANCE			Humidity Tolerance
+	TOLERATES_RAIN				Flyer
+	CAVE_DWELLING				Dwelling
+FLOWER_PROVIDER					Flower Type
+	FLOWERING					Pollination
+	TERRITORY					Territory
+EFFECT							Effect
+
+		
+Discord Addon
+
+https://imgur.com/a/EKuZ0ny
+
+
+
+===========================================================
+Listing Alleles for Enum: SPECIES
+SPECIES Allele found: 1 / 160 - extrabees.species.resin
+SPECIES Allele found: 160 / 160 - extrabees.species.primeval
+===========================================================
+===========================================================
+Slowest < Slower < Slow < Normal < Fast < Faster < Fastest
+
+Listing Alleles for Enum: SPEED
+SPEED Allele found: 1 / 7 - forestry.speedSlow
+SPEED Allele found: 2 / 7 - forestry.speedFastest
+SPEED Allele found: 3 / 7 - forestry.speedFaster
+SPEED Allele found: 4 / 7 - forestry.speedFast
+SPEED Allele found: 5 / 7 - forestry.speedSlowest
+SPEED Allele found: 6 / 7 - forestry.speedSlower
+SPEED Allele found: 7 / 7 - forestry.speedNormal
+===========================================================
+===========================================================
+Shortest < Shorter < Short < Shortened < Normal < Elongated < Long < Longer < Longest
+
+Listing Alleles for Enum: LIFESPAN
+LIFESPAN Allele found: 1 / 9 - forestry.lifespanLonger
+LIFESPAN Allele found: 2 / 9 - forestry.lifespanShortened
+LIFESPAN Allele found: 3 / 9 - forestry.lifespanShort
+LIFESPAN Allele found: 4 / 9 - forestry.lifespanNormal
+LIFESPAN Allele found: 5 / 9 - forestry.lifespanShortest
+LIFESPAN Allele found: 6 / 9 - forestry.lifespanShorter
+LIFESPAN Allele found: 7 / 9 - forestry.lifespanElongated
+LIFESPAN Allele found: 8 / 9 - forestry.lifespanLong
+LIFESPAN Allele found: 9 / 9 - forestry.lifespanLongest
+===========================================================
+===========================================================
+Low < Normal < High < Maximum
+
+Listing Alleles for Enum: FERTILITY
+FERTILITY Allele found: 1 / 4 - forestry.fertilityLow
+FERTILITY Allele found: 2 / 4 - forestry.fertilityMaximum
+FERTILITY Allele found: 3 / 4 - forestry.fertilityHigh
+FERTILITY Allele found: 4 / 4 - forestry.fertilityNormal
+===========================================================
+===========================================================
+Icy < Cold < Normal < Warm < Hot < Hellish
+
+Listing Alleles for Enum: TEMPERATURE_TOLERANCE
+TEMPERATURE_TOLERANCE Allele found: 1 / 16 - forestry.toleranceDown5
+TEMPERATURE_TOLERANCE Allele found: 2 / 16 - forestry.toleranceDown1
+TEMPERATURE_TOLERANCE Allele found: 3 / 16 - forestry.toleranceUp5
+TEMPERATURE_TOLERANCE Allele found: 4 / 16 - forestry.toleranceUp4
+TEMPERATURE_TOLERANCE Allele found: 5 / 16 - forestry.toleranceBoth5
+TEMPERATURE_TOLERANCE Allele found: 6 / 16 - forestry.toleranceBoth4
+TEMPERATURE_TOLERANCE Allele found: 7 / 16 - forestry.toleranceUp2
+TEMPERATURE_TOLERANCE Allele found: 8 / 16 - forestry.toleranceBoth2
+TEMPERATURE_TOLERANCE Allele found: 9 / 16 - forestry.toleranceBoth1
+TEMPERATURE_TOLERANCE Allele found: 10 / 16 - forestry.toleranceUp3
+TEMPERATURE_TOLERANCE Allele found: 11 / 16 - forestry.toleranceDown3
+TEMPERATURE_TOLERANCE Allele found: 12 / 16 - forestry.toleranceBoth3
+TEMPERATURE_TOLERANCE Allele found: 13 / 16 - forestry.toleranceDown4
+TEMPERATURE_TOLERANCE Allele found: 14 / 16 - forestry.toleranceNone
+TEMPERATURE_TOLERANCE Allele found: 15 / 16 - forestry.toleranceDown2
+TEMPERATURE_TOLERANCE Allele found: 16 / 16 - forestry.toleranceUp1
+===========================================================
+===========================================================
+Listing Alleles for Enum: NEVER_SLEEPS
+NEVER_SLEEPS Allele found: 1 / 2 - forestry.boolTrue
+NEVER_SLEEPS Allele found: 2 / 2 - forestry.boolFalse
+===========================================================
+===========================================================
+Listing Alleles for Enum: HUMIDITY_TOLERANCE
+HUMIDITY_TOLERANCE Allele found: 1 / 16 - forestry.toleranceDown5
+HUMIDITY_TOLERANCE Allele found: 2 / 16 - forestry.toleranceDown1
+HUMIDITY_TOLERANCE Allele found: 3 / 16 - forestry.toleranceUp5
+HUMIDITY_TOLERANCE Allele found: 4 / 16 - forestry.toleranceUp4
+HUMIDITY_TOLERANCE Allele found: 5 / 16 - forestry.toleranceBoth5
+HUMIDITY_TOLERANCE Allele found: 6 / 16 - forestry.toleranceBoth4
+HUMIDITY_TOLERANCE Allele found: 7 / 16 - forestry.toleranceUp2
+HUMIDITY_TOLERANCE Allele found: 8 / 16 - forestry.toleranceBoth2
+HUMIDITY_TOLERANCE Allele found: 9 / 16 - forestry.toleranceBoth1
+HUMIDITY_TOLERANCE Allele found: 10 / 16 - forestry.toleranceUp3
+HUMIDITY_TOLERANCE Allele found: 11 / 16 - forestry.toleranceDown3
+HUMIDITY_TOLERANCE Allele found: 12 / 16 - forestry.toleranceBoth3
+HUMIDITY_TOLERANCE Allele found: 13 / 16 - forestry.toleranceDown4
+HUMIDITY_TOLERANCE Allele found: 14 / 16 - forestry.toleranceNone
+HUMIDITY_TOLERANCE Allele found: 15 / 16 - forestry.toleranceDown2
+HUMIDITY_TOLERANCE Allele found: 16 / 16 - forestry.toleranceUp1
+===========================================================
+===========================================================
+Listing Alleles for Enum: TOLERATES_RAIN
+TOLERATES_RAIN Allele found: 1 / 2 - forestry.boolTrue
+TOLERATES_RAIN Allele found: 2 / 2 - forestry.boolFalse
+===========================================================
+===========================================================
+Listing Alleles for Enum: CAVE_DWELLING
+CAVE_DWELLING Allele found: 1 / 2 - forestry.boolTrue
+CAVE_DWELLING Allele found: 2 / 2 - forestry.boolFalse
+===========================================================
+===========================================================
+Listing Alleles for Enum: FLOWER_PROVIDER
+FLOWER_PROVIDER Allele found: 1 / 20 - forestry.flowersCacti
+FLOWER_PROVIDER Allele found: 2 / 20 - DEAD
+FLOWER_PROVIDER Allele found: 3 / 20 - REDSTONE
+FLOWER_PROVIDER Allele found: 4 / 20 - SAPLING
+FLOWER_PROVIDER Allele found: 5 / 20 - LEAVES
+FLOWER_PROVIDER Allele found: 6 / 20 - forestry.flowersVanilla
+FLOWER_PROVIDER Allele found: 7 / 20 - SUGAR
+FLOWER_PROVIDER Allele found: 8 / 20 - WATER
+FLOWER_PROVIDER Allele found: 9 / 20 - FRUIT
+FLOWER_PROVIDER Allele found: 10 / 20 - forestry.flowersGourd
+FLOWER_PROVIDER Allele found: 11 / 20 - ROCK
+FLOWER_PROVIDER Allele found: 12 / 20 - forestry.flowersMushrooms
+FLOWER_PROVIDER Allele found: 13 / 20 - WOOD
+FLOWER_PROVIDER Allele found: 14 / 20 - forestry.flowersWheat
+FLOWER_PROVIDER Allele found: 15 / 20 - forestry.flowersSnow
+FLOWER_PROVIDER Allele found: 16 / 20 - forestry.flowersEnd
+FLOWER_PROVIDER Allele found: 17 / 20 - MYSTICAL
+FLOWER_PROVIDER Allele found: 18 / 20 - forestry.flowersNether
+FLOWER_PROVIDER Allele found: 19 / 20 - BOOK
+FLOWER_PROVIDER Allele found: 20 / 20 - forestry.flowersJungle
+===========================================================
+===========================================================
+Listing Alleles for Enum: FLOWERING
+FLOWERING Allele found: 1 / 8 - forestry.floweringSlower
+FLOWERING Allele found: 2 / 8 - forestry.floweringSlow
+FLOWERING Allele found: 3 / 8 - forestry.floweringSlowest
+FLOWERING Allele found: 4 / 8 - forestry.floweringAverage
+FLOWERING Allele found: 5 / 8 - forestry.floweringMaximum
+FLOWERING Allele found: 6 / 8 - forestry.floweringFastest
+FLOWERING Allele found: 7 / 8 - forestry.floweringFast
+FLOWERING Allele found: 8 / 8 - forestry.floweringFaster
+===========================================================
+===========================================================
+Listing Alleles for Enum: TERRITORY
+TERRITORY Allele found: 1 / 4 - forestry.territoryLargest
+TERRITORY Allele found: 2 / 4 - forestry.territoryLarger
+TERRITORY Allele found: 3 / 4 - forestry.territoryAverage
+TERRITORY Allele found: 4 / 4 - forestry.territoryLarge
+===========================================================
+===========================================================
+Listing Alleles for Enum: EFFECT
+EFFECT Allele found: 1 / 19 - forestry.effectReanimation
+EFFECT Allele found: 2 / 19 - forestry.effectIgnition
+EFFECT Allele found: 3 / 19 - forestry.effectCreeper
+EFFECT Allele found: 4 / 19 - forestry.effectHeroic
+EFFECT Allele found: 5 / 19 - forestry.effectGlacial
+EFFECT Allele found: 6 / 19 - forestry.effectMycophilic
+EFFECT Allele found: 7 / 19 - forestry.effectExploration
+EFFECT Allele found: 8 / 19 - forestry.effectMisanthrope
+EFFECT Allele found: 9 / 19 - forestry.effectAggressive
+EFFECT Allele found: 10 / 19 - forestry.effectBeatific
+EFFECT Allele found: 11 / 19 - forestry.effectMiasmic
+EFFECT Allele found: 12 / 19 - forestry.effectRepulsion
+EFFECT Allele found: 13 / 19 - forestry.effectFestiveEaster
+EFFECT Allele found: 14 / 19 - forestry.effectDrunkard
+EFFECT Allele found: 15 / 19 - forestry.effectNone
+EFFECT Allele found: 16 / 19 - forestry.effectRadioactive
+EFFECT Allele found: 17 / 19 - forestry.effectResurrection
+EFFECT Allele found: 18 / 19 - forestry.effectFertile
+EFFECT Allele found: 19 / 19 - forestry.effectSnowing
+===========================================================
